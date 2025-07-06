@@ -8,24 +8,10 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@nuxt/fonts',
     '@nuxt/content',
-    '@logto/nuxt',
     '@nuxtjs/kinde',
   ],
 
   runtimeConfig: {
-    logto: {
-      endpoint: 'see .env',
-      appId: 'see .env',
-      appSecret: 'see .env',
-      cookieEncryptionKey: 'see .env',
-    },
   },
 
-  logto: {
-    pathnames: {
-      signIn: '/sign-in',
-      signOut: '/sign-out',
-      callback: '/auth/callback',
-    },
-  },
 })
