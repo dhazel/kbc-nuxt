@@ -10,5 +10,9 @@
     <AppAlert>
       This is an auto-imported component
     </AppAlert>
+
+    <NuxtLink to="/api/logout" external>
+      Sign out
+    </NuxtLink>
   </div>
 </template>
