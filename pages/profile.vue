@@ -1,18 +1,20 @@
 <template>
   <div>
-    <h1>Welcome to your profile</h1>
+    <h1>Profile</h1>
 
-    <!-- Display user information when signed in -->
-    <ul v-if="Boolean($auth.loggedIn)"> 
-      <li v-for="(value, key) in $auth.user"><b>{{ key }}:</b> {{ value }}</li>
-    </ul>
+    <AvatarMeta />
 
-    <AppAlert>
-      This is an auto-imported component
-    </AppAlert>
-
-    <NuxtLink to="/api/logout" external>
-      Sign out
-    </NuxtLink>
+    <Button v-if="$auth.loggedIn" >
+        <NuxtLink to="/api/logout" external>
+            Sign Out
+        </NuxtLink>
+    </Button>
   </div>
 </template>
+
+
+<script setup lang="ts">
+definePageMeta({
+  middleware: ['auth-logged-in'],
+})
+</script>
