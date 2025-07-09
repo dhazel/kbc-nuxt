@@ -26,6 +26,7 @@ export default defineNuxtConfig({
         theme: {
             preset: Aura
         },
+        ripple: true,
         unstyled: false
     }
   },

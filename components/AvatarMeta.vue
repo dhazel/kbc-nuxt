@@ -3,7 +3,7 @@
     <div class="bg-surface-0 dark:bg-surface-950 px-6 py-8 md:px-12 lg:px-20">
         <div class="flex items-center flex-col lg:flex-row lg:justify-between">
             <div class="flex items-start flex-col md:flex-row gap-8">
-                <img :src="$auth.user.picture" class="w-[6.42rem] h-[6.42rem]" />
+                <img :src="$auth.user.picture" class="w-[6.42rem] h-[6.42rem] rounded-md" />
                 <div class="flex flex-col gap-4">
                     <div class="flex items-center">
                         <span class="text-surface-900 dark:text-surface-0 font-bold text-3xl">{{ $auth.user.name }}</span>
