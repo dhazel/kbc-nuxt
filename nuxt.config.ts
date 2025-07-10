@@ -11,7 +11,6 @@ export default defineNuxtConfig({
     '@primevue/nuxt-module',
     '@nuxt/icon',
     '@nuxt/fonts',
-    '@nuxt/content',
     '@nuxtjs/kinde',
   ],
 
