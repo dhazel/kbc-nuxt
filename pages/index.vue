@@ -1,7 +1,9 @@
 <template>
-  <div>
-    <h1>Welcome to the homepage</h1>
-  </div>
+    <div>
+        <section>
+            <h1 class="text-3xl">Welcome to the homepage</h1>
+        </section>
+    </div>
 </template>
 
 <script setup lang="ts">
