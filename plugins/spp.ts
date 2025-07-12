@@ -1,5 +1,5 @@
 import mondaySdk from "monday-sdk-js";
-import { SppConnection } from '~/utilities/sppConnection.ts';
+import { SppConnection } from '~/utilities/SppConnection.ts';
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig();
