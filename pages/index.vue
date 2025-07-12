@@ -1,7 +1,7 @@
 <template>
     <div>
         <section>
-            <h1 class="text-3xl">Welcome to the homepage</h1>
+            <h1 class="text-3xl">Welcome!</h1>
         </section>
     </div>
 </template>

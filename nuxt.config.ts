@@ -35,8 +35,11 @@ export default defineNuxtConfig({
       '~/assets/css/main.css',
   ],
 
-  runtimeConfig: {
-  },
+    runtimeConfig: {
+        mondayToken: process.env.NUXT_MONDAY_TOKEN || 'default_token',
+        public: {
+    }
+},
 
   // routeRules: {
   //   '/**': {
@@ -72,3 +75,10 @@ export default defineNuxtConfig({
   //   },
   // },
 })
+
+// TypeScript declaration for injected $spp
+declare module '#app' {
+  interface NuxtApp {
+    $spp: InstanceType<typeof SppConnection>;
+  }
+}
