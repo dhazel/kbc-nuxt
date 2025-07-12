@@ -11,10 +11,6 @@
 <script setup lang="ts">
 import { useNuxtApp, useAsyncData } from '#app';
 
-definePageMeta({
-  middleware: ['auth-logged-in'],
-})
-
 const { $spp } = useNuxtApp();
 
 const { data: users } = await useAsyncData('users', () => $spp.getUsers());
