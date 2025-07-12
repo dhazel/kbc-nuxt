@@ -3,7 +3,7 @@
         <header>
             <AppHeader />
         </header>
-        <main class="container justify-self-center mt-6">
+        <main class="container mx-auto mt-6">
             <slot />
         </main>
         <footer>
