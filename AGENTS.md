@@ -10,7 +10,7 @@
 ## Code Style Guidelines
 
 - **Imports**: Use ES module syntax; group imports by source (standard, third-party, local).
-- **Formatting**: Follow Prettier defaults with 2-space indentation; use single quotes.
+- **Formatting**: Follow Prettier defaults with 4-space indentation; use single quotes.
 - **Types**: Use TypeScript with strict typing; avoid `any` unless necessary.
 - **Naming**: Use camelCase for variables/functions, PascalCase for components/types.
 - **Error Handling**: Use try-catch for async operations; log errors with context.
