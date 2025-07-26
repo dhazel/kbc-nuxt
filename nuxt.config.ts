@@ -8,10 +8,11 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   modules: [
-    '@primevue/nuxt-module',
-    '@nuxt/icon',
-    '@nuxt/fonts',
-    '@nuxtjs/kinde',
+      '@primevue/nuxt-module',
+      '@nuxt/icon',
+      '@nuxt/fonts',
+      '@nuxtjs/kinde',
+      'nuxt-auth-utils',
   ],
 
   vite: {
@@ -41,6 +42,7 @@ export default defineNuxtConfig({
     }
 },
 
+
   routeRules: {
     '/dashboard': {
       appMiddleware: ['auth-logged-in'],
@@ -64,6 +66,7 @@ export default defineNuxtConfig({
       },
     },
     // Optional: Add '/**': { ... } if you want to protect all other routes
+    // '/api/spp/**': { middleware: ['~/server/middleware/auth.ts'] }, // Apply auth middleware only to /api/spp/ routes
   },
 })
 

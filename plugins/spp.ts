@@ -1,11 +1,7 @@
-import mondaySdk from "monday-sdk-js";
-import { SppConnection } from '~/utilities/SppConnection.ts';
+import { SppConnection } from '~/utilities/SppConnection';
 
 export default defineNuxtPlugin((nuxtApp) => {
-  const config = useRuntimeConfig();
-  const monday = mondaySdk();
-  monday.setToken(config.mondayToken); // Use config.public.mondayToken if public
-
-  const spp = new SppConnection(monday);
-  nuxtApp.provide('spp', spp);
+    const headers = useRequestHeaders(['cookie']);
+    const spp = new SppConnection(headers);
+    nuxtApp.provide('spp', spp);
 });

@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>Welcome to your dashboard</h1>
+        <p>{{ users }}</p>
 
     <form @submit.prevent="submitPrayerOrder">
       <div>
@@ -24,7 +25,7 @@ const { $spp, $auth } = useNuxtApp();
 const title = ref('');
 const body = ref('');
 
-const { data: boards } = await useAsyncData('boards', () => $spp.getBoard('Informed Intercession'));
+const { data: users } = await useAsyncData('users', () => $spp.getUsers());
 
 const submitPrayerOrder = async () => {
   if (!title.value.trim() || !body.value.trim()) {
