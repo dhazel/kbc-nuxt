@@ -21,6 +21,10 @@ export default defineNuxtConfig({
       ],
   },
 
+  kinde: {
+    // middleware: true,
+  },
+
   primevue: {
     options: {
         theme: {
@@ -65,8 +69,6 @@ export default defineNuxtConfig({
         public: true,
       },
     },
-    // Optional: Add '/**': { ... } if you want to protect all other routes
-    // '/api/spp/**': { middleware: ['~/server/middleware/auth.ts'] }, // Apply auth middleware only to /api/spp/ routes
   },
 })
 
