@@ -48,7 +48,7 @@ export default defineNuxtConfig({
 
 
   routeRules: {
-    '/dashboard': {
+    '/demo': {
       appMiddleware: ['auth-logged-in'],
       kinde: {
         external: true,
