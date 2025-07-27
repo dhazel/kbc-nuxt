@@ -12,7 +12,6 @@ export default defineNuxtConfig({
       '@nuxt/icon',
       '@nuxt/fonts',
       '@nuxtjs/kinde',
-      'nuxt-auth-utils',
   ],
 
   vite: {
