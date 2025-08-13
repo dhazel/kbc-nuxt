@@ -43,7 +43,8 @@ const resolver = ref(zodResolver(
 
 const submitPrayerOrder = async ({ valid, values }) => {
   if (valid) {
-    try {
+    try
+    {
       const user = { name: $auth.user.name, email: $auth.user.email };
       const prayerOrder = { title: values.subject, body: values.details };
 
@@ -51,7 +52,9 @@ const submitPrayerOrder = async ({ valid, values }) => {
 
       toast.add({ severity: 'success', summary: 'Prayer order added', life: 3000 });
       console.log('Prayer order added successfully');
-    } catch (error) {
+    }
+    catch (error)
+    {
       toast.add({ severity: 'error', summary: 'Error adding prayer order', life: 3000 });
       console.error('Error adding prayer order:', error);
     }
