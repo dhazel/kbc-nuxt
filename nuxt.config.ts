@@ -2,6 +2,8 @@
 
 import tailwindcss from "@tailwindcss/vite";
 import Aura from '@primeuix/themes/aura';
+import type { KvStore } from './utilities/KvStore';
+import { SppConnection } from './utilities/SppConnection';
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
@@ -39,12 +41,16 @@ export default defineNuxtConfig({
       '~/assets/css/main.css',
   ],
 
-    runtimeConfig: {
-        mondayToken: process.env.NUXT_MONDAY_TOKEN || 'default_token',
-        public: {
-    }
-},
+  plugins: [
+    { src: '~/plugins/kvStore.ts', mode: 'server' }
+  ],
 
+  runtimeConfig: {
+    kvBackend: 'netlify',
+    mondayToken: process.env.NUXT_MONDAY_TOKEN || 'default_token',
+    public: {
+    }
+  },
 
   routeRules: {
     '/demo': {
@@ -75,5 +81,12 @@ export default defineNuxtConfig({
 declare module '#app' {
   interface NuxtApp {
     $spp: InstanceType<typeof SppConnection>;
+  }
+}
+
+// TypeScript declaration for injected $kv
+declare module '#app' {
+  interface NuxtApp {
+    $kv: KvStore;
   }
 }

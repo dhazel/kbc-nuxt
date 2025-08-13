@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@logto/nuxt": "^1.2.6",
+    "@netlify/blobs": "^10.0.8",
     "@nuxt/fonts": "^0.11.4",
     "@nuxt/icon": "^1.15.0",
     "@nuxtjs/kinde": "^0.2.0",
