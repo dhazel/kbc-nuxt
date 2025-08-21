@@ -2,7 +2,7 @@
 
 import tailwindcss from "@tailwindcss/vite";
 import Aura from '@primeuix/themes/aura';
-import type { KvStore } from './utilities/KvStore';
+import type { IKvStore } from './utilities/PluggableKvStore';
 import { SppConnection } from './utilities/SppConnection';
 
 export default defineNuxtConfig({
@@ -87,6 +87,6 @@ declare module '#app' {
 // TypeScript declaration for injected $kv
 declare module '#app' {
   interface NuxtApp {
-    $kv: KvStore;
+    $kv: IKvStore;
   }
 }
