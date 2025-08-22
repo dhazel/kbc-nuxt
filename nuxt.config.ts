@@ -41,9 +41,10 @@ export default defineNuxtConfig({
       '~/assets/css/main.css',
   ],
 
-  plugins: [
-    { src: '~/plugins/kvStore.ts', mode: 'server' }
-  ],
+   plugins: [
+     { src: '~/plugins/kvStore.ts', mode: 'server' },
+     { src: '~/plugins/clientStorage.ts', mode: 'client' }
+   ],
 
   runtimeConfig: {
     kvBackend: 'netlify',
@@ -88,5 +89,6 @@ declare module '#app' {
 declare module '#app' {
   interface NuxtApp {
     $kv: Storage;
+    $clientKv: import('~/utilities/ClientStorage').ClientStorage;
   }
 }
