@@ -1,16 +1,15 @@
-import { PluggableKvStore } from '~/utilities/PluggableKvStore';
+import { createStorage, type Storage } from 'unstorage';
 import { netlifyDriver } from '~/utilities/NetlifyKvStore';
-import type { IKvStore } from '~/utilities/PluggableKvStore';
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig();
-  let kv: IKvStore;
+  let storage: Storage;
   switch (config.kvBackend) {
     case 'netlify':
-      kv = new PluggableKvStore(netlifyDriver());
+      storage = createStorage({ driver: netlifyDriver() });
       break;
     default:
       throw new Error(`Unknown KV backend: ${config.kvBackend}`);
   }
-  nuxtApp.provide('kv', kv);
+  nuxtApp.provide('kv', storage);
 });
