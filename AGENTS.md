@@ -12,10 +12,10 @@
 - **Imports**: Use ES module syntax; group imports by source (standard, third-party, local).
 - **Formatting**: Follow Prettier defaults with 4-space indentation; use single quotes.
 - **Types**: Use TypeScript with strict typing; avoid `any` unless necessary.
-- **Naming**: Use camelCase for variables/functions, PascalCase for components/types.
+- **Naming**: Use camelCase for variables/functions, PascalCase for components/types. Interface names should start with an `I`, for example `IMyInterface`.
 - **Error Handling**: Use try-catch for async operations; log errors with context.
 - **Components**: Follow Nuxt conventions for Vue components in `pages/` and `components/`.
-- **File Structure**: Organize files per Nuxt standards (pages, components, composables).
+- **File Structure**: Organize files per Nuxt standards (pages, components, composables). Each class and interface should be in its own file.
 
 ## Additional Rules
 
