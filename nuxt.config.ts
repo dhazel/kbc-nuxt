@@ -41,10 +41,11 @@ export default defineNuxtConfig({
       '~/assets/css/main.css',
   ],
 
-  plugins: [
-    { src: '~/plugins/kvStore.ts', mode: 'server' },
-    { src: '~/plugins/clientStorage.ts', mode: 'client' }
-  ],
+    plugins: [
+      { src: '~/plugins/clientStorage.ts', mode: 'client' },
+      { src: '~/plugins/userService.client.ts', mode: 'client' },
+      { src: '~/plugins/enhance-user.client.ts', mode: 'client' }
+    ],
 
   runtimeConfig: {
     kvBackend: 'netlify',
