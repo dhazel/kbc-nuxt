@@ -1,6 +1,3 @@
-import { createStorage } from 'unstorage';
-import { netlifyDriver } from '~/utilities/NetlifyKvStore';
-
 export default defineEventHandler(async (event) => {
   // Authentication check
   const kinde = event.context.kinde;
@@ -17,16 +14,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const config = useRuntimeConfig();
-    let kv: any;
-    switch (config.kvBackend) {
-      case 'netlify':
-        kv = createStorage({ driver: netlifyDriver() });
-        break;
-      default:
-        throw createError({ statusCode: 500, message: `Unknown KV backend: ${config.kvBackend}` });
-    }
-
+    const kv = event.context.$kv;
     await kv.setItem(key, value);
     return { success: true };
   } catch (error: any) {

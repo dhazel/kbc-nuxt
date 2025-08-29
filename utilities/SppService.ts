@@ -1,5 +1,10 @@
-export class SppConnection {
-  constructor(private headers) {}
+export class SppService {
+  constructor(private headers, private storage?: any) {}
+
+  // Method to set storage after construction (for client-side usage)
+  setStorage(storage: any) {
+    this.storage = storage;
+  }
 
   async getUsers() {
     const query = 'query { users { name } }';
@@ -15,14 +20,43 @@ export class SppConnection {
     return users;
   }
 
-  async addPrayerOrderForInformedIntercession(user: User, prayerOrder: PrayerOrder) {
-      const board = await this.getBoard("Informed Intercession");
-      let informedIntercessionGroup = await this.getInformedIntercessionGroup(user);
-      if (informedIntercessionGroup === null) {
-          informedIntercessionGroup = await this.addInformedIntercessionGroup(user);
-      }
+  // Storage integration methods with error handling
+  async cacheUserData(userId: string, data: any) {
+    if (!this.storage) {
+      console.warn('Storage not available, skipping cache operation');
+      return;
+    }
 
-      await this.addItem(board.id, informedIntercessionGroup, prayerOrder.title, prayerOrder.body);
+    try {
+      await this.storage.setItem(`user_${userId}`, JSON.stringify(data));
+    } catch (error: any) {
+      console.error('Failed to cache user data:', error.message);
+      // Continue execution - don't throw error for cache failures
+    }
+  }
+
+  async getCachedUserData(userId: string) {
+    if (!this.storage) {
+      return null;
+    }
+
+    try {
+      const cached = await this.storage.getItem(`user_${userId}`);
+      return cached ? JSON.parse(cached) : null;
+    } catch (error: any) {
+      console.error('Failed to get cached user data:', error.message);
+      return null;
+    }
+  }
+
+  async addPrayerOrderForInformedIntercession(user: User, prayerOrder: PrayerOrder) {
+      // const board = await this.getBoard("Informed Intercession");
+      // let informedIntercessionGroup = await this.getInformedIntercessionGroup(user);
+      // if (informedIntercessionGroup === null) {
+      //     informedIntercessionGroup = await this.addInformedIntercessionGroup(user);
+      // }
+      //
+      // await this.addItem(board.id, informedIntercessionGroup, prayerOrder.title, prayerOrder.body);
   }
 
   private async addItem(boardId: number, group: { id: string }, title: string, body: string): Promise<number> {

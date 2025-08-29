@@ -3,7 +3,7 @@
 import tailwindcss from "@tailwindcss/vite";
 import Aura from '@primeuix/themes/aura';
 
-import { SppConnection } from './utilities/SppConnection';
+import { SppService } from './utilities/SppService';
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
@@ -41,10 +41,10 @@ export default defineNuxtConfig({
       '~/assets/css/main.css',
   ],
 
-   plugins: [
-     { src: '~/plugins/kvStore.ts', mode: 'server' },
-     { src: '~/plugins/clientStorage.ts', mode: 'client' }
-   ],
+  plugins: [
+    { src: '~/plugins/kvStore.ts', mode: 'server' },
+    { src: '~/plugins/clientStorage.ts', mode: 'client' }
+  ],
 
   runtimeConfig: {
     kvBackend: 'netlify',
@@ -81,7 +81,7 @@ export default defineNuxtConfig({
 // TypeScript declaration for injected $spp
 declare module '#app' {
   interface NuxtApp {
-    $spp: InstanceType<typeof SppConnection>;
+    $spp: InstanceType<typeof SppService>;
   }
 }
 
