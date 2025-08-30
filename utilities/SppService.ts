@@ -20,35 +20,6 @@ export class SppService {
     return users;
   }
 
-  // Storage integration methods with error handling
-  async cacheUserData(userId: string, data: any) {
-    if (!this.storage) {
-      console.warn('Storage not available, skipping cache operation');
-      return;
-    }
-
-    try {
-      await this.storage.setItem(`user_${userId}`, JSON.stringify(data));
-    } catch (error: any) {
-      console.error('Failed to cache user data:', error.message);
-      // Continue execution - don't throw error for cache failures
-    }
-  }
-
-  async getCachedUserData(userId: string) {
-    if (!this.storage) {
-      return null;
-    }
-
-    try {
-      const cached = await this.storage.getItem(`user_${userId}`);
-      return cached ? JSON.parse(cached) : null;
-    } catch (error: any) {
-      console.error('Failed to get cached user data:', error.message);
-      return null;
-    }
-  }
-
   async addPrayerOrderForInformedIntercession(user: User, prayerOrder: PrayerOrder) {
       // const board = await this.getBoard("Informed Intercession");
       // let informedIntercessionGroup = await this.getInformedIntercessionGroup(user);
