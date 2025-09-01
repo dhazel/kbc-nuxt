@@ -84,7 +84,7 @@ export class UserService {
       const profileData = await this.kvStore.getItem(userKey)
 
       if (profileData) {
-        return JSON.parse(profileData) as UserProfile
+        return profileData as UserProfile
       }
 
       return null
