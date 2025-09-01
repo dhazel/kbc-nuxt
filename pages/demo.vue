@@ -15,7 +15,7 @@
         <Textarea id="body" name="details" rows="5" />
         <Message v-if="$form.details?.invalid" severity="error" size="small" variant="simple">{{ $form.details.error?.message }}</Message>
       </div>
-      <Button type="submit" label="Submit Prayer Order" />
+      <Button type="submit" label="Submit Prayer Order" :loading="isSubmitting" />
     </Form>
   </div>
 </template>
@@ -24,10 +24,13 @@
 import { useNuxtApp, useAsyncData } from '#app';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { useToast } from "primevue/usetoast";
+import ProgressSpinner from 'primevue/progressspinner';
 import { z } from 'zod';
 const { $sppService, $auth } = useNuxtApp();
 
 const toast = useToast();
+
+const isSubmitting = ref(false);
 
 const initialValues = ref({
     subject: '',
@@ -42,7 +45,8 @@ const resolver = ref(zodResolver(
 ));
 
 const submitPrayerOrder = async ({ valid, values }) => {
-  if (valid) {
+  if (valid && !isSubmitting.value) {
+    isSubmitting.value = true;
     try
     {
       const user = { name: $auth.user.name, email: $auth.user.email };
@@ -57,6 +61,9 @@ const submitPrayerOrder = async ({ valid, values }) => {
     {
       toast.add({ severity: 'error', summary: 'Error adding prayer order', life: 3000 });
       console.error('Error adding prayer order:', error);
+    }
+    finally {
+      isSubmitting.value = false;
     }
   }
 };
