@@ -1,9 +1,8 @@
-import type { IClientKvStore } from "./IClientKvStore";
+import type { PrayerOrder } from "../models/PrayerOrder";
+import type { User } from "../models/User";
 
 export interface ISppService {
-  addPrayerOrderForInformedIntercession(user: User, prayerOrder: PrayerOrder): Promise<void>;
-  getInformedIntercessionGroup(user: User): Promise<any>;
-  addInformedIntercessionGroup(user: User): Promise<any>;
-  getBoard(name: string): Promise<any>;
+  addPrayerOrder(user: User, prayerOrder: PrayerOrder): Promise<void>;
+  getPrayerOrders(user: User): Promise<PrayerOrder[]>;
 }
 

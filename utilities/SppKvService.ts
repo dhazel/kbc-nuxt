@@ -1,24 +1,18 @@
 import type { IClientKvStore } from "./IClientKvStore";
 import type { ISppService } from "./ISppService";
+import type { PrayerOrder } from "../models/PrayerOrder";
+import type { User } from "../models/User";
 
 export class SppKvService implements ISppService {
-  constructor(private kvStore: IClientKvStore) {}
+    constructor(private kvStore: IClientKvStore) {}
 
-  async addPrayerOrderForInformedIntercession(user: User, prayerOrder: PrayerOrder): Promise<void> {
-    throw new Error('Not implemented in SppKvService');
-  }
+    addPrayerOrder(user: User, prayerOrder: PrayerOrder): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
 
-  async getInformedIntercessionGroup(user: User): Promise<any> {
-    throw new Error('Not implemented in SppKvService');
-  }
-
-  async addInformedIntercessionGroup(user: User): Promise<any> {
-    throw new Error('Not implemented in SppKvService');
-  }
-
-  async getBoard(name: string): Promise<any> {
-    throw new Error('Not implemented in SppKvService');
-  }
+    getPrayerOrders(user: User): Promise<PrayerOrder[]> {
+        throw new Error("Method not implemented.");
+    }
 }
 
 // Re-export interfaces for convenience

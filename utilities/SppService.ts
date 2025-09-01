@@ -1,10 +1,13 @@
 import type { IClientKvStore } from "./IClientKvStore";
 import type { ISppService } from "./ISppService";
+import type { PrayerOrder } from "../models/PrayerOrder";
+import type { User } from "../models/User";
 
 export class SppService implements ISppService {
   constructor(private headers: Record<string, string>, private storage: IClientKvStore) {}
 
-  async addPrayerOrderForInformedIntercession(user: User, prayerOrder: PrayerOrder) {
+  async addPrayerOrder(user: User, prayerOrder: PrayerOrder) {
+      throw new Error("Method not implemented.");
       // const board = await this.getBoard("Informed Intercession");
       // let informedIntercessionGroup = await this.getInformedIntercessionGroup(user);
       // if (informedIntercessionGroup === null) {
@@ -12,6 +15,10 @@ export class SppService implements ISppService {
       // }
       //
       // await this.addItem(board.id, informedIntercessionGroup, prayerOrder.title, prayerOrder.body);
+  }
+
+  getPrayerOrders(user: User): Promise<PrayerOrder[]> {
+      throw new Error("Method not implemented.");
   }
 
   private async addItem(boardId: number, group: { id: string }, title: string, body: string): Promise<number> {
@@ -142,12 +149,4 @@ export class SppService implements ISppService {
     }
 }
 
-interface PrayerOrder {
-  title: string;
-  body: string;
-}
 
-interface User {
-    name: string;
-    email: string;
-}
