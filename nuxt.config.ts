@@ -3,7 +3,7 @@
 import tailwindcss from "@tailwindcss/vite";
 import Aura from '@primeuix/themes/aura';
 
-import { SppService } from './utilities/SppService';
+import type { ISppService } from './utilities/ISppService';
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
@@ -83,7 +83,7 @@ export default defineNuxtConfig({
 // TypeScript declaration for injected $sppService
 declare module '#app' {
   interface NuxtApp {
-    $sppService: InstanceType<typeof SppService>;
+    $sppService: ISppService;
   }
 }
 

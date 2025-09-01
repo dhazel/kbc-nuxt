@@ -1,24 +1,8 @@
-export class SppService {
-  constructor(private headers, private storage?: any) {}
+import type { IClientKvStore } from "./IClientKvStore";
+import type { ISppService } from "./ISppService";
 
-  // Method to set storage after construction (for client-side usage)
-  setStorage(storage: any) {
-    this.storage = storage;
-  }
-
-  async getUsers() {
-    const query = 'query { users { name } }';
-    const { data: users } = await $fetch(
-        '/api/monday',
-        {
-            method: 'POST',
-            body: { query },
-            headers: this.headers,
-        }
-    );
-
-    return users;
-  }
+export class SppService implements ISppService {
+  constructor(private headers: Record<string, string>) {}
 
   async addPrayerOrderForInformedIntercession(user: User, prayerOrder: PrayerOrder) {
       // const board = await this.getBoard("Informed Intercession");
