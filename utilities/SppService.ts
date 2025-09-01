@@ -2,7 +2,7 @@ import type { IClientKvStore } from "./IClientKvStore";
 import type { ISppService } from "./ISppService";
 
 export class SppService implements ISppService {
-  constructor(private headers: Record<string, string>) {}
+  constructor(private headers: Record<string, string>, private storage: IClientKvStore) {}
 
   async addPrayerOrderForInformedIntercession(user: User, prayerOrder: PrayerOrder) {
       // const board = await this.getBoard("Informed Intercession");
