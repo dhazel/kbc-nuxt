@@ -43,6 +43,7 @@ export default defineNuxtConfig({
 
     plugins: [
       { src: '~/plugins/clientStorage.ts', mode: 'client' },
+      { src: '~/plugins/spp.client.ts', mode: 'client' },
       { src: '~/plugins/userService.client.ts', mode: 'client' },
       { src: '~/plugins/enhance-user.client.ts', mode: 'client' }
     ],
