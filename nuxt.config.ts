@@ -43,7 +43,7 @@ export default defineNuxtConfig({
 
     plugins: [
       { src: '~/plugins/kv.client.ts', mode: 'client' },
-      { src: '~/plugins/spp.client.ts', mode: 'client' },
+      { src: '~/plugins/sppService.client.ts', mode: 'client' },
       { src: '~/plugins/userService.client.ts', mode: 'client' },
       { src: '~/plugins/enhance-user.client.ts', mode: 'client' }
     ],
@@ -80,10 +80,10 @@ export default defineNuxtConfig({
   },
 })
 
-// TypeScript declaration for injected $spp
+// TypeScript declaration for injected $sppService
 declare module '#app' {
   interface NuxtApp {
-    $spp: InstanceType<typeof SppService>;
+    $sppService: InstanceType<typeof SppService>;
   }
 }
 

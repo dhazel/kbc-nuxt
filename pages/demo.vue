@@ -25,7 +25,7 @@ import { useNuxtApp, useAsyncData } from '#app';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { useToast } from "primevue/usetoast";
 import { z } from 'zod';
-const { $spp, $auth } = useNuxtApp();
+const { $sppService, $auth } = useNuxtApp();
 
 const toast = useToast();
 
@@ -48,7 +48,7 @@ const submitPrayerOrder = async ({ valid, values }) => {
       const user = { name: $auth.user.name, email: $auth.user.email };
       const prayerOrder = { title: values.subject, body: values.details };
 
-      await $spp.addPrayerOrderForInformedIntercession(user, prayerOrder);
+      await $sppService.addPrayerOrderForInformedIntercession(user, prayerOrder);
 
       toast.add({ severity: 'success', summary: 'Prayer order added', life: 3000 });
       console.log('Prayer order added successfully');

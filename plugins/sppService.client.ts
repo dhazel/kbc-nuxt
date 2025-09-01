@@ -6,5 +6,5 @@ export default defineNuxtPlugin((nuxtApp) => {
 
     spp.setStorage(nuxtApp.$kv);
 
-    nuxtApp.provide('spp', spp);
+    nuxtApp.provide('sppService', spp);
 });
