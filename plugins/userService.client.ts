@@ -1,10 +1,10 @@
 import { UserService } from '~/utilities/UserService'
 
 export default defineNuxtPlugin((): object => {
-  const { $clientKv, $auth } = useNuxtApp()
+  const { $kv, $auth } = useNuxtApp()
 
   // Initialize UserService with the KV store
-  const userService: UserService = new UserService($clientKv)
+  const userService: UserService = new UserService($kv)
 
   // Set current user if already authenticated
   if ($auth.loggedIn && $auth.user) {

@@ -42,7 +42,7 @@ export default defineNuxtConfig({
   ],
 
     plugins: [
-      { src: '~/plugins/clientStorage.ts', mode: 'client' },
+      { src: '~/plugins/kv.client.ts', mode: 'client' },
       { src: '~/plugins/spp.client.ts', mode: 'client' },
       { src: '~/plugins/userService.client.ts', mode: 'client' },
       { src: '~/plugins/enhance-user.client.ts', mode: 'client' }
@@ -90,7 +90,6 @@ declare module '#app' {
 // TypeScript declaration for injected $kv
 declare module '#app' {
   interface NuxtApp {
-    $kv: Storage;
-    $clientKv: import('~/utilities/ClientStorage').ClientStorage;
+    $kv: import('~/utilities/ClientStorage').ClientStorage;
   }
 }

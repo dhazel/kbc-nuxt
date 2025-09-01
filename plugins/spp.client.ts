@@ -4,7 +4,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     const headers = useRequestHeaders(['cookie']);
     const spp = new SppService(headers);
 
-    spp.setStorage(nuxtApp.$clientKv);
+    spp.setStorage(nuxtApp.$kv);
 
     nuxtApp.provide('spp', spp);
 });
