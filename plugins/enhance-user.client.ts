@@ -6,6 +6,8 @@ export default defineNuxtPlugin(async () => {
     try {
       const profile = await $userService.getOrCreateCurrentUserProfile()
       if (profile) {
+        profile.visitCount += 1;
+        await $userService.saveCurrentUserProfile(profile);
         const enhancedUser = { ...user, profile: profile }
         return enhancedUser
       }
