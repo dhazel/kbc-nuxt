@@ -6,7 +6,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     const headers = useRequestHeaders(['cookie']);
 
     // Check environment variable to determine which service to use
-    const useKvService = process.env.NUXT_USE_KV_SERVICE === 'true';
+    const config = useRuntimeConfig();
+    const useKvService = config.public.NUXT_USE_KV_SPPSERVICE === 'true';
 
     let sppService;
     if (useKvService) {

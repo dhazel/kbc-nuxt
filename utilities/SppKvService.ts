@@ -6,11 +6,17 @@ import type { User } from "../models/User";
 export class SppKvService implements ISppService {
     constructor(private kvStore: IClientKvStore) {}
 
-    addPrayerOrder(user: User, prayerOrder: PrayerOrder): Promise<void> {
-        throw new Error("Method not implemented.");
+    async addPrayerOrder(user: User, prayerOrder: PrayerOrder): Promise<void> {
+        let prayerOrdersKey = `po:${user.email}`;
+        let prayerOrders = await this.kvStore.getItem(prayerOrdersKey);
+        if (!prayerOrders) {
+            prayerOrders = [];
+        }
+        prayerOrders.push(prayerOrder);
+        await this.kvStore.setItem(prayerOrdersKey, prayerOrders);
     }
 
-    getPrayerOrders(user: User): Promise<PrayerOrder[]> {
+    async getPrayerOrders(user: User): Promise<PrayerOrder[]> {
         throw new Error("Method not implemented.");
     }
 }
