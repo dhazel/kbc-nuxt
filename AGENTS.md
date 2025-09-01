@@ -15,7 +15,8 @@
 - **Naming**: Use camelCase for variables/functions, PascalCase for components/types. Interface names should start with an `I`, for example `IMyInterface`.
 - **Error Handling**: Use try-catch for async operations; log errors with context.
 - **Components**: Follow Nuxt conventions for Vue components in `pages/` and `components/`.
-- **File Structure**: Organize files per Nuxt standards (pages, components, composables). Each class and interface should be in its own file.
+- **File Structure**: Organize files per Nuxt standards (pages, components, composables).
+- **Interfaces**: Interfaces should be in their own, separate files.
 
 ## Additional Rules
 
