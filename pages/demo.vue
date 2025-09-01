@@ -48,7 +48,7 @@ const submitPrayerOrder = async ({ valid, values }) => {
       const user = { name: $auth.user.name, email: $auth.user.email };
       const prayerOrder = { title: values.subject, body: values.details };
 
-      await $sppService.addPrayerOrderForInformedIntercession(user, prayerOrder);
+      await $sppService.addPrayerOrder(user, prayerOrder);
 
       toast.add({ severity: 'success', summary: 'Prayer order added', life: 3000 });
       console.log('Prayer order added successfully');
