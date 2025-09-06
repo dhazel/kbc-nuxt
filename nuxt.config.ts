@@ -52,7 +52,7 @@ export default defineNuxtConfig({
     kvBackend: 'netlify',
     mondayToken: process.env.NUXT_MONDAY_TOKEN || 'default_token',
     public: {
-      NUXT_USE_KV_SPPSERVICE: process.env.NUXT_USE_KV_SPPSERVICE || 'false'
+      NUXT_SPPSERVICE_TYPE: process.env.NUXT_SPPSERVICE_TYPE || 'indexeddb'
     }
   },
 

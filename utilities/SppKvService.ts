@@ -17,7 +17,9 @@ export class SppKvService implements ISppService {
     }
 
     async getPrayerOrders(user: User): Promise<PrayerOrder[]> {
-        throw new Error("Method not implemented.");
+        const prayerOrdersKey = `po:${user.email}`;
+        const prayerOrders = await this.kvStore.getItem(prayerOrdersKey);
+        return prayerOrders || [];
     }
 }
 
