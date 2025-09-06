@@ -7,7 +7,7 @@ export class SppKvService implements ISppService {
     constructor(private kvStore: IClientKvStore) {}
 
     async addPrayerOrder(user: User, prayerOrder: PrayerOrder): Promise<void> {
-        let prayerOrdersKey = `po:${user.email}`;
+        const prayerOrdersKey = `po:${user.email}`;
         let prayerOrders = await this.kvStore.getItem(prayerOrdersKey);
         if (!prayerOrders) {
             prayerOrders = [];

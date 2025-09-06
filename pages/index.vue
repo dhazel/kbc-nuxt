@@ -8,7 +8,7 @@
             <Divider/>
             <section class="mt-10">
 
-                <Button as="a" label="Create New Prayer Order" href="/demo" icon="pi pi-pen-to-square" iconPos="left" class="mb-5"/>
+                <Button as="a" label="Create New Prayer Order" href="/demo" icon="pi pi-pen-to-square" icon-pos="left" class="mb-5"/>
 
                 <div class="card">
                     <Toast />
@@ -22,15 +22,15 @@
                         <template #footer>
                             <div class="flex flex-wrap items-center justify-between gap-4">
                                 <div class="flex items-center gap-2">
-                                    <Button icon="pi pi-user" rounded text></Button>
-                                    <Button icon="pi pi-bookmark" severity="secondary" rounded text></Button>
+                                    <Button icon="pi pi-user" rounded text/>
+                                    <Button icon="pi pi-bookmark" severity="secondary" rounded text/>
                                 </div>
                                 <span class="text-surface-500 dark:text-surface-400">Updated 2 hours ago</span>
                             </div>
                         </template>
                         <template #icons>
                             <Button icon="pi pi-cog" severity="secondary" rounded text @click="toggle" />
-                            <Menu ref="menu" id="config_menu" :model="items" popup />
+                            <Menu id="config_menu" ref="menu" :model="items" popup />
                         </template>
                         <h2 class="text-2xl">
                             Prayer Order Response

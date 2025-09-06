@@ -4,7 +4,7 @@
 
     <Toast />
 
-    <Form v-slot="$form" :resolver="resolver" :initialValues="initialValues"  @submit="submitPrayerOrder" class="flex justify-center flex-col gap-4 w-3xl">
+    <Form v-slot="$form" :resolver="resolver" :initial-values="initialValues"  class="flex justify-center flex-col gap-4 w-3xl" @submit="submitPrayerOrder">
       <div class="flex flex-col gap-1">
         <label for="title">Prayer Subject</label>
         <InputText id="title" name="subject" />

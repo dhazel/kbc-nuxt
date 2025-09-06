@@ -1,4 +1,4 @@
-import { UserService } from '~/utilities/UserService'
+import type { UserService } from '~/utilities/UserService'
 
 declare module '#auth' {
   interface User {

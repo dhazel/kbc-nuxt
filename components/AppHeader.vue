@@ -2,7 +2,7 @@
     <MegaMenu :model="items">
         <template #start>
             <NuxtLink to="/" external>
-                <img src="/Catalyst_Transparent.png" style="height: 40px" />
+                <img src="/Catalyst_Transparent.png" style="height: 40px" >
             </NuxtLink>
         </template>
         <template #item="{ item }">
