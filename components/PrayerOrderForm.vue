@@ -1,5 +1,5 @@
 <template>
-  <Form v-slot="$form" :resolver="resolver" :initial-values="initialValues" class="flex justify-center flex-col gap-4 w-3xl" @submit="submitPrayerOrder">
+  <Form ref="formRef" v-slot="$form" :resolver="resolver" :initial-values="initialValues" class="flex justify-center flex-col gap-4 w-3xl" @submit="submitPrayerOrder">
     <div class="flex flex-col gap-1">
       <label for="title">Prayer Subject</label>
       <InputText id="title" name="subject" />
@@ -24,6 +24,8 @@ const { $sppService, $auth } = useNuxtApp();
 
 const toast = useToast();
 
+const formRef = ref();
+
 const isSubmitting = ref(false);
 
 const initialValues = ref({
@@ -47,9 +49,9 @@ const submitPrayerOrder = async ({ valid, values }) => {
 
       await $sppService.addPrayerOrder(user, prayerOrder);
 
-      toast.add({ severity: 'success', summary: 'Prayer order added', life: 3000 });
-      console.log('Prayer order added successfully');
-      $form.reset();
+       toast.add({ severity: 'success', summary: 'Prayer order added', life: 3000 });
+       console.log('Prayer order added successfully');
+       formRef.value?.reset();
     } catch (error) {
       toast.add({ severity: 'error', summary: 'Error adding prayer order', life: 3000 });
       console.error('Error adding prayer order:', error);
