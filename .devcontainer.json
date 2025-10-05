@@ -1,0 +1,16 @@
+{
+    "image":"mcr.microsoft.com/devcontainers/javascript-node",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace/${localWorkspaceFolderBasename},type=bind,consistency=cached,relabel=private",
+    "workspaceFolder": "/workspace/${localWorkspaceFolderBasename}",
+    "postCreateCommand": "echo 'cd ${workspaceFolder}' >> ~/.bashrc",
+    "features": {
+        "ghcr.io/devcontainers-extra/features/neovim-apt-get:1": {}
+    },
+    "forwardPorts": [3000],
+    "portsAttributes": {
+        "3000": {
+            "label": "Nuxt Dev Server",
+            "onAutoForward": "notify"
+        }
+    }
+}
