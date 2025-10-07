@@ -1,16 +1,11 @@
 import { defineConfig } from 'vitest/config'
-import vue from '@vitejs/plugin-vue'
+import { defineVitestProject } from '@nuxt/test-utils/config'
 
-export default defineConfig({
-  plugins: [vue()],
-  test: {
-    environment: 'happy-dom',
-    globals: true,
-  },
-  resolve: {
-    alias: {
-      '~': '.',
-      '@': '.',
-    },
-  },
-})
+export default defineVitestProject(
+    ['**/*.{test,spec}.?(c|m)[jt]s?(x)'], // Glob pattern for your test files
+    () => defineConfig({
+        test: {
+            environment: 'nuxt'
+        }
+    })
+)

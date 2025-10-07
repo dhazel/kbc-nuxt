@@ -14,6 +14,7 @@ export default defineNuxtConfig({
       '@nuxt/icon',
       '@nuxt/fonts',
       '@nuxtjs/kinde',
+      '@nuxt/test-utils/module',
   ],
 
   vite: {
