@@ -5,9 +5,21 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ length: 100 })
     name: string;
 
     @Column()
     email: string;
+
+    @Column({ default: 0 })
+    prayerOrders: number;
+
+    @Column({ default: 0 })
+    prayerResponses: number;
+
+    @Column({ default: () => 'CURRENT_TIMESTAMP' })
+    joinedAt: Date;
+
+    @Column({ default: 0 })
+    visitCount: number;
 }
