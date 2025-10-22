@@ -1,4 +1,5 @@
 import type { IClientKvStore } from './IClientKvStore';
+import type { IUserService } from './IUserService';
 
 export interface UserProfile {
     email: string;
@@ -9,7 +10,7 @@ export interface UserProfile {
     visitCount: number;
 }
 
-export class UserService {
+export class UserKvService implements IUserService {
 
     constructor(private kvStore: IClientKvStore) {}
 

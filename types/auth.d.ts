@@ -1,4 +1,4 @@
-import type { UserService } from '~/utilities/UserService'
+import type { UserKvService } from '~/utilities/UserKvService'
 
 declare module '#auth' {
   interface User {
@@ -29,6 +29,6 @@ declare module 'vue/types/vue' {
 
 declare module '#app' {
   interface NuxtApp {
-    $userService: UserService
+    $userService: UserKvService
   }
 }

@@ -1,4 +1,4 @@
-import { UserService, type UserProfile } from '~/utilities/UserService';
+import { UserKvService, type UserProfile } from '~/utilities/UserKvService';
 import { IndexedDbStorage } from '~/utilities/IndexedDbStorage';
 import type { IClientKvStore } from '~/utilities/IClientKvStore';
 
@@ -10,12 +10,12 @@ export default defineNuxtPlugin(async (): Promise<object> => {
     switch (serviceType) {
         case 'kv':
             // Use KV-based service with server-side storage
-            userService = new UserService($kv as IClientKvStore);
+            userService = new UserKvService($kv as IClientKvStore);
             break;
         case 'indexeddb':
             // Use KV-based service with IndexedDB storage
             const indexedDbStore = new IndexedDbStorage();
-            userService = new UserService(indexedDbStore);
+            userService = new UserKvService(indexedDbStore);
             break;
         default:
             throw Error(`Unknown user service type: ${serviceType}`);
