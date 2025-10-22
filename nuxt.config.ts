@@ -40,7 +40,6 @@ export default defineNuxtConfig({
         { src: '~/plugins/kv.client.ts', mode: 'client' },
         { src: '~/plugins/sppService.client.ts', mode: 'client' },
         { src: '~/plugins/userService.client.ts', mode: 'client' },
-        { src: '~/plugins/enhance-user.client.ts', mode: 'client' },
     ],
 
     runtimeConfig: {

@@ -10,69 +10,8 @@ export interface UserProfile {
 }
 
 export class UserService {
-    private currentUserEmail: string | null = null;
 
     constructor(private kvStore: IClientKvStore) {}
-
-    /**
-     * Set the current authenticated user
-     * @param user - Kinde user object
-     */
-    setCurrentUser(user: any): void {
-        this.currentUserEmail = user?.email || null;
-    }
-
-    /**
-     * Clear the current user (logout)
-     */
-    clearCurrentUser(): void {
-        this.currentUserEmail = null;
-    }
-
-    /**
-     * Get the current user ID
-     * @returns string | null
-     */
-    getCurrentUserEmail(): string | null {
-        return this.currentUserEmail;
-    }
-
-    /**
-     * Get current user's profile
-     * @returns Promise<UserProfile | null>
-     */
-    async getCurrentUserProfile(): Promise<UserProfile | null> {
-        if (!this.currentUserEmail) {
-            console.warn('No current user set');
-            return null;
-        }
-        return this.getUserProfileByEmail(this.currentUserEmail);
-    }
-
-    /**
-     * Save current user's profile
-     * @param profile - User profile data
-     * @returns Promise<boolean> - Success status
-     */
-    async saveCurrentUserProfile(profile: UserProfile): Promise<boolean> {
-        if (!this.currentUserEmail) {
-            console.warn('No current user set');
-            return false;
-        }
-        return this.saveUserProfile(this.currentUserEmail, profile);
-    }
-
-    /**
-     * Get or create current user's profile
-     * @returns Promise<UserProfile | null>
-     */
-    async getOrCreateCurrentUserProfile(): Promise<UserProfile | null> {
-        if (!this.currentUserEmail) {
-            console.warn('No current user set');
-            return null;
-        }
-        return this.getOrCreateUserProfile(this.currentUserEmail);
-    }
 
     /**
      * Get user profile from KV store
@@ -109,12 +48,9 @@ export class UserService {
      * @param profile - User profile data
      * @returns Promise<boolean> - Success status
      */
-    async saveUserProfile(
-        userEmail: string,
-        profile: UserProfile
-    ): Promise<boolean> {
+    async saveUserProfile(profile: UserProfile): Promise<boolean> {
         try {
-            const userKey = `user:${userEmail}`;
+            const userKey = `user:${profile.email}`;
             await this.kvStore.setItem(userKey, JSON.stringify(profile));
             return true;
         } catch (error) {
@@ -123,45 +59,4 @@ export class UserService {
         }
     }
 
-    /**
-     * Create a new default user profile
-     * @returns UserProfile
-     */
-    makeDefaultProfile(): UserProfile {
-        return {
-            email: '', //TODO: fix email and name, this is currently broken
-            joinedAt: new Date(),
-            name: '',
-            prayerOrders: 0,
-            prayerResponses: 0,
-            visitCount: 0,
-        };
-    }
-
-    /**
-     * Get or create user profile - main method for user enhancement
-     * @param userEmail - User's unique identifier (email)
-     * @returns Promise<UserProfile>
-     */
-    async getOrCreateUserProfile(userEmail: string): Promise<UserProfile> {
-        // Try to get existing profile
-        const existingProfile = await this.getUserProfileByEmail(userEmail);
-
-        if (existingProfile) {
-            console.log('User profile loaded from KV store:', existingProfile);
-            return existingProfile;
-        }
-
-        // Create new profile if none exists
-        const newProfile = this.makeDefaultProfile();
-        const saved = await this.saveUserProfile(userEmail, newProfile);
-
-        if (saved) {
-            console.log('New user profile created and stored:', newProfile);
-        } else {
-            console.error('Failed to save new user profile');
-        }
-
-        return newProfile;
-    }
 }
