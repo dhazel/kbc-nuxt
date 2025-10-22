@@ -11,8 +11,8 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 401, message: 'Not Authenticated' });
     }
 
-    const db = event.context.db;
-    const userService = new UserService(db);
+    const prisma = event.context.prisma;
+    const userService = new UserService(prisma);
     const email = getRouterParam(event, 'email');
 
     if (!email) {

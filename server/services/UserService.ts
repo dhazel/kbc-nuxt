@@ -1,15 +1,15 @@
-import type { DataSource } from 'typeorm';
+import type { PrismaClient } from '@prisma/client';
 import type { IUserService } from '../../utilities/IUserService';
 import type { UserProfile } from '../../utilities/UserKvService';
-import { User } from '../entities/User';
 
 export class UserService implements IUserService {
-    constructor(private db: DataSource) {}
+    constructor(private prisma: PrismaClient) {}
 
     async getUserProfileByEmail(email: string): Promise<UserProfile | null> {
         try {
-            const userRepo = this.db.getRepository(User);
-            const user = await userRepo.findOne({ where: { email } });
+            const user = await this.prisma.user.findUnique({
+                where: { email },
+            });
             if (user) {
                 return {
                     email: user.email,
@@ -29,27 +29,23 @@ export class UserService implements IUserService {
 
     async saveUserProfile(profile: UserProfile): Promise<boolean> {
         try {
-            const userRepo = this.db.getRepository(User);
-            let user = await userRepo.findOne({
+            await this.prisma.user.upsert({
                 where: { email: profile.email },
-            });
-            if (user) {
-                user.name = profile.name;
-                user.prayerOrders = profile.prayerOrders;
-                user.prayerResponses = profile.prayerResponses;
-                user.visitCount = profile.visitCount;
-                await userRepo.save(user);
-            } else {
-                user = userRepo.create({
+                update: {
+                    name: profile.name,
+                    prayerOrders: profile.prayerOrders,
+                    prayerResponses: profile.prayerResponses,
+                    visitCount: profile.visitCount,
+                },
+                create: {
                     email: profile.email,
                     name: profile.name,
                     prayerOrders: profile.prayerOrders,
                     prayerResponses: profile.prayerResponses,
                     visitCount: profile.visitCount,
                     joinedAt: profile.joinedAt,
-                });
-                await userRepo.save(user);
-            }
+                },
+            });
             return true;
         } catch (error) {
             console.error('Failed to save user profile:', error);

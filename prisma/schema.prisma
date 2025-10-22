@@ -1,0 +1,37 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int     @id @default(autoincrement())
+  name            String
+  email           String  @unique
+  prayerOrders    Int     @default(0)
+  prayerResponses Int     @default(0)
+  joinedAt        DateTime @default(now())
+  visitCount      Int     @default(0)
+
+  orders          PrayerOrder[]
+
+  @@map("users")
+}
+
+model PrayerOrder {
+  id      Int    @id @default(autoincrement())
+  title   String
+  body    String
+  userId  Int
+
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("prayer_orders")
+}
