@@ -3,7 +3,7 @@ import { User } from './User';
 
 @Entity()
 export class PrayerOrder {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({type: 'int'})
     id: number;
 
     @Column()
