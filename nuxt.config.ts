@@ -93,6 +93,6 @@ declare module '#app' {
 // TypeScript declaration for injected $kv
 declare module '#app' {
     interface NuxtApp {
-        $kv: import('~/utilities/ClientStorage').ClientStorage;
+        $kv: import('~/utilities/ClientKvStorage').ClientKvStorage;
     }
 }

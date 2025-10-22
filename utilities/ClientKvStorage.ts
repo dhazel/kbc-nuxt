@@ -1,9 +1,9 @@
 import type { IClientKvStore } from "./IClientKvStore";
 
-export class ClientStorage implements IClientKvStore {
+export class ClientKvStorage implements IClientKvStore {
   async hasItem(key: string): Promise<boolean> {
     try {
-      const response = await $fetch<{ value: string | null }>('/api/storage/get', {
+      const response = await $fetch<{ value: string | null }>('/api/kvstorage/get', {
         method: 'POST',
         body: { key }
       });
@@ -18,7 +18,7 @@ export class ClientStorage implements IClientKvStore {
 
   async getItem(key: string): Promise<string | null> {
     try {
-      const response = await $fetch<{ value: string | null }>('/api/storage/get', {
+      const response = await $fetch<{ value: string | null }>('/api/kvstorage/get', {
         method: 'POST',
         body: { key }
       });
@@ -33,7 +33,7 @@ export class ClientStorage implements IClientKvStore {
 
   async setItem(key: string, value: string): Promise<void> {
     try {
-      await $fetch('/api/storage/set', {
+      await $fetch('/api/kvstorage/set', {
         method: 'POST',
         body: { key, value }
       });
@@ -47,7 +47,7 @@ export class ClientStorage implements IClientKvStore {
 
   async removeItem(key: string): Promise<void> {
     try {
-      await $fetch('/api/storage/remove', {
+      await $fetch('/api/kvstorage/remove', {
         method: 'POST',
         body: { key }
       });
@@ -61,7 +61,7 @@ export class ClientStorage implements IClientKvStore {
 
   async getKeys(): Promise<string[]> {
     try {
-      const response = await $fetch<{ keys: string[] }>('/api/storage/keys', {
+      const response = await $fetch<{ keys: string[] }>('/api/kvstorage/keys', {
         method: 'POST',
         body: {}
       });
@@ -76,7 +76,7 @@ export class ClientStorage implements IClientKvStore {
 
   async clear(): Promise<void> {
     try {
-      await $fetch('/api/storage/clear', {
+      await $fetch('/api/kvstorage/clear', {
         method: 'POST',
         body: {}
       });
