@@ -1,5 +1,3 @@
-import { UserService } from '../../services/UserService';
-
 export default defineEventHandler(async (event) => {
     const kinde = event.context.kinde;
     if (kinde === null) {
@@ -11,8 +9,7 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 401, message: 'Not Authenticated' });
     }
 
-    const prisma = event.context.prisma;
-    const userService = new UserService(prisma);
+    const userService = event.context.userService;
     const email = getRouterParam(event, 'email');
 
     if (!email) {
