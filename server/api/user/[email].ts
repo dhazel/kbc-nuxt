@@ -19,6 +19,11 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 400, message: 'Email is required' });
     }
 
+    const user = await kinde.getUser();
+    if (!user || user.email !== email) {
+        throw createError({ statusCode: 403, message: 'Forbidden' });
+    }
+
     if (event.node.req.method === 'GET') {
         const profile = await userService.getUserProfileByEmail(email);
         if (profile) {
@@ -28,6 +33,9 @@ export default defineEventHandler(async (event) => {
         }
     } else if (event.node.req.method === 'PUT') {
         const profile = await readBody(event);
+        if (profile.email !== email) {
+            throw createError({ statusCode: 400, message: 'Email mismatch' });
+        }
         const success = await userService.saveUserProfile(profile);
         if (success) {
             return { success: true };
