@@ -10,10 +10,13 @@ export default defineEventHandler(async (event) => {
     }
 
     const userService = event.context.userService;
-    const email = getRouterParam(event, 'email');
+    let email = getRouterParam(event, 'email');
 
     if (!email) {
         throw createError({ statusCode: 400, message: 'Email is required' });
+    }
+    else {
+        email = decodeURIComponent(email);
     }
 
     const user = await kinde.getUser();
