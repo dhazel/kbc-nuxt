@@ -9,6 +9,7 @@ export class UserService implements IUserService {
         try {
             const user = await this.prisma.user.findUnique({
                 where: { email },
+                include: { roles: true },
             });
             if (user) {
                 return {
@@ -18,6 +19,7 @@ export class UserService implements IUserService {
                     prayerOrders: user.prayerOrders,
                     prayerResponses: user.prayerResponses,
                     visitCount: user.visitCount,
+                    roles: user.roles.map((role) => role.name),
                 };
             }
             return null;

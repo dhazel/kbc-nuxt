@@ -8,10 +8,10 @@ export interface UserProfile {
     prayerOrders: number;
     prayerResponses: number;
     visitCount: number;
+    roles: string[];
 }
 
 export class UserKvService implements IUserService {
-
     constructor(private kvStore: IClientKvStore) {}
 
     /**
@@ -19,7 +19,9 @@ export class UserKvService implements IUserService {
      * @param userEmail - User's unique identifier (email)
      * @returns Promise<UserProfile | null>
      */
-    async getUserProfileByEmail(userEmail: string): Promise<UserProfile | null> {
+    async getUserProfileByEmail(
+        userEmail: string
+    ): Promise<UserProfile | null> {
         try {
             const userKey = `user:${userEmail}`;
             const profileData = await this.kvStore.getItem(userKey);
@@ -33,6 +35,7 @@ export class UserKvService implements IUserService {
                     prayerOrders: parsed.prayerOrders,
                     prayerResponses: parsed.prayerResponses,
                     visitCount: parsed.visitCount,
+                    roles: parsed.roles || [],
                 };
             }
 
@@ -59,5 +62,4 @@ export class UserKvService implements IUserService {
             return false;
         }
     }
-
 }

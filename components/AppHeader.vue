@@ -33,10 +33,22 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useNuxtApp } from '#app';
 
-const { $auth } = useNuxtApp();
+const { $auth, $userService } = useNuxtApp();
+const userProfile = ref(null);
+const showAdmin = computed(
+    () => userProfile.value?.roles.includes('admin') ?? false
+);
+
+onMounted(async () => {
+    if ($auth.loggedIn && $auth.user?.email) {
+        userProfile.value = await $userService.getUserProfileByEmail(
+            $auth.user.email
+        );
+    }
+});
 
 const items = ref([
     {
@@ -49,7 +61,7 @@ const items = ref([
         label: 'Admin',
         icon: 'pi',
         route: '/admin',
-        show: $auth.loggedIn,
+        show: showAdmin,
     },
 ]);
 </script>
