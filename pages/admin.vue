@@ -40,7 +40,31 @@
             <p v-if="error" class="text-red-500">{{ error }}</p>
         </div>
 
-        <div v-if="orders.length > 0" class="overflow-x-auto">
+        <div v-if="intercessorTotals.length > 0" class="overflow-x-auto">
+            <h2 class="text-xl mb-2">Closed Prayer Orders per Intercessor</h2>
+            <table class="min-w-full bg-white border border-gray-300">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="px-4 py-2 border">Intercessor</th>
+                        <th class="px-4 py-2 border">Total Closed Orders</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr
+                        v-for="total in intercessorTotals"
+                        :key="total.intercessor"
+                        class="hover:bg-gray-50"
+                    >
+                        <td class="px-4 py-2 border">
+                            {{ total.intercessor }}
+                        </td>
+                        <td class="px-4 py-2 border">{{ total.count }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div v-if="orders.length > 0" class="overflow-x-auto mt-8">
+            <h2 class="text-xl mb-2">Closed Prayer Orders</h2>
             <table class="min-w-full bg-white border border-gray-300">
                 <thead>
                     <tr class="bg-gray-100">
@@ -68,6 +92,8 @@
                 </tbody>
             </table>
         </div>
+
+
         <p v-else-if="!loading && !error">No orders found.</p>
     </div>
 </template>
@@ -86,6 +112,21 @@ const endDate = ref('');
 const orders = ref([]);
 const loading = ref(false);
 const error = ref('');
+
+const intercessorTotals = computed(() => {
+    const totals = {};
+    orders.value.forEach((order) => {
+        if (totals[order.intercessor]) {
+            totals[order.intercessor]++;
+        } else {
+            totals[order.intercessor] = 1;
+        }
+    });
+    return Object.entries(totals).map(([intercessor, count]) => ({
+        intercessor,
+        count,
+    }));
+});
 
 const fetchOrders = async () => {
     if (!startDate.value || !endDate.value) {
