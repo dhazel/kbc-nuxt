@@ -91,7 +91,9 @@ export class AdminService implements IAdminService {
                 );
 
             // query the monday api to get all the items, on the given set of boards, that had their status column changed between the start and the end date
-            const activityQuery = `query { boards(ids: [${boards[0]}]) { activity_logs(from: "${startDate.toISOString()}", to: "${endDate.toISOString()}", column_ids: ["${statusColumnId}"]) { id event data user_id created_at } } }`;
+            const inclusiveEndDate = new Date(endDate);
+            inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
+            const activityQuery = `query { boards(ids: [${boards[0]}]) { activity_logs(from: "${startDate.toISOString()}", to: "${inclusiveEndDate.toISOString()}", column_ids: ["${statusColumnId}"]) { id event data user_id created_at } } }`;
             const activityResponse = await monday.api(activityQuery);
             const activityData = activityResponse.data.boards[0] as {
                 activity_logs: ActivityLog[];
