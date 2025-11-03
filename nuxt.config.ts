@@ -16,6 +16,10 @@ export default defineNuxtConfig({
         '@nuxtjs/kinde',
     ],
 
+    nitro: {
+        preset: 'netlify'
+    },
+
     vite: {
         plugins: [tailwindcss()],
     },
