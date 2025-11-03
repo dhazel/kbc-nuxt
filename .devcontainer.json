@@ -12,5 +12,6 @@
             "label": "Nuxt Dev Server",
             "onAutoForward": "notify"
         }
-    }
+    },
+    "runArgs": ["--network", "host"]
 }
