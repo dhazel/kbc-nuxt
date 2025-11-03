@@ -1,5 +1,5 @@
 <template>
-    <div class="container mx-auto p-4">
+    <div v-if="isAdmin" class="container mx-auto p-4">
         <h1 class="text-2xl font-bold mb-4">Admin Panel</h1>
 
         <div class="mb-4">
@@ -93,19 +93,38 @@
             </table>
         </div>
 
-
         <p v-else-if="!loading && !error">No orders found.</p>
     </div>
 </template>
 
 <script setup>
 import { navigateTo, useNuxtApp } from '#app';
+import { onMounted, ref } from 'vue';
 
-const { $auth } = useNuxtApp();
+const { $auth, $userService } = useNuxtApp();
 
-if (!$auth.loggedIn) {
-    navigateTo('/');
-}
+const isAdmin = ref(false);
+
+onMounted(async () => {
+    if (!$auth.loggedIn) {
+        navigateTo('/');
+        return;
+    }
+
+    try {
+        const profile = await $userService.getUserProfileByEmail(
+            $auth.user.email
+        );
+        if (profile && profile.roles.includes('admin')) {
+            isAdmin.value = true;
+        } else {
+            navigateTo('/');
+        }
+    } catch (error) {
+        console.error('Failed to fetch user profile:', error);
+        navigateTo('/');
+    }
+});
 
 const startDate = ref('');
 const endDate = ref('');

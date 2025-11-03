@@ -21,7 +21,7 @@ export default defineNuxtConfig({
     },
 
     kinde: {
-        // middleware: true,
+        middleware: true,
     },
 
     primevue: {
@@ -58,7 +58,16 @@ export default defineNuxtConfig({
     },
 
     routeRules: {
+        '/admin': {
+            appMiddleware: ['auth-logged-in'],
+            kinde: {
+                // permissions: { admin: true }, // This fails for some reason
+                redirectUrl: '/',
+                external: true,
+            },
+        },
         '/demo': {
+            redirect: '/',
             appMiddleware: ['auth-logged-in'],
             kinde: {
                 external: true,
