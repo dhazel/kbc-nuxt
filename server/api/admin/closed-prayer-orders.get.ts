@@ -11,6 +11,17 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 401, message: 'Not Authenticated' });
     }
 
+    const user = await kinde.getUser();
+    if (!user) {
+        throw createError({ statusCode: 401, message: 'User not found' });
+    }
+    const profile = await event.context.userService.getUserProfileByEmail(
+        user.email
+    );
+    if (!profile || !profile.roles.includes('admin')) {
+        throw createError({ statusCode: 403, message: 'Forbidden' });
+    }
+
     const { startDate, endDate } = getQuery(event);
     if (!startDate || !endDate) {
         throw createError({
