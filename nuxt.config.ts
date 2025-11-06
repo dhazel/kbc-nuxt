@@ -3,7 +3,7 @@
 import tailwindcss from '@tailwindcss/vite';
 import Aura from '@primeuix/themes/aura';
 
-import type { ISppService } from './utilities/ISppService';
+
 
 export default defineNuxtConfig({
     compatibilityDate: '2025-05-15',
@@ -95,16 +95,9 @@ export default defineNuxtConfig({
     },
 });
 
-// TypeScript declaration for injected $sppService
+// TypeScript declaration for injected $userService
 declare module '#app' {
     interface NuxtApp {
-        $sppService: ISppService;
-    }
-}
-
-// TypeScript declaration for injected $kv
-declare module '#app' {
-    interface NuxtApp {
-        $kv: import('~/utilities/ClientKvStorage').ClientKvStorage;
+        $userService: import('~/utilities/UserKvService').UserKvService;
     }
 }

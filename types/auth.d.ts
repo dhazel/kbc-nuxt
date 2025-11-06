@@ -1,5 +1,3 @@
-import type { UserKvService } from '~/utilities/UserKvService'
-
 declare module '#auth' {
   interface User {
     // Kinde default properties
@@ -27,8 +25,4 @@ declare module 'vue/types/vue' {
   }
 }
 
-declare module '#app' {
-  interface NuxtApp {
-    $userService: UserKvService
-  }
-}
+

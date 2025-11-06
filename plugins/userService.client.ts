@@ -2,16 +2,18 @@ import { UserKvService, type UserProfile } from '~/utilities/UserKvService';
 import { IndexedDbStorage } from '~/utilities/IndexedDbStorage';
 import type { IClientKvStore } from '~/utilities/IClientKvStore';
 import { ApiUserService } from '~/utilities/ApiUserService';
+import { ClientKvStorage } from '~/utilities/ClientKvStorage';
 
 export default defineNuxtPlugin(async (): Promise<object> => {
-    const { $kv, $auth } = useNuxtApp();
+    const $auth = useNuxtApp().$auth;
+    const kv = new ClientKvStorage();
 
     const serviceType = 'api';
     let userService;
     switch (serviceType) {
         case 'kv':
             // Use KV-based service with server-side storage
-            userService = new UserKvService($kv as IClientKvStore);
+            userService = new UserKvService(kv as IClientKvStore);
             break;
         case 'indexeddb':
             // Use KV-based service with IndexedDB storage
@@ -78,6 +80,8 @@ export default defineNuxtPlugin(async (): Promise<object> => {
     );
 
     // Provide the UserService to the Nuxt app
+    const nuxtApp = useNuxtApp();
+    nuxtApp.$userService = userService;
     return {
         provide: {
             userService,

@@ -99,9 +99,10 @@
 
 <script setup>
 import { navigateTo, useNuxtApp } from '#app';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, inject } from 'vue';
 
-const { $auth, $userService } = useNuxtApp();
+const { $auth } = useNuxtApp();
+const userService = inject('userService');
 
 const isAdmin = ref(false);
 
@@ -112,7 +113,7 @@ onMounted(async () => {
     }
 
     try {
-        const profile = await $userService.getUserProfileByEmail(
+        const profile = await userService.getUserProfileByEmail(
             $auth.user.email
         );
         if (profile && profile.roles.includes('admin')) {
