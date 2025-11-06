@@ -41,59 +41,24 @@
 
         <div v-if="intercessorTotals.length > 0" class="overflow-x-auto">
             <h2 class="text-xl mb-2">Closed Prayer Orders per Intercessor</h2>
-            <table class="min-w-full bg-white border border-gray-300">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="px-4 py-2 border">Intercessor</th>
-                        <th class="px-4 py-2 border">Total Closed Orders</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr
-                        v-for="total in intercessorTotals"
-                        :key="total.intercessor"
-                        class="hover:bg-gray-50"
-                    >
-                        <td class="px-4 py-2 border">
-                            {{ total.intercessor }}
-                        </td>
-                        <td class="px-4 py-2 border">{{ total.count }}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <DataTable :value="intercessorTotals" class="p-datatable-sm">
+                <Column field="intercessor" header="Intercessor" />
+                <Column field="count" header="Total Closed Orders" />
+            </DataTable>
         </div>
         <div v-if="orders.length > 0" class="overflow-x-auto mt-8">
             <h2 class="text-xl mb-2">Closed Prayer Orders</h2>
-            <table class="min-w-full bg-white border border-gray-300">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="px-4 py-2 border">Status</th>
-                        <th class="px-4 py-2 border">Close Date</th>
-                        <th class="px-4 py-2 border">Title</th>
-                        <th class="px-4 py-2 border">Intercessor</th>
-                        <th class="px-4 py-2 border">Board</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr
-                        v-for="order in orders"
-                        :key="order.title"
-                        class="hover:bg-gray-50"
-                    >
-                        <td class="px-4 py-2 border">{{ order.status }}</td>
-                        <td class="px-4 py-2 border">
-                            {{ new Date(order.closeDate).toLocaleDateString() }}
-                        </td>
-                        <td class="px-4 py-2 border">{{ order.title }}</td>
-                        <td class="px-4 py-2 border">
-                            {{ order.intercessor }}
-                        </td>
-                        <td class="px-4 py-2 border">
-                            {{ order.board }}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <DataTable :value="orders" class="p-datatable-sm">
+                <Column field="status" header="Status" />
+                <Column field="closeDate" header="Close Date">
+                    <template #body="slotProps">
+                        {{ new Date(slotProps.data.closeDate).toLocaleDateString() }}
+                    </template>
+                </Column>
+                <Column field="title" header="Title" />
+                <Column field="intercessor" header="Intercessor" />
+                <Column field="board" header="Board" />
+            </DataTable>
         </div>
 
         <p v-else-if="!loading && !error">No orders found.</p>
@@ -105,6 +70,8 @@ import { navigateTo, useNuxtApp } from '#app';
 import { onMounted, ref } from 'vue';
 import DatePicker from 'primevue/datepicker';
 import Button from 'primevue/button';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
 
 const { $auth, $userService } = useNuxtApp();
 
