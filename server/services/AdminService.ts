@@ -19,6 +19,7 @@ interface ActivityLog {
     data: string;
     user_id: string;
     created_at: string;
+    boardName?: string;
 }
 
 interface ColumnValue {
@@ -48,10 +49,17 @@ export class AdminService implements IAdminService {
             monday.setToken(config.mondayToken);
 
             // define the set of boards that we will operate on
-            const boards = [8281675180];
+            const boards = [
+                18130780948,
+                9731839830,
+                9675066534,
+                9913642037,
+                9804560302,
+                18080835095,
+            ];
 
             // query the monday api to get the status column ID and settings
-            const boardQuery = `query { boards(ids: [${boards[0]}]) { columns { id title type settings_str } } }`;
+            const boardQuery = `query { boards(ids: [${boards.join(',')}]) { columns { id title type settings_str } } }`;
             const boardResponse = await monday.api(boardQuery);
             const boardData = boardResponse.data.boards[0] as {
                 columns: (Column & { settings_str: string })[];
@@ -66,7 +74,7 @@ export class AdminService implements IAdminService {
             const labels = settings.labels || {};
             const labelMap: Record<number, string> = {};
             if (Array.isArray(labels)) {
-                labels.forEach((l: any) => {
+                labels.forEach((l: { id: number; name: string }) => {
                     labelMap[l.id] = l.name;
                 });
             } else if (typeof labels === 'object') {
@@ -76,29 +84,24 @@ export class AdminService implements IAdminService {
             }
 
             // query the monday api to get all the users that are active on the given set of boards
-            const usersQuery = `query { boards(ids: [${boards[0]}]) { subscribers { id name } } }`;
+            const usersQuery = `query { boards(ids: [${boards.join(',')}]) { subscribers { id name } } }`;
             const usersResponse = await monday.api(usersQuery);
-            const usersData = usersResponse.data.boards[0] as {
-                subscribers: User[];
-            };
-            const activeUsers: Record<string, string> =
-                usersData.subscribers.reduce(
-                    (map: Record<string, string>, user: User) => {
-                        map[user.id] = user.name;
-                        return map;
-                    },
-                    {}
-                );
+            const allSubscribers = usersResponse.data.boards.flatMap((board: { subscribers: User[] }) => board.subscribers);
+            const activeUsers: Record<string, string> = allSubscribers.reduce(
+                (map: Record<string, string>, user: User) => {
+                    map[user.id] = user.name;
+                    return map;
+                },
+                {}
+            );
 
             // query the monday api to get all the items, on the given set of boards, that had their status column changed between the start and the end date
             const inclusiveEndDate = new Date(endDate);
             inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
-            const activityQuery = `query { boards(ids: [${boards[0]}]) { activity_logs(from: "${startDate.toISOString()}", to: "${inclusiveEndDate.toISOString()}", column_ids: ["${statusColumnId}"]) { id event data user_id created_at } } }`;
+            const activityQuery = `query { boards(ids: [${boards.join(',')}]) { name activity_logs(from: "${startDate.toISOString()}", to: "${inclusiveEndDate.toISOString()}", column_ids: ["${statusColumnId}"]) { id event data user_id created_at } } }`;
             const activityResponse = await monday.api(activityQuery);
-            const activityData = activityResponse.data.boards[0] as {
-                activity_logs: ActivityLog[];
-            };
-            const activityLogs = activityData.activity_logs;
+            const allActivityLogs = activityResponse.data.boards.flatMap((board: { name: string; activity_logs: ActivityLog[] }) => board.activity_logs.map(log => ({ ...log, boardName: board.name })));
+            const activityLogs = allActivityLogs;
 
             // filter the set of returned items to only those items whose status changed to "Closed"
             const closedChanges = activityLogs.filter((log: ActivityLog) => {
@@ -155,6 +158,7 @@ export class AdminService implements IAdminService {
                         title: item.name,
                         intercessor:
                             activeUsers[changeLog.user_id] || 'Unknown',
+                        board: changeLog.boardName || 'Unknown',
                     });
                 }
             }

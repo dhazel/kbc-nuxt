@@ -3,6 +3,7 @@ export interface PrayerOrderData {
     closeDate: Date;
     title: string;
     intercessor: string;
+    board: string;
 }
 
 export interface IAdminService {

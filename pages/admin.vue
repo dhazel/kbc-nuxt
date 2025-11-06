@@ -72,6 +72,7 @@
                         <th class="px-4 py-2 border">Close Date</th>
                         <th class="px-4 py-2 border">Title</th>
                         <th class="px-4 py-2 border">Intercessor</th>
+                        <th class="px-4 py-2 border">Board</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -87,6 +88,9 @@
                         <td class="px-4 py-2 border">{{ order.title }}</td>
                         <td class="px-4 py-2 border">
                             {{ order.intercessor }}
+                        </td>
+                        <td class="px-4 py-2 border">
+                            {{ order.board }}
                         </td>
                     </tr>
                 </tbody>
