@@ -1,10 +1,13 @@
 {
     "image":"mcr.microsoft.com/devcontainers/javascript-node",
+    "remoteUser": "node",
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspace/${localWorkspaceFolderBasename},type=bind,consistency=cached,relabel=private",
     "workspaceFolder": "/workspace/${localWorkspaceFolderBasename}",
     "postCreateCommand": "echo 'cd ${workspaceFolder}' >> ~/.bashrc",
     "features": {
-        "ghcr.io/devcontainers-extra/features/neovim-apt-get:1": {}
+        "ghcr.io/devcontainers-extra/features/neovim-homebrew:1": {},
+        "ghcr.io/devcontainer-community/devcontainer-features/opencode.ai:1": {},
+        "ghcr.io/devcontainers-extra/features/ripgrep:1": {}
     },
     "forwardPorts": [3000],
     "portsAttributes": {
@@ -13,5 +16,10 @@
             "onAutoForward": "notify"
         }
     },
-    "runArgs": ["--network", "host"]
+    "runArgs": ["--network", "host"],
+    "mounts": [
+        "source=.config/nvim,target=/home/node/.config/nvim,type=bind,consistency=cached,relabel=private",
+        "source=${localWorkspaceFolder}/.config/nvim-data,target=/home/node/.config/nvim-data,type=bind,consistency=cached,relabel=private",
+        "source=.gitconfig,target=/home/node/.gitconfig,type=bind,consistency=cached,relabel=private"
+    ],
 }
