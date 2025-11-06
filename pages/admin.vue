@@ -9,32 +9,31 @@
                     <label for="startDate" class="block text-sm font-medium"
                         >Start Date</label
                     >
-                    <input
+                    <DatePicker
                         id="startDate"
                         v-model="startDate"
-                        type="date"
-                        class="border rounded px-3 py-2"
+                        model-type="string"
+                        date-format="yy-mm-dd"
                     />
                 </div>
                 <div>
                     <label for="endDate" class="block text-sm font-medium"
                         >End Date</label
                     >
-                    <input
+                    <DatePicker
                         id="endDate"
                         v-model="endDate"
-                        type="date"
-                        class="border rounded px-3 py-2"
+                        model-type="string"
+                        date-format="yy-mm-dd"
                     />
                 </div>
                 <div class="flex items-end">
-                    <button
-                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-                        :disabled="loading"
+                    <Button
+                        label="Fetch Orders"
+                        :loading="loading"
+                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                         @click="fetchOrders"
-                    >
-                        {{ loading ? 'Fetching...' : 'Fetch Orders' }}
-                    </button>
+                    />
                 </div>
             </div>
             <p v-if="error" class="text-red-500">{{ error }}</p>
@@ -103,7 +102,9 @@
 
 <script setup>
 import { navigateTo, useNuxtApp } from '#app';
-import { onMounted, ref, inject } from 'vue';
+import { onMounted, ref } from 'vue';
+import DatePicker from 'primevue/datepicker';
+import Button from 'primevue/button';
 
 const { $auth, $userService } = useNuxtApp();
 
@@ -163,8 +164,8 @@ const fetchOrders = async () => {
     try {
         const response = await $fetch('/api/admin/closed-prayer-orders', {
             query: {
-                startDate: startDate.value,
-                endDate: endDate.value,
+                startDate: startDate.value instanceof Date ? startDate.value.toISOString().split('T')[0] : startDate.value,
+                endDate: endDate.value instanceof Date ? endDate.value.toISOString().split('T')[0] : endDate.value,
             },
         });
         orders.value = response;
