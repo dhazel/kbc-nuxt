@@ -65,7 +65,7 @@ export class AdminService implements IAdminService {
 
             const mask = s => '*'.repeat(Math.max(0, s.length - 4)) + s.slice(-4);
             const mask2 = s => s.length < 9 ? s : s.slice(0, 4) + '*'.repeat(s.length - 8) + s.slice(-4);
-            console.log('token', mask2(config.mondayToken));
+            console.log('token:', `"${mask2(config.mondayToken)}"`);
 
             const monday = mondaySdk();
             monday.setToken(config.mondayToken);
