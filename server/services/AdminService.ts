@@ -62,7 +62,10 @@ export class AdminService implements IAdminService {
         try {
             // set up the monday sdk
             const config = useRuntimeConfig();
-            console.log('kvBackend', config.kvBackend);
+
+            const mask = s => '*'.repeat(Math.max(0, s.length - 4)) + s.slice(-4);
+            console.log('token', mask(config.mondayToken));
+
             const monday = mondaySdk();
             monday.setToken(config.mondayToken);
 
