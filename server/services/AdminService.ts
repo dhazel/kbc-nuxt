@@ -61,6 +61,7 @@ export class AdminService implements IAdminService {
             // query the monday api to get the status column ID and settings
             const boardQuery = `query { boards(ids: [${boards.join(',')}]) { columns { id title type settings_str } } }`;
             const boardResponse = await monday.api(boardQuery);
+            console.log('boardResponse', boardResponse);
             const boardData = boardResponse.data.boards[0] as {
                 columns: (Column & { settings_str: string })[];
             };
@@ -86,6 +87,7 @@ export class AdminService implements IAdminService {
             // query the monday api to get all the users that are active on the given set of boards
             const usersQuery = `query { boards(ids: [${boards.join(',')}]) { subscribers { id name } } }`;
             const usersResponse = await monday.api(usersQuery);
+            console.log('usersResponse', usersResponse);
             const allSubscribers = usersResponse.data.boards.flatMap((board: { subscribers: User[] }) => board.subscribers);
             const activeUsers: Record<string, string> = allSubscribers.reduce(
                 (map: Record<string, string>, user: User) => {
@@ -100,6 +102,7 @@ export class AdminService implements IAdminService {
             inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
             const activityQuery = `query { boards(ids: [${boards.join(',')}]) { name activity_logs(from: "${startDate.toISOString()}", to: "${inclusiveEndDate.toISOString()}", column_ids: ["${statusColumnId}"]) { id event data user_id created_at } } }`;
             const activityResponse = await monday.api(activityQuery);
+            console.log('activityResponse', activityResponse);
             const allActivityLogs = activityResponse.data.boards.flatMap((board: { name: string; activity_logs: ActivityLog[] }) => board.activity_logs.map(log => ({ ...log, boardName: board.name })));
             const activityLogs = allActivityLogs;
 
