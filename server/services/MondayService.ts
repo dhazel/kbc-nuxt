@@ -23,8 +23,8 @@ export class MondayService implements IMondayService {
             const data = await response.json();
 
             // // Log for debugging (visible in Netlify function logs)
-            const mask = s => s.length < 9 ? s : s.slice(0, 4) + '*'.repeat(s.length - 8) + s.slice(-4);
-            console.log('token:', `"${mask(this.token)}"`);
+            // const mask = s => s.length < 9 ? s : s.slice(0, 4) + '*'.repeat(s.length - 8) + s.slice(-4);
+            // console.log('token:', `"${mask(this.token)}"`);
             // console.log('Status:', response.status);
             // console.log('Response:', JSON.stringify(data, null, 2));
 
