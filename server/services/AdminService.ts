@@ -43,9 +43,8 @@ export class AdminService implements IAdminService {
         try {
             const response = await monday.api(query);
             if (response.errors) {
-                console.error(
-                    'Monday API call errors:',
-                    response.errors.map((e: any) => e.message).join('; ')
+                response.errors.forEach(
+                    (e: any) => console.error('Monday API call error:', JSON.stringify(e))
                 );
             }
             return response;
