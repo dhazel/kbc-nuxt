@@ -37,6 +37,9 @@ export class MondayService implements IMondayService {
             }
             if (data.errors) {
                 returnValue['errors'] = data.errors;
+                data.errors.forEach(
+                    (e: any) => console.error('Monday API call error:', JSON.stringify(e))
+                );
             }
             return returnValue;
         } catch (error) {
