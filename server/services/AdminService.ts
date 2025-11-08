@@ -1,5 +1,5 @@
 import type { IAdminService, PrayerOrderData } from './IAdminService';
-import { MondayService } from './MondayService';
+import type { IMondayService } from './IMondayService';
 
 interface Column {
     id: string;
@@ -38,13 +38,13 @@ interface ItemsResponse {
 }
 
 export class AdminService implements IAdminService {
+    constructor(private mondayService: IMondayService) {}
 
     async getClosedPrayerOrders(
         startDate: Date,
         endDate: Date
     ): Promise<PrayerOrderData[]> {
         try {
-            const mondayService = new MondayService();
 
             // define the set of boards that we will operate on
             const boards = [
@@ -58,7 +58,7 @@ export class AdminService implements IAdminService {
 
             // query the monday api to get the status column ID and settings
             const boardQuery = `query { boards(ids: [${boards.join(',')}]) { columns { id title type settings_str } } }`;
-            const boardResponse = await mondayService.query(boardQuery);
+            const boardResponse = await this.mondayService.query(boardQuery);
             const boardData = boardResponse.data.boards[0] as {
                 columns: (Column & { settings_str: string })[];
             };
@@ -83,7 +83,7 @@ export class AdminService implements IAdminService {
 
             // query the monday api to get all the users that are active on the given set of boards
             const usersQuery = `query { boards(ids: [${boards.join(',')}]) { subscribers { id name } } }`;
-            const usersResponse = await mondayService.query(usersQuery);
+            const usersResponse = await this.mondayService.query(usersQuery);
             const allSubscribers = usersResponse.data.boards.flatMap((board: { subscribers: User[] }) => board.subscribers);
             const activeUsers: Record<string, string> = allSubscribers.reduce(
                 (map: Record<string, string>, user: User) => {
@@ -97,7 +97,7 @@ export class AdminService implements IAdminService {
             const inclusiveEndDate = new Date(endDate);
             inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
             const activityQuery = `query { boards(ids: [${boards.join(',')}]) { name activity_logs(from: "${startDate.toISOString()}", to: "${inclusiveEndDate.toISOString()}", column_ids: ["${statusColumnId}"]) { id event data user_id created_at } } }`;
-            const activityResponse = await mondayService.query(activityQuery);
+            const activityResponse = await this.mondayService.query(activityQuery);
             const allActivityLogs = activityResponse.data.boards.flatMap((board: { name: string; activity_logs: ActivityLog[] }) => board.activity_logs.map(log => ({ ...log, boardName: board.name })));
             const activityLogs = allActivityLogs;
 
@@ -126,7 +126,7 @@ export class AdminService implements IAdminService {
 
             // query the monday api, for only those items who had their status changed to "Closed", and return only those items whose status is currently "Closed"
             const itemsQuery = `query { items(ids: [${itemIds.join(',')}]) { id name column_values { id value } } }`;
-            const itemsResponse = await mondayService.query(itemsQuery);
+            const itemsResponse = await this.mondayService.query(itemsQuery);
             const itemsData = itemsResponse.data as ItemsResponse;
             const items = itemsData.items.filter((item: Item) => {
                 const statusValue = item.column_values.find(

@@ -1,4 +1,4 @@
-import { AdminService } from '~/server/services/AdminService';
+
 
 export default defineEventHandler(async (event) => {
     const kinde = event.context.kinde;
@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        const adminService = new AdminService();
+        const adminService = event.context.adminService;
         const orders = await adminService.getClosedPrayerOrders(start, end);
         return orders;
     } catch (error) {
