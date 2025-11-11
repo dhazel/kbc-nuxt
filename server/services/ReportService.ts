@@ -157,15 +157,27 @@ export class ReportService implements IReportService {
                     parseInt(changeLog.created_at) / 10000
                 );
                 const item = items.items.filter(
-                        (item: Item) => JSON.parse(changeLog.data).pulse_id == item.id
-                    )[0];
-                console.log(item);
+                    (item: Item) =>
+                        JSON.parse(changeLog.data).pulse_id == item.id
+                )[0];
+                const statusColumnValue = item.column_values.find(
+                    (cv) => cv.id === statusColumnId
+                );
+                let status = 'Unknown';
+                if (statusColumnValue) {
+                    try {
+                        const parsedValue = JSON.parse(statusColumnValue.value);
+                        const index = parsedValue?.index;
+                        status = labelMap[index] || 'Unknown';
+                    } catch {
+                        status = 'Unknown';
+                    }
+                }
                 prayerOrders.push({
-                    status: 'Closed',
+                    status: status,
                     closeDate: new Date(unixMs),
                     title: item.name,
-                    lastChangedBy:
-                        activeUsers[changeLog.user_id] || 'Unknown',
+                    lastChangedBy: activeUsers[changeLog.user_id] || 'Unknown',
                     board: changeLog.boardName || 'Unknown',
                     intercessor: allUsersMap[changeLog.user_id] || 'Unknown',
                 });

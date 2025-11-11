@@ -49,7 +49,7 @@
         <div v-if="orders.length > 0" class="overflow-x-auto mt-8">
             <h2 class="text-xl mb-2">Closed Prayer Orders</h2>
             <DataTable :value="orders" class="p-datatable-sm">
-                <Column field="status" header="Status" />
+                <Column field="status" header="Current Status" />
                 <Column field="closeDate" header="Close Date" sortable>
                     <template #body="slotProps">
                         {{
