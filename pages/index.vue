@@ -1,44 +1,54 @@
 <template>
     <div>
+        <section class="mb-12">
+            <h1 class="text-3xl">Welcome{{ userName? ` ${userName}` : '' }}!</h1>
+        </section>
         <section>
-            <h1 class="text-3xl">Welcome!</h1>
+            <Card style="width: 25rem; overflow: hidden" v-if="isAdmin">
+                <template #header>
+                    <!-- <img alt="user header" src="/images/usercard.png" /> -->
+                </template>
+                <template #title>Intercessor Report</template>
+                <template #subtitle>Track work completed by intercessors</template>
+                <template #content>
+                    <p class="m-0">
+                    </p>
+                </template>
+                <template #footer>
+                    <div class="flex gap-4 mt-1">
+                        <Button class="w-full">
+                            <NuxtLink to="/reports/intercessors" external> View Report </NuxtLink>
+                        </Button>
+                    </div>
+                </template>
+            </Card>
         </section>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useToast } from "primevue/usetoast";
-import { useRouter } from 'vue-router';
-import Menu from 'primevue/menu';
+import { navigateTo, useNuxtApp } from '#app';
+import { onMounted, ref } from 'vue';
 
-const menu = ref(null);
-const toast = useToast();
-const router = useRouter();
+const { $auth, $userService } = useNuxtApp();
 
-const items = ref([
-    {
-        label: 'Refresh',
-        icon: 'pi pi-refresh'
-    },
-    {
-        label: 'Search',
-        icon: 'pi pi-search'
-    },
-    {
-        separator: true
-    },
-    {
-        label: 'Delete',
-        icon: 'pi pi-times'
+const isAdmin = ref(false);
+const userName = ref();
+
+onMounted(async () => {
+    if ($auth.loggedIn) {
+        userName.value = $auth.user.name;
     }
-]);
 
-const toggle = (event) => {
-    menu.value.toggle(event);
-};
-
-const save = () => {
-    toast.add({ severity: 'success', summary: 'Success', detail: 'Data Saved', life: 3000 });
-};
+    try {
+        const profile = await $userService.getUserProfileByEmail(
+            $auth.user.email
+        );
+        if (profile && profile.roles.includes('admin')) {
+            isAdmin.value = true;
+        }
+    } catch (error) {
+        console.error('Failed to fetch user profile:', error);
+    }
+});
 </script>
