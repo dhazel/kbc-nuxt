@@ -80,10 +80,23 @@ export class ReportService implements IReportService {
                 });
             }
 
-            // query the monday api to get all the users that are active on the given set of boards
-            const usersQuery = `query { boards(ids: [${boards.join(',')}]) { subscribers { id name } } }`;
+            // query the monday api to get all users in the account
+            const usersQuery = `query { users { id name } }`;
             const usersResponse = await this.mondayService.query(usersQuery);
-            const allSubscribers = usersResponse.data.boards.flatMap(
+            const allUsers = usersResponse.data.users as User[];
+            const allUsersMap: Record<string, string> = allUsers.reduce(
+                (map: Record<string, string>, user: User) => {
+                    map[user.id] = user.name;
+                    return map;
+                },
+                {}
+            );
+
+            // query the monday api to get all the users that are active on the given set of boards
+            const subscribersQuery = `query { boards(ids: [${boards.join(',')}]) { subscribers { id name } } }`;
+            const subscribersResponse =
+                await this.mondayService.query(subscribersQuery);
+            const allSubscribers = subscribersResponse.data.boards.flatMap(
                 (board: { subscribers: User[] }) => board.subscribers
             );
             const activeUsers: Record<string, string> = allSubscribers.reduce(
@@ -132,41 +145,30 @@ export class ReportService implements IReportService {
                 ),
             ];
 
-            // query the monday api, for only those items who had their status changed to "Closed", and return only those items whose status is currently "Closed"
+            // query the monday api for the specific item records
             const itemsQuery = `query { items(ids: [${itemIds.join(',')}]) { id name column_values { id value } } }`;
             const itemsResponse = await this.mondayService.query(itemsQuery);
-            const itemsData = itemsResponse.data as ItemsResponse;
-            const items = itemsData.items.filter((item: Item) => {
-                const statusValue = item.column_values.find(
-                    (cv: ColumnValue) => cv.id === statusColumnId
-                );
-                if (!statusValue) return false;
-                const parsedValue = JSON.parse(statusValue.value);
-                const index = parsedValue?.index;
-                const label = labelMap[index];
-                return label?.toLowerCase() === 'closed';
-            });
+            const items = itemsResponse.data as ItemsResponse;
 
             // build PrayerOrderData objects by combining the active users with the closed items
             const prayerOrders: PrayerOrderData[] = [];
-            for (const item of items) {
-                const changeLog = closedChanges.find(
-                    (log: ActivityLog) =>
-                        JSON.parse(log.data).pulse_id == item.id
+            for (const changeLog of closedChanges) {
+                const unixMs = Math.round(
+                    parseInt(changeLog.created_at) / 10000
                 );
-                if (changeLog) {
-                    const unixMs = Math.round(
-                        parseInt(changeLog.created_at) / 10000
-                    );
-                    prayerOrders.push({
-                        status: 'Closed',
-                        closeDate: new Date(unixMs),
-                        title: item.name,
-                        intercessor:
-                            activeUsers[changeLog.user_id] || 'Unknown',
-                        board: changeLog.boardName || 'Unknown',
-                    });
-                }
+                const item = items.items.filter(
+                        (item: Item) => JSON.parse(changeLog.data).pulse_id == item.id
+                    )[0];
+                console.log(item);
+                prayerOrders.push({
+                    status: 'Closed',
+                    closeDate: new Date(unixMs),
+                    title: item.name,
+                    lastChangedBy:
+                        activeUsers[changeLog.user_id] || 'Unknown',
+                    board: changeLog.boardName || 'Unknown',
+                    intercessor: allUsersMap[changeLog.user_id] || 'Unknown',
+                });
             }
 
             // return the PrayerOrderData objects
