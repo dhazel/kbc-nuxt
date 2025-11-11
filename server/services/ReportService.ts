@@ -173,7 +173,6 @@ export class ReportService implements IReportService {
                     }
                 }
                 else {
-                    console.log(changeLog);
                     status = 'Deleted';
                     item = {
                         id: 'none',
