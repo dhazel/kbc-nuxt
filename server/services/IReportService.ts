@@ -2,8 +2,9 @@ export interface PrayerOrderData {
     status: string;
     closeDate: Date;
     title: string;
-    intercessor: string;
+    lastChangedBy: string;
     board: string;
+    intercessor: string;
 }
 
 export interface IReportService {
