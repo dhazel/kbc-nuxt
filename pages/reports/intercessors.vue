@@ -1,6 +1,6 @@
 <template>
     <div v-if="isAdmin" class="container mx-auto p-4">
-        <h1 class="text-2xl font-bold mb-4">Admin Panel</h1>
+        <h1 class="text-2xl font-bold mb-4">Intercessor Report</h1>
 
         <div class="mb-4">
             <h2 class="text-xl mb-2">Closed Prayer Orders</h2>
@@ -129,7 +129,7 @@ const fetchOrders = async () => {
     error.value = '';
 
     try {
-        const response = await $fetch('/api/admin/closed-prayer-orders', {
+        const response = await $fetch('/api/reports/closed-prayer-orders', {
             query: {
                 startDate: startDate.value instanceof Date ? startDate.value.toISOString().split('T')[0] : startDate.value,
                 endDate: endDate.value instanceof Date ? endDate.value.toISOString().split('T')[0] : endDate.value,

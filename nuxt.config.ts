@@ -3,8 +3,6 @@
 import tailwindcss from '@tailwindcss/vite';
 import Aura from '@primeuix/themes/aura';
 
-
-
 export default defineNuxtConfig({
     compatibilityDate: '2025-05-15',
     devtools: { enabled: true },
@@ -17,7 +15,7 @@ export default defineNuxtConfig({
     ],
 
     nitro: {
-        preset: 'netlify'
+        preset: 'netlify',
     },
 
     vite: {
@@ -62,7 +60,7 @@ export default defineNuxtConfig({
     },
 
     routeRules: {
-        '/admin': {
+        '/reports/intercessors': {
             appMiddleware: ['auth-logged-in'],
             kinde: {
                 // permissions: { admin: true }, // This fails for some reason

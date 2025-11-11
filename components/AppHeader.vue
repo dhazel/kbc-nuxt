@@ -58,9 +58,9 @@ const items = ref([
         show: false,
     },
     {
-        label: 'Admin',
+        label: 'Intercessor Report',
         icon: 'pi',
-        route: '/admin',
+        route: '/reports/intercessors',
         show: showAdmin,
     },
 ]);

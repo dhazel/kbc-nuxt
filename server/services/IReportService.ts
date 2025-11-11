@@ -6,7 +6,7 @@ export interface PrayerOrderData {
     board: string;
 }
 
-export interface IAdminService {
+export interface IReportService {
     getClosedPrayerOrders(
         startDate: Date,
         endDate: Date

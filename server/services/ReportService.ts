@@ -1,4 +1,4 @@
-import type { IAdminService, PrayerOrderData } from './IAdminService';
+import type { IReportService, PrayerOrderData } from './IReportService';
 import type { IMondayService } from './IMondayService';
 
 interface Column {
@@ -37,7 +37,7 @@ interface ItemsResponse {
     items: Item[];
 }
 
-export class AdminService implements IAdminService {
+export class ReportService implements IReportService {
     constructor(private mondayService: IMondayService) {}
 
     async getClosedPrayerOrders(
