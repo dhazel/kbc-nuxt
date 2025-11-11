@@ -42,22 +42,26 @@
         <div v-if="intercessorTotals.length > 0" class="overflow-x-auto">
             <h2 class="text-xl mb-2">Closed Prayer Orders per Intercessor</h2>
             <DataTable :value="intercessorTotals" class="p-datatable-sm">
-                <Column field="intercessor" header="Intercessor" />
-                <Column field="count" header="Total Closed Orders" />
+                <Column field="intercessor" header="Intercessor" sortable />
+                <Column field="count" header="Total Closed Orders" sortable />
             </DataTable>
         </div>
         <div v-if="orders.length > 0" class="overflow-x-auto mt-8">
             <h2 class="text-xl mb-2">Closed Prayer Orders</h2>
             <DataTable :value="orders" class="p-datatable-sm">
                 <Column field="status" header="Status" />
-                <Column field="closeDate" header="Close Date">
+                <Column field="closeDate" header="Close Date" sortable>
                     <template #body="slotProps">
-                        {{ new Date(slotProps.data.closeDate).toLocaleDateString() }}
+                        {{
+                            new Date(
+                                slotProps.data.closeDate
+                            ).toLocaleDateString()
+                        }}
                     </template>
                 </Column>
-                <Column field="title" header="Title" />
-                <Column field="intercessor" header="Intercessor" />
-                <Column field="board" header="Board" />
+                <Column field="title" header="Title" sortable />
+                <Column field="intercessor" header="Intercessor" sortable />
+                <Column field="board" header="Board" sortable />
             </DataTable>
         </div>
 
@@ -131,8 +135,14 @@ const fetchOrders = async () => {
     try {
         const response = await $fetch('/api/reports/closed-prayer-orders', {
             query: {
-                startDate: startDate.value instanceof Date ? startDate.value.toISOString().split('T')[0] : startDate.value,
-                endDate: endDate.value instanceof Date ? endDate.value.toISOString().split('T')[0] : endDate.value,
+                startDate:
+                    startDate.value instanceof Date
+                        ? startDate.value.toISOString().split('T')[0]
+                        : startDate.value,
+                endDate:
+                    endDate.value instanceof Date
+                        ? endDate.value.toISOString().split('T')[0]
+                        : endDate.value,
             },
         });
         orders.value = response;
