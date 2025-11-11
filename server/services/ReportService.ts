@@ -45,7 +45,6 @@ export class ReportService implements IReportService {
         endDate: Date
     ): Promise<PrayerOrderData[]> {
         try {
-
             // define the set of boards that we will operate on
             const boards = [
                 18130780948,
@@ -84,7 +83,9 @@ export class ReportService implements IReportService {
             // query the monday api to get all the users that are active on the given set of boards
             const usersQuery = `query { boards(ids: [${boards.join(',')}]) { subscribers { id name } } }`;
             const usersResponse = await this.mondayService.query(usersQuery);
-            const allSubscribers = usersResponse.data.boards.flatMap((board: { subscribers: User[] }) => board.subscribers);
+            const allSubscribers = usersResponse.data.boards.flatMap(
+                (board: { subscribers: User[] }) => board.subscribers
+            );
             const activeUsers: Record<string, string> = allSubscribers.reduce(
                 (map: Record<string, string>, user: User) => {
                     map[user.id] = user.name;
@@ -97,8 +98,15 @@ export class ReportService implements IReportService {
             const inclusiveEndDate = new Date(endDate);
             inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
             const activityQuery = `query { boards(ids: [${boards.join(',')}]) { name activity_logs(from: "${startDate.toISOString()}", to: "${inclusiveEndDate.toISOString()}", column_ids: ["${statusColumnId}"]) { id event data user_id created_at } } }`;
-            const activityResponse = await this.mondayService.query(activityQuery);
-            const allActivityLogs = activityResponse.data.boards.flatMap((board: { name: string; activity_logs: ActivityLog[] }) => board.activity_logs.map(log => ({ ...log, boardName: board.name })));
+            const activityResponse =
+                await this.mondayService.query(activityQuery);
+            const allActivityLogs = activityResponse.data.boards.flatMap(
+                (board: { name: string; activity_logs: ActivityLog[] }) =>
+                    board.activity_logs.map((log) => ({
+                        ...log,
+                        boardName: board.name,
+                    }))
+            );
             const activityLogs = allActivityLogs;
 
             // filter the set of returned items to only those items whose status changed to "Closed"
@@ -109,7 +117,7 @@ export class ReportService implements IReportService {
                 const parsedValue = data.value;
                 const index = parsedValue?.label.index;
                 const label = labelMap[index];
-                return label === 'Closed';
+                return label?.toLowerCase() === 'closed';
             });
 
             if (closedChanges.length === 0) return [];
@@ -136,7 +144,7 @@ export class ReportService implements IReportService {
                 const parsedValue = JSON.parse(statusValue.value);
                 const index = parsedValue?.index;
                 const label = labelMap[index];
-                return label === 'Closed';
+                return label?.toLowerCase() === 'closed';
             });
 
             // build PrayerOrderData objects by combining the active users with the closed items
