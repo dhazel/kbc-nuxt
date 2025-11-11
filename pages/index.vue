@@ -6,7 +6,7 @@
         <section>
             <Card style="width: 25rem; overflow: hidden" v-if="isAdmin">
                 <template #header>
-                    <!-- <img alt="user header" src="/images/usercard.png" /> -->
+                    <img alt="intercessor" src="/intercessor4_cropped.jpg" />
                 </template>
                 <template #title>Intercessor Report</template>
                 <template #subtitle>Track work completed by intercessors</template>
