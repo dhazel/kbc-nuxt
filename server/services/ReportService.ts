@@ -47,11 +47,7 @@ export class ReportService implements IReportService {
         try {
             // define the set of boards that we will operate on
             const boards = [
-                18130780948,
-                9731839830,
-                9675066534,
-                9913642037,
-                9804560302,
+                18130780948, 9731839830, 9675066534, 9913642037, 9804560302,
                 18080835095,
             ];
 
@@ -110,7 +106,7 @@ export class ReportService implements IReportService {
             // query the monday api to get all the items, on the given set of boards, that had their status column changed between the start and the end date
             const inclusiveEndDate = new Date(endDate);
             inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
-            const activityQuery = `query { boards(ids: [${boards.join(',')}]) { name activity_logs(from: "${startDate.toISOString()}", to: "${inclusiveEndDate.toISOString()}", column_ids: ["${statusColumnId}"]) { id event data user_id created_at } } }`;
+            const activityQuery = `query { boards(ids: [${boards.join(',')}]) { name activity_logs(from: "${startDate.toISOString()}", to: "${inclusiveEndDate.toISOString()}", column_ids: ["${statusColumnId}"], limit: 10000) { id event data user_id created_at } } }`;
             const activityResponse =
                 await this.mondayService.query(activityQuery);
             const allActivityLogs = activityResponse.data.boards.flatMap(
@@ -121,6 +117,9 @@ export class ReportService implements IReportService {
                     }))
             );
             const activityLogs = allActivityLogs;
+            if (activityLogs.length >= 10000) {
+                console.warn(`ActivityLog limit of 10000 is reached for range: startDate "${startDate}", endDate "${endDate}"`);
+            }
 
             // filter the set of returned items to only those items whose status changed to "Closed"
             const closedChanges = activityLogs.filter((log: ActivityLog) => {
@@ -146,7 +145,7 @@ export class ReportService implements IReportService {
             ];
 
             // query the monday api for the specific item records
-            const itemsQuery = `query { items(ids: [${itemIds.join(',')}]) { id name column_values { id value } } }`;
+            const itemsQuery = `query { items(ids: [${itemIds.join(',')}], limit: 10000) { id name column_values { id value } } }`;
             const itemsResponse = await this.mondayService.query(itemsQuery);
             const items = itemsResponse.data as ItemsResponse;
 
@@ -156,22 +155,31 @@ export class ReportService implements IReportService {
                 const unixMs = Math.round(
                     parseInt(changeLog.created_at) / 10000
                 );
-                const item = items.items.filter(
-                    (item: Item) =>
-                        JSON.parse(changeLog.data).pulse_id == item.id
-                )[0];
-                const statusColumnValue = item.column_values.find(
-                    (cv) => cv.id === statusColumnId
-                );
+                const changeLogData = JSON.parse(changeLog.data);
+                let item = items.items.filter((item: Item) => changeLogData.pulse_id == item.id)[0];
                 let status = 'Unknown';
-                if (statusColumnValue) {
-                    try {
-                        const parsedValue = JSON.parse(statusColumnValue.value);
-                        const index = parsedValue?.index;
-                        status = labelMap[index] || 'Unknown';
-                    } catch {
-                        status = 'Unknown';
+                if (item) {
+                    const statusColumnValue = item.column_values.find(
+                        (cv) => cv.id === statusColumnId
+                    );
+                    if (statusColumnValue) {
+                        try {
+                            const parsedValue = JSON.parse(statusColumnValue.value);
+                            const index = parsedValue?.index;
+                            status = labelMap[index] || 'Unknown';
+                        } catch {
+                            status = 'Unknown';
+                        }
                     }
+                }
+                else {
+                    console.log(changeLog);
+                    status = 'Deleted';
+                    item = {
+                        id: 'none',
+                        name: changeLogData.pulse_name,
+                        column_values: [],
+                    };
                 }
                 prayerOrders.push({
                     status: status,
