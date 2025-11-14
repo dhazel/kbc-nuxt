@@ -40,9 +40,8 @@ model PrayerOrder {
 model Role {
   id     Int    @id @default(autoincrement())
   name   String
-  userId Int
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  users  User[]
 
   @@map("roles")
 }
