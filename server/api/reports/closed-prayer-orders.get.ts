@@ -37,8 +37,8 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        const adminService = event.context.adminService;
-        const orders = await adminService.getClosedPrayerOrders(start, end);
+        const intercessorReportService = event.context.intercessorReportService;
+        const orders = await intercessorReportService.getClosedPrayerOrders(start, end);
         return orders;
     } catch (error) {
         console.error('Error in closed-prayer-orders endpoint:', error);

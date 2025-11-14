@@ -7,7 +7,7 @@ export interface PrayerOrderData {
     intercessor: string;
 }
 
-export interface IReportService {
+export interface IIntercessorReportService {
     getClosedPrayerOrders(
         startDate: Date,
         endDate: Date

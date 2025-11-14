@@ -1,5 +1,5 @@
-import type { IReportService, PrayerOrderData } from './IReportService';
-import type { IMondayService } from './IMondayService';
+import type { IIntercessorReportService, PrayerOrderData } from './IIntercessorReportService';
+import type { IMondayService } from '../IMondayService';
 
 interface Column {
     id: string;
@@ -37,7 +37,7 @@ interface ItemsResponse {
     items: Item[];
 }
 
-export class ReportService implements IReportService {
+export class SppInformedReportService implements IIntercessorReportService {
     constructor(private mondayService: IMondayService) {}
 
     async getClosedPrayerOrders(
