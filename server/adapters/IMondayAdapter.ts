@@ -1,3 +1,3 @@
-export interface IMondayService {
+export interface IMondayAdapter {
     query(query: string): Promise<any>;
 }

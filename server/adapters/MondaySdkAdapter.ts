@@ -1,7 +1,7 @@
 import mondaySdk from 'monday-sdk-js';
-import type { IMondayService } from './IMondayService';
+import type { IMondayAdapter } from './IMondayAdapter';
 
-export class MondayService implements IMondayService {
+export class MondayAdapter implements IMondayAdapter {
     private monday: any;
 
     constructor() {
