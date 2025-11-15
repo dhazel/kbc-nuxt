@@ -147,7 +147,12 @@ const fetchOrders = async () => {
         });
         orders.value = response;
     } catch (err) {
-        error.value = 'Failed to fetch closed prayer orders. Please try again.';
+        if (err.statusCode === 413) {
+            error.value = err.statusText;
+        }
+        else {
+            error.value = 'Failed to fetch closed prayer orders. Please try again.';
+        }
         console.error('Fetch error:', err);
     } finally {
         loading.value = false;

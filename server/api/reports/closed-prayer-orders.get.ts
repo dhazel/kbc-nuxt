@@ -1,3 +1,4 @@
+import { ResultSizeError } from "~/server/errors/ResultSizeError";
 
 
 export default defineEventHandler(async (event) => {
@@ -41,10 +42,18 @@ export default defineEventHandler(async (event) => {
         const orders = await intercessorReportService.getClosedPrayerOrders(start, end);
         return orders;
     } catch (error) {
-        console.error('Error in closed-prayer-orders endpoint:', error);
-        throw createError({
-            statusCode: 500,
-            message: 'Internal server error',
-        });
+        if (error instanceof ResultSizeError) {
+             throw createError({                                                                                 
+               statusCode: 413,
+               statusMessage: `Too many activity logs. Try a narrower date range.`
+             });                                                                                                 
+        }
+        else {
+            console.error('Error in closed-prayer-orders endpoint:', error);
+            throw createError({
+                statusCode: 500,
+                message: 'Internal server error',
+            });
+        }
     }
 });

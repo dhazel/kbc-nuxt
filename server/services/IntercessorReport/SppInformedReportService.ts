@@ -1,5 +1,6 @@
 import type { IIntercessorReportService, PrayerOrderData } from './IIntercessorReportService';
 import type { IMondayService } from '../IMondayService';
+import { ResultSizeError } from '~/server/errors/ResultSizeError';
 
 interface Column {
     id: string;
@@ -106,7 +107,8 @@ export class SppInformedReportService implements IIntercessorReportService {
             // query the monday api to get all the items, on the given set of boards, that had their status column changed between the start and the end date
             const inclusiveEndDate = new Date(endDate);
             inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
-            const activityQuery = `query { boards(ids: [${boards.join(',')}]) { name activity_logs(from: "${startDate.toISOString()}", to: "${inclusiveEndDate.toISOString()}", column_ids: ["${statusColumnId}"], limit: 10000) { id event data user_id created_at } } }`;
+            const maxActivityLog = 10000;
+            const activityQuery = `query { boards(ids: [${boards.join(',')}]) { name activity_logs(from: "${startDate.toISOString()}", to: "${inclusiveEndDate.toISOString()}", column_ids: ["${statusColumnId}"], limit: ${maxActivityLog}) { id event data user_id created_at } } }`;
             const activityResponse =
                 await this.mondayService.query(activityQuery);
             const allActivityLogs = activityResponse.data.boards.flatMap(
@@ -117,8 +119,9 @@ export class SppInformedReportService implements IIntercessorReportService {
                     }))
             );
             const activityLogs = allActivityLogs;
-            if (activityLogs.length >= 10000) {
-                console.warn(`ActivityLog limit of 10000 is reached for range: startDate "${startDate}", endDate "${endDate}"`);
+            if (activityLogs.length >= maxActivityLog) {
+                console.warn(`ActivityLog size ${activityLogs.length} exceeds the maximum allowed size of ${maxActivityLog} for date range: ${startDate.toISOString().split('T')[0]} - ${endDate.toISOString().split('T')[0]}`);
+                throw ResultSizeError.exceedsMaxSize(maxActivityLog, activityLogs.length);
             }
 
             // filter the set of returned items to only those items whose status changed to "Closed"
