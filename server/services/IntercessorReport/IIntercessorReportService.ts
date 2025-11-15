@@ -4,6 +4,7 @@ export interface PrayerOrderData {
     title: string;
     board: string;
     intercessor: string;
+    group: string;
 }
 
 export interface IIntercessorReportService {
