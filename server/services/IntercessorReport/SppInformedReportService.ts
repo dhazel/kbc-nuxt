@@ -89,21 +89,6 @@ export class SppInformedReportService implements IIntercessorReportService {
                 {}
             );
 
-            // query the monday api to get all the users that are active on the given set of boards
-            const subscribersQuery = `query { boards(ids: [${boards.join(',')}]) { subscribers { id name } } }`;
-            const subscribersResponse =
-                await this.mondayService.query(subscribersQuery);
-            const allSubscribers = subscribersResponse.data.boards.flatMap(
-                (board: { subscribers: User[] }) => board.subscribers
-            );
-            const activeUsers: Record<string, string> = allSubscribers.reduce(
-                (map: Record<string, string>, user: User) => {
-                    map[user.id] = user.name;
-                    return map;
-                },
-                {}
-            );
-
             // query the monday api to get all the items, on the given set of boards, that had their status column changed between the start and the end date
             const inclusiveEndDate = new Date(endDate);
             inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
@@ -134,6 +119,7 @@ export class SppInformedReportService implements IIntercessorReportService {
                 const label = labelMap[index];
                 return label?.toLowerCase() === 'closed';
             });
+            console.log('closedChanges:', closedChanges);
 
             if (closedChanges.length === 0) return [];
 
@@ -187,7 +173,6 @@ export class SppInformedReportService implements IIntercessorReportService {
                     status: status,
                     closeDate: new Date(unixMs),
                     title: item.name,
-                    lastChangedBy: activeUsers[changeLog.user_id] || 'Unknown',
                     board: changeLog.boardName || 'Unknown',
                     intercessor: allUsersMap[changeLog.user_id] || 'Unknown',
                 });
