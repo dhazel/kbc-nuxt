@@ -23,16 +23,14 @@ export class SppInformedReportService implements IIntercessorReportService {
 
             const closedActivityLogs = this.mondayService.filterActivityLogsByStatus(activityLogs, 'closed');
 
-            if (closedActivityLogs.length !== 0) {
-                const closedItems = await this.mondayService.getAllRelatedItems(closedActivityLogs);
+            const closedItems = await this.mondayService.getAllRelatedItems(closedActivityLogs);
 
-                prayerOrders = this.makePrayerOrderList(
-                    closedActivityLogs,
-                    closedItems,
-                    await this.mondayService.getStatusLabels(boardIds[0]),
-                    await this.mondayService.getAllMondayUsers()
-                );
-            }
+            prayerOrders = this.makePrayerOrderList(
+                closedActivityLogs,
+                closedItems.items,
+                await this.mondayService.getStatusLabels(boardIds[0]),
+                await this.mondayService.getAllMondayUsers()
+            );
 
             return prayerOrders;
         } catch (error) {
@@ -43,7 +41,7 @@ export class SppInformedReportService implements IIntercessorReportService {
 
     private makePrayerOrderList(
         closedChanges: any,
-        items: ItemsResponse,
+        items: Item[],
         labelMap: Record<number, string>,
         allUsersMap: Record<string, string>
     ) {
@@ -53,7 +51,7 @@ export class SppInformedReportService implements IIntercessorReportService {
                 parseInt(changeLog.created_at) / 10000
             );
             const changeLogData = JSON.parse(changeLog.data);
-            let item = items.items.filter(
+            let item = items.filter(
                 (item: Item) => changeLogData.pulse_id == item.id
             )[0];
             let status = 'Unknown';
