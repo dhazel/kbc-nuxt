@@ -7,7 +7,7 @@ import type { IMondayService, Item, ItemsResponse } from '../Monday/IMondayServi
 export class SppInformedReportService implements IIntercessorReportService {
     constructor(private mondayService: IMondayService) {}
 
-    async getClosedPrayerOrders(
+    async getWorkedPrayerOrders(
         startDate: Date,
         endDate: Date
     ): Promise<PrayerOrderData[]> {

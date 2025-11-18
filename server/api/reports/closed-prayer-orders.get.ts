@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
 
     try {
         const intercessorReportService = event.context.intercessorReportService;
-        const orders = await intercessorReportService.getClosedPrayerOrders(start, end);
+        const orders = await intercessorReportService.getWorkedPrayerOrders(start, end);
         return orders;
     } catch (error) {
         if (error instanceof ResultSizeError) {

@@ -8,7 +8,7 @@ export interface PrayerOrderData {
 }
 
 export interface IIntercessorReportService {
-    getClosedPrayerOrders(
+    getWorkedPrayerOrders(
         startDate: Date,
         endDate: Date
     ): Promise<PrayerOrderData[]>;
