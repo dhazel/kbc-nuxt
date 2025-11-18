@@ -1,5 +1,11 @@
-import { IMondayAdapter } from "../../adapters/IMondayAdapter";
-import { ActivityLog, Column, IMondayService, ItemsResponse, User } from "./IMondayService";
+import type { IMondayAdapter } from '../../adapters/IMondayAdapter';
+import type {
+    ActivityLog,
+    Column,
+    IMondayService,
+    ItemsResponse,
+    User,
+} from './IMondayService';
 import { ResultSizeError } from '~/server/errors/ResultSizeError';
 
 export class MondayService implements IMondayService {
@@ -9,11 +15,14 @@ export class MondayService implements IMondayService {
      * @param activityLogs - Collection of activity logs
      * @returns Collection of all the items referenced by the given activity logs
      */
-    public async getAllRelatedItems(activityLogs: ActivityLog[]): Promise<ItemsResponse> {
+    public async getAllRelatedItems(
+        activityLogs: ActivityLog[]
+    ): Promise<ItemsResponse> {
         const itemIds = [
             ...new Set(
                 activityLogs
-                    .map((log: ActivityLog) => log.data ? JSON.parse(log.data).pulse_id : null
+                    .map((log: ActivityLog) =>
+                        log.data ? JSON.parse(log.data).pulse_id : null
                     )
                     .filter(Boolean)
             ),
@@ -27,16 +36,17 @@ export class MondayService implements IMondayService {
 
     /**
      * @param activityLogs - Collection of activity logs
-     * @returns Collection of activity logs filtered to contain only those with a 'closed' status
+     * @param statusText - The text of the status that the activity log references
+     * @returns Collection of activity logs filtered to contain only those with the given status
      */
-    public getClosedActivityLogs(activityLogs: ActivityLog[]) {
+    public filterActivityLogsByStatus(activityLogs: ActivityLog[], statusText: string) {
         return activityLogs.filter((log: ActivityLog) => {
             if (log.event !== 'update_column_value') return false;
             const data = JSON.parse(log.data);
             if (data.column_id !== 'status') return false;
             const parsedValue = data.value;
             const label = parsedValue?.label.text;
-            return label?.toLowerCase() === 'closed';
+            return label?.toLowerCase() === statusText.toLowerCase();
         });
     }
 
@@ -57,10 +67,11 @@ export class MondayService implements IMondayService {
         const activityQuery = `query { boards(ids: [${boards.join(',')}]) { name activity_logs(from: "${startDate.toISOString()}", to: "${inclusiveEndDate.toISOString()}", column_ids: ["status"], limit: ${maxActivityLog}) { id event data user_id created_at } } }`;
         const activityResponse = await this.mondayAdapter.query(activityQuery);
         const allActivityLogs = activityResponse.data.boards.flatMap(
-            (board: { name: string; activity_logs: ActivityLog[]; }) => board.activity_logs.map((log) => ({
-                ...log,
-                boardName: board.name,
-            }))
+            (board: { name: string; activity_logs: ActivityLog[] }) =>
+                board.activity_logs.map((log) => ({
+                    ...log,
+                    boardName: board.name,
+                }))
         );
         const activityLogs = allActivityLogs;
         if (activityLogs.length >= maxActivityLog) {
@@ -79,21 +90,23 @@ export class MondayService implements IMondayService {
      * @param boardId - Id of a board on Monday.com
      * @returns A map of status IDs to their label text
      */
-    public async getStatusLabels(boardId: number): Promise<Record<number, string>> {
+    public async getStatusLabels(
+        boardId: number
+    ): Promise<Record<number, string>> {
         const boardQuery = `query { boards(ids: [${boardId}]) { columns { id title type settings_str } } }`;
         const boardResponse = await this.mondayAdapter.query(boardQuery);
         const boardData = boardResponse.data.boards[0] as {
-            columns: (Column & { settings_str: string; })[];
+            columns: (Column & { settings_str: string })[];
         };
         const statusColumn = boardData.columns.find(
-            (col: Column & { settings_str: string; }) => col.type === 'status'
+            (col: Column & { settings_str: string }) => col.type === 'status'
         );
         if (!statusColumn) throw new Error('Status column not found');
         const settings = JSON.parse(statusColumn.settings_str);
         const labels = settings.labels || {};
         const labelMap: Record<number, string> = {};
         if (Array.isArray(labels)) {
-            labels.forEach((l: { id: number; name: string; }) => {
+            labels.forEach((l: { id: number; name: string }) => {
                 labelMap[l.id] = l.name;
             });
         } else if (typeof labels === 'object') {
@@ -116,5 +129,27 @@ export class MondayService implements IMondayService {
             {}
         );
         return allUsersMap;
+    }
+
+    /**
+     * @param boardIds - Collection of board IDs
+     * @returns A record mapping board IDs to their groups (id and title)
+     */
+    public async getGroupsForBoards(
+        boardIds: number[]
+    ): Promise<Record<number, { id: string; title: string }[]>> {
+        const query = `query { boards(ids: [${boardIds.join(',')}], limit: 1000) { id groups { id title } } }`;
+        const response = await this.mondayAdapter.query(query);
+        const boards = response.data.boards;
+        const result: Record<number, { id: string; title: string }[]> = {};
+        boards.forEach(
+            (board: {
+                id: string;
+                groups: { id: string; title: string }[];
+            }) => {
+                result[parseInt(board.id)] = board.groups;
+            }
+        );
+        return result;
     }
 }

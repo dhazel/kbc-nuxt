@@ -1,5 +1,3 @@
-
-
 export interface Column {
     id: string;
     title: string;
@@ -38,7 +36,6 @@ export interface ItemsResponse {
 }
 
 export interface IMondayService {
-
     /*
      * @param activityLogs - Collection of activity logs
      * @returns Collection of all the items referenced by the given activity logs
@@ -47,9 +44,10 @@ export interface IMondayService {
 
     /**
      * @param activityLogs - Collection of activity logs
-     * @returns Collection of activity logs filtered to contain only those with a 'closed' status
+     * @param statusText - The text of the status that the activity log references
+     * @returns Collection of activity logs filtered to contain only those with the given status
      */
-    getClosedActivityLogs(activityLogs: ActivityLog[]): ActivityLog[];
+    filterActivityLogsByStatus(activityLogs: ActivityLog[], statusText: string): ActivityLog[];
 
     /**
      * @param boards - Collection of board IDs
@@ -57,7 +55,11 @@ export interface IMondayService {
      * @param startDate - Start of the date range
      * @returns Collection of all activity logs that had their status changed within the given date range
      */
-    getAllStatusActivityLogs(boards: number[], startDate: Date, endDate: Date): Promise<ActivityLog[]>;
+    getAllStatusActivityLogs(
+        boards: number[],
+        startDate: Date,
+        endDate: Date
+    ): Promise<ActivityLog[]>;
 
     /**
      * @param boardId - Id of a board on Monday.com
@@ -67,4 +69,11 @@ export interface IMondayService {
 
     getAllMondayUsers(): Promise<Record<string, string>>;
 
+    /**
+     * @param boardIds - Collection of board IDs
+     * @returns A record mapping board IDs to their groups (id and title)
+     */
+    getGroupsForBoards(
+        boardIds: number[]
+    ): Promise<Record<number, { id: string; title: string }[]>>;
 }

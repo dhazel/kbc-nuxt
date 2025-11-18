@@ -21,7 +21,7 @@ export class SppInformedReportService implements IIntercessorReportService {
 
             const activityLogs = await this.mondayService.getAllStatusActivityLogs(boardIds, startDate, endDate);
 
-            const closedActivityLogs = this.mondayService.getClosedActivityLogs(activityLogs);
+            const closedActivityLogs = this.mondayService.filterActivityLogsByStatus(activityLogs, 'closed');
 
             if (closedActivityLogs.length !== 0) {
                 const closedItems = await this.mondayService.getAllRelatedItems(closedActivityLogs);

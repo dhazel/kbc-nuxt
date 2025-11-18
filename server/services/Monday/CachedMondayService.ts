@@ -4,6 +4,21 @@ export class CachedMondayService implements IMondayService {
     constructor(private mondayService: IMondayService) {}
 
     /**
+     * @param boardIds - Collection of board IDs
+     * @returns A record mapping board IDs to their groups (id and title)
+     */
+    public async getGroupsForBoards(
+        boardIds: number[]
+    ): Promise<Record<number, { id: string; title: string; }[]>> {
+        const cachedFunc = defineCachedFunction(async (boardIds) => 
+            await this.mondayService.getGroupsForBoards(boardIds),
+            {
+                maxAge: 60 * 60
+            });
+        return await cachedFunc(boardIds);
+    }
+
+    /**
      * @param activityLogs - Collection of activity logs
      * @returns Collection of all the items referenced by the given activity logs
      */
@@ -18,10 +33,11 @@ export class CachedMondayService implements IMondayService {
 
     /**
      * @param activityLogs - Collection of activity logs
-     * @returns Collection of activity logs filtered to contain only those with a 'closed' status
+     * @param statusText - The text of the status that the activity log references
+     * @returns Collection of activity logs filtered to contain only those with the given status
      */
-    public getClosedActivityLogs(activityLogs: ActivityLog[]) {
-        return this.mondayService.getClosedActivityLogs(activityLogs);
+    public filterActivityLogsByStatus(activityLogs: ActivityLog[], statusText: string) {
+        return this.mondayService.filterActivityLogsByStatus(activityLogs, statusText);
     }
 
     /**
