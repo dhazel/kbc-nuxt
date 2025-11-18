@@ -1,33 +1,49 @@
-import { describe, it, expect, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { describe, it, expect, vi } from 'vitest';
+import { mount } from '@vue/test-utils';
 // @ts-ignore
-import AppHeader from './AppHeader.vue'
+import AppHeader from './AppHeader.vue';
+
+vi.mock('@nuxtjs/color-mode', () => ({
+    useColorMode: () => ({ preference: 'light' }),
+}));
 
 describe('AppHeader', () => {
-  it('renders the header component', () => {
-    const wrapper = mount(AppHeader, {
-        global: {
-          mocks: {
-            $auth: { loggedIn: true, user: { picture: 'test.jpg' } },
-            $userService: { getUserProfileByEmail: vi.fn() }
-          },
-          stubs: ['NuxtLink', 'Button', 'Avatar', 'MegaMenu']
-        }
-    })
-    expect(wrapper.exists()).toBe(true)
-    expect(wrapper.findComponent({ name: 'MegaMenu' }).exists()).toBe(true)
-  })
+    it('renders the header component', () => {
+        const wrapper = mount(AppHeader, {
+            global: {
+                mocks: {
+                    $auth: {
+                        loggedIn: true,
+                        user: {
+                            picture: 'test.jpg',
+                            email: 'test@example.com',
+                        },
+                    },
+                    $userService: {
+                        getUserProfileByEmail: vi
+                            .fn()
+                            .mockResolvedValue({ roles: [] }),
+                    },
+                },
+                stubs: ['NuxtLink', 'Button', 'Avatar', 'MegaMenu'],
+            },
+        });
+        expect(wrapper.exists()).toBe(true);
+        expect(wrapper.findComponent({ name: 'MegaMenu' }).exists()).toBe(true);
+    });
 
-  it('renders with auth mock', () => {
-    const wrapper = mount(AppHeader, {
-       global: {
-         mocks: {
-           $auth: { loggedIn: false },
-           $userService: { getUserProfileByEmail: () => Promise.resolve(null) }
-         },
-         stubs: ['NuxtLink', 'Button', 'Avatar', 'MegaMenu']
-       }
-    })
-    expect(wrapper.exists()).toBe(true)
-  })
-})
+    it('renders with auth mock', () => {
+        const wrapper = mount(AppHeader, {
+            global: {
+                mocks: {
+                    $auth: { loggedIn: false },
+                    $userService: {
+                        getUserProfileByEmail: () => Promise.resolve(null),
+                    },
+                },
+                stubs: ['NuxtLink', 'Button', 'Avatar', 'MegaMenu'],
+            },
+        });
+        expect(wrapper.exists()).toBe(true);
+    });
+});

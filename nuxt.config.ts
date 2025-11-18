@@ -12,6 +12,7 @@ export default defineNuxtConfig({
         '@nuxt/icon',
         '@nuxt/fonts',
         '@nuxtjs/kinde',
+        '@nuxtjs/color-mode',
     ],
 
     nitro: {

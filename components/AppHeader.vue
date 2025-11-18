@@ -2,7 +2,7 @@
     <MegaMenu :model="items">
         <template #start>
             <NuxtLink to="/" external>
-                <img src="/Catalyst_Transparent.png" style="height: 40px" />
+                <img :src="logoSrc" style="height: 40px" />
             </NuxtLink>
         </template>
         <template #item="{ item }">
@@ -37,6 +37,12 @@ import { ref, computed, onMounted } from 'vue';
 import { useNuxtApp } from '#app';
 
 const { $auth, $userService } = useNuxtApp();
+const colorMode = useColorMode();
+const logoSrc = computed(() =>
+    colorMode.value === 'dark'
+        ? '/Catalyst_Transparent_dark.png'
+        : '/Catalyst_Transparent.png'
+);
 const userProfile = ref(null);
 const showAdmin = computed(
     () => userProfile.value?.roles.includes('admin') ?? false
