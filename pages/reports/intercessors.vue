@@ -62,6 +62,7 @@
                 <Column field="title" header="Title" sortable />
                 <Column field="intercessor" header="Intercessor" sortable />
                 <Column field="board" header="Board" sortable />
+                <Column field="group" header="Group" sortable />
             </DataTable>
         </div>
 
