@@ -28,20 +28,26 @@ export class MondayAdapter implements IMondayAdapter {
             // console.log('Status:', response.status);
             // console.log('Response:', JSON.stringify(data, null, 2));
 
+            let returnValue = {};
             if (!response.ok) {
                 console.error('Monday API call failed:', response);
-                throw 'Monday API call failed';
+                returnValue['errors'] = [
+                    {
+                        status: response.status,
+                        message: `${response.status}: ${response.statusText}`,
+                    }
+                ];
             }
-
-            let returnValue = {};
-            if (data.data) {
-                returnValue['data'] = data.data;
-            }
-            if (data.errors) {
-                returnValue['errors'] = data.errors;
-                data.errors.forEach(
-                    (e: any) => console.error('Monday API call error:', JSON.stringify(e))
-                );
+            else {
+                if (data.data) {
+                    returnValue['data'] = data.data;
+                }
+                if (data.errors) {
+                    returnValue['errors'] = data.errors;
+                    data.errors.forEach(
+                        (e: any) => console.error('Monday API call error:', JSON.stringify(e))
+                    );
+                }
             }
             return returnValue;
         } catch (error) {
