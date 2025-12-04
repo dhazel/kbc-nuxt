@@ -2,7 +2,7 @@ import type {
     IIntercessorReportService,
     PrayerOrderData,
 } from './IIntercessorReportService';
-import type { IMondayService, Item, ItemsResponse } from '../Monday/IMondayService';
+import type { IMondayService, Item } from '../Monday/IMondayService';
 
 export class SppInformedReportService implements IIntercessorReportService {
     constructor(private mondayService: IMondayService) {}
@@ -27,14 +27,14 @@ export class SppInformedReportService implements IIntercessorReportService {
 
             prayerOrders = this.makePrayerOrderList(
                 closedActivityLogs,
-                closedItems.items,
+                closedItems,
                 await this.mondayService.getStatusLabels(boardIds[0]),
                 await this.mondayService.getAllMondayUsers()
             );
 
             return prayerOrders;
         } catch (error) {
-            console.error('Error in getClosedPrayerOrders:', error);
+            console.error('Error in getWorkedPrayerOrders:', error);
             throw error;
         }
     }
@@ -81,7 +81,7 @@ export class SppInformedReportService implements IIntercessorReportService {
             }
             prayerOrders.push({
                 status: status,
-                closeDate: new Date(unixMs),
+                workedDate: new Date(unixMs),
                 title: item.name,
                 board: changeLog.boardName || 'Unknown',
                 intercessor: allUsersMap[changeLog.user_id] || 'Unknown',

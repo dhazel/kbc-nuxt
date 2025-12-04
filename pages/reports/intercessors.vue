@@ -3,7 +3,7 @@
         <h1 class="text-2xl font-bold mb-4">Intercessor Report</h1>
 
         <div class="mb-4">
-            <h2 class="text-xl mb-2">Closed Prayer Orders</h2>
+            <h2 class="text-xl mb-2">Worked Prayer Orders</h2>
             <div class="flex gap-4 mb-4">
                 <div>
                     <label for="startDate" class="block text-sm font-medium"
@@ -40,21 +40,21 @@
         </div>
 
         <div v-if="intercessorTotals.length > 0" class="overflow-x-auto">
-            <h2 class="text-xl mb-2">Closed Prayer Orders per Intercessor</h2>
+            <h2 class="text-xl mb-2">Worked Prayer Orders per Intercessor</h2>
             <DataTable :value="intercessorTotals" class="p-datatable-sm">
                 <Column field="intercessor" header="Intercessor" sortable />
-                <Column field="count" header="Total Closed Orders" sortable />
+                <Column field="count" header="Total Worked Orders" sortable />
             </DataTable>
         </div>
         <div v-if="orders.length > 0" class="overflow-x-auto mt-8">
-            <h2 class="text-xl mb-2">Closed Prayer Orders</h2>
+            <h2 class="text-xl mb-2">Worked Prayer Orders</h2>
             <DataTable :value="orders" class="p-datatable-sm">
                 <Column field="status" header="Current Status" />
-                <Column field="closeDate" header="Close Date" sortable>
+                <Column field="workedDate" header="Worked Date" sortable>
                     <template #body="slotProps">
                         {{
                             new Date(
-                                slotProps.data.closeDate
+                                slotProps.data.workedDate
                             ).toLocaleDateString()
                         }}
                     </template>
@@ -152,7 +152,7 @@ const fetchOrders = async () => {
             error.value = err.statusText;
         }
         else {
-            error.value = 'Failed to fetch closed prayer orders. Please try again.';
+            error.value = 'Failed to fetch worked prayer orders. Please try again.';
         }
         console.error('Fetch error:', err);
     } finally {

@@ -1,6 +1,6 @@
 export interface PrayerOrderData {
     status: string;
-    closeDate: Date;
+    workedDate: Date;
     title: string;
     board: string;
     intercessor: string;
