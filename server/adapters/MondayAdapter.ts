@@ -36,7 +36,7 @@ export class MondayAdapter implements IMondayAdapter {
                 };
 
                 if (response.status === 429) {
-                    console.info('Monday API call failed:', error);
+                    console.trace('Monday API call failed:', error);
                 }
                 else {
                     console.error('Monday API call failed:', response);
