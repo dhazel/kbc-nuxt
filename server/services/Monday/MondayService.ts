@@ -3,7 +3,7 @@ import type {
     ActivityLog,
     Column,
     IMondayService,
-    ItemsResponse,
+    Item,
     User,
 } from './IMondayService';
 import { ResultSizeError } from '~/server/errors/ResultSizeError';
@@ -17,7 +17,7 @@ export class MondayService implements IMondayService {
      */
     public async getAllRelatedItems(
         activityLogs: ActivityLog[]
-    ): Promise<ItemsResponse> {
+    ): Promise<Item[]> {
         const itemIds = [
             ...new Set(
                 activityLogs
@@ -28,9 +28,12 @@ export class MondayService implements IMondayService {
             ),
         ];
 
-        const itemsQuery = `query { items(ids: [${itemIds.join(',')}], limit: 10000) { id name group { id title } column_values { id value } } }`;
-        const itemsResponse = await this.mondayAdapter.query(itemsQuery);
-        const items = itemsResponse.data as ItemsResponse;
+        let items = [];
+        if (itemIds.length > 0) {
+            const itemsQuery = `query { items(ids: [${itemIds.join(',')}], limit: 10000) { id name board { id name } group { id title } column_values { id value } } }`;
+            const itemsResponse = await this.mondayAdapter.query(itemsQuery);
+            items = itemsResponse.data.items?? [];
+        }
         return items;
     }
 
