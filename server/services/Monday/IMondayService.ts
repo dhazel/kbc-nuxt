@@ -31,16 +31,12 @@ export interface Item {
     group?: { id: string; title: string };
 }
 
-export interface ItemsResponse {
-    items: Item[];
-}
-
 export interface IMondayService {
     /*
      * @param activityLogs - Collection of activity logs
      * @returns Collection of all the items referenced by the given activity logs
      */
-    getAllRelatedItems(activityLogs: ActivityLog[]): Promise<ItemsResponse>;
+    getAllRelatedItems(activityLogs: ActivityLog[]): Promise<Item[]>;
 
     /**
      * @param activityLogs - Collection of activity logs
@@ -48,6 +44,18 @@ export interface IMondayService {
      * @returns Collection of activity logs filtered to contain only those with the given status
      */
     filterActivityLogsByStatus(activityLogs: ActivityLog[], statusText: string): ActivityLog[];
+
+    /**
+     * @param boards - Collection of board IDs
+     * @param endDate - End of the date range
+     * @param startDate - Start of the date range
+     * @returns Collection of all activity logs where an item was created within the given date range
+     */
+    getAllItemCreationActivityLogs(
+        boards: number[],
+        startDate: Date,
+        endDate: Date
+    ): Promise<ActivityLog[]>;
 
     /**
      * @param boards - Collection of board IDs

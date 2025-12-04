@@ -42,7 +42,10 @@ export class MondayService implements IMondayService {
      * @param statusText - The text of the status that the activity log references
      * @returns Collection of activity logs filtered to contain only those with the given status
      */
-    public filterActivityLogsByStatus(activityLogs: ActivityLog[], statusText: string) {
+    public filterActivityLogsByStatus(
+        activityLogs: ActivityLog[],
+        statusText: string
+    ) {
         return activityLogs.filter((log: ActivityLog) => {
             if (log.event !== 'update_column_value') return false;
             const data = JSON.parse(log.data);
@@ -51,6 +54,44 @@ export class MondayService implements IMondayService {
             const label = parsedValue?.label.text;
             return label?.toLowerCase() === statusText.toLowerCase();
         });
+    }
+
+    /**
+     * @param boards - Collection of board IDs
+     * @param endDate - End of the date range
+     * @param startDate - Start of the date range
+     * @returns Collection of all activity logs where an item was created within the given date range
+     */
+    public async getAllItemCreationActivityLogs(
+        boards: number[],
+        startDate: Date,
+        endDate: Date
+    ): Promise<ActivityLog[]> {
+        const inclusiveEndDate = new Date(endDate);
+        inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
+        const maxActivityLog = 10000;
+        const activityQuery = `query { boards(ids: [${boards.join(',')}]) { name activity_logs(from: "${startDate.toISOString()}", to: "${inclusiveEndDate.toISOString()}", limit: ${maxActivityLog}) { id event data user_id created_at } } }`;
+        const activityResponse = await this.mondayAdapter.query(activityQuery);
+        const allActivityLogs = activityResponse.data.boards.flatMap(
+            (board: { name: string; activity_logs: ActivityLog[] }) =>
+                board.activity_logs.map((log) => ({
+                    ...log,
+                    boardName: board.name,
+                }))
+        );
+        if (allActivityLogs.length >= maxActivityLog) {
+            console.warn(
+                `ActivityLog size ${allActivityLogs.length} exceeds the maximum allowed size of ${maxActivityLog} for date range: ${startDate.toISOString().split('T')[0]} - ${endDate.toISOString().split('T')[0]}`
+            );
+            throw ResultSizeError.exceedsMaxSize(
+                maxActivityLog,
+                allActivityLogs.length
+            );
+        }
+        const activityLogs = allActivityLogs.filter(
+            (log: ActivityLog) => log.event === 'create_pulse'
+        );
+        return activityLogs;
     }
 
     /**
