@@ -13,7 +13,7 @@ export default defineNitroPlugin((nitroApp) => {
         );
         event.context.intercessorReportService = new AggregateIntercessorReportService([
             new SppInformedReportService(mondayService),
-            new SppInspiredReportService(mondayService)
+            new SppInspiredReportService(mondayService),
         ]);
     });
 });
