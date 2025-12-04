@@ -30,13 +30,19 @@ export class MondayAdapter implements IMondayAdapter {
 
             let returnValue = {};
             if (!response.ok) {
-                console.error('Monday API call failed:', response);
-                returnValue['errors'] = [
-                    {
-                        status: response.status,
-                        message: `${response.status}: ${response.statusText}`,
-                    }
-                ];
+                const error = {
+                    status: response.status,
+                    message: `${response.status}: ${response.statusText}`,
+                };
+
+                if (response.status === 429) {
+                    console.info('Monday API call failed:', error);
+                }
+                else {
+                    console.error('Monday API call failed:', response);
+                }
+
+                returnValue['errors'] = [error];
             }
             else {
                 if (data.data) {
