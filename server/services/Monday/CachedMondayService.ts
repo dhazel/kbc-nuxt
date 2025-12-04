@@ -1,4 +1,4 @@
-import {ActivityLog, IMondayService, Item} from "./IMondayService";
+import type { ActivityLog, IMondayService, Item } from './IMondayService';
 
 export class CachedMondayService implements IMondayService {
     constructor(private mondayService: IMondayService) {}
@@ -8,12 +8,20 @@ export class CachedMondayService implements IMondayService {
         startDate: Date,
         endDate: Date
     ): Promise<ActivityLog[]> {
-        const cachedFunc = defineCachedFunction(async (boards, startDate, endDate) => 
-            await this.mondayService.getAllItemCreationActivityLogs(boards, startDate, endDate),
+        const cachedFunc = defineCachedFunction(
+            async (boards, startDate, endDate) =>
+                await this.mondayService.getAllItemCreationActivityLogs(
+                    boards,
+                    startDate,
+                    endDate
+                ),
             {
-                maxAge: 10 * 60
-            });
-        return await cachedFunc(boards, startDate, endDate);
+                maxAge: 10 * 60,
+                name: 'getAllItemCreationActivityLogs',
+            }
+        );
+        const response = await cachedFunc(boards, startDate, endDate);
+        return response;
     }
 
     /**
@@ -22,26 +30,36 @@ export class CachedMondayService implements IMondayService {
      */
     public async getGroupsForBoards(
         boardIds: number[]
-    ): Promise<Record<number, { id: string; title: string; }[]>> {
-        const cachedFunc = defineCachedFunction(async (boardIds) => 
-            await this.mondayService.getGroupsForBoards(boardIds),
+    ): Promise<Record<number, { id: string; title: string }[]>> {
+        const cachedFunc = defineCachedFunction(
+            async (boardIds) =>
+                await this.mondayService.getGroupsForBoards(boardIds),
             {
-                maxAge: 60 * 60
-            });
-        return await cachedFunc(boardIds);
+                maxAge: 60 * 60,
+                name: 'getGroupsForBoards',
+            }
+        );
+        const response = await cachedFunc(boardIds);
+        return response;
     }
 
     /**
      * @param activityLogs - Collection of activity logs
      * @returns Collection of all the items referenced by the given activity logs
      */
-    public async getAllRelatedItems(activityLogs: ActivityLog[]): Promise<Item[]> {
-        const cachedFunc = defineCachedFunction(async (activityLogs) => 
-            await this.mondayService.getAllRelatedItems(activityLogs),
+    public async getAllRelatedItems(
+        activityLogs: ActivityLog[]
+    ): Promise<Item[]> {
+        const cachedFunc = defineCachedFunction(
+            async (activityLogs) =>
+                await this.mondayService.getAllRelatedItems(activityLogs),
             {
-                maxAge: 10 * 60
-            });
-        return await cachedFunc(activityLogs);
+                maxAge: 10 * 60,
+                name: 'getAllRelatedItems',
+            }
+        );
+        const response = await cachedFunc(activityLogs);
+        return response;
     }
 
     /**
@@ -49,8 +67,14 @@ export class CachedMondayService implements IMondayService {
      * @param statusText - The text of the status that the activity log references
      * @returns Collection of activity logs filtered to contain only those with the given status
      */
-    public filterActivityLogsByStatus(activityLogs: ActivityLog[], statusText: string) {
-        return this.mondayService.filterActivityLogsByStatus(activityLogs, statusText);
+    public filterActivityLogsByStatus(
+        activityLogs: ActivityLog[],
+        statusText: string
+    ) {
+        return this.mondayService.filterActivityLogsByStatus(
+            activityLogs,
+            statusText
+        );
     }
 
     /**
@@ -64,33 +88,50 @@ export class CachedMondayService implements IMondayService {
         startDate: Date,
         endDate: Date
     ): Promise<ActivityLog[]> {
-        const cachedFunc = defineCachedFunction(async (boards, startDate, endDate) => 
-            await this.mondayService.getAllStatusActivityLogs(boards, startDate, endDate),
+        const cachedFunc = defineCachedFunction(
+            async (boards, startDate, endDate) =>
+                await this.mondayService.getAllStatusActivityLogs(
+                    boards,
+                    startDate,
+                    endDate
+                ),
             {
-                maxAge: 10 * 60
-            });
-        return await cachedFunc(boards, startDate, endDate);
+                maxAge: 10 * 60,
+                name: 'getAllStatusActivityLogs',
+            }
+        );
+        const response = await cachedFunc(boards, startDate, endDate);
+        return response;
     }
 
     /**
      * @param boardId - Id of a board on Monday.com
      * @returns A map of status IDs to their label text
      */
-    public async getStatusLabels(boardId: number): Promise<Record<number, string>> {
-        const cachedFunc = defineCachedFunction(async (boardId) => 
-            await this.mondayService.getStatusLabels(boardId),
+    public async getStatusLabels(
+        boardId: number
+    ): Promise<Record<number, string>> {
+        const cachedFunc = defineCachedFunction(
+            async (boardId) =>
+                await this.mondayService.getStatusLabels(boardId),
             {
-                maxAge: 60 * 60
-            });
-        return await cachedFunc(boardId);
+                maxAge: 60 * 60,
+                name: 'getStatusLabels',
+            }
+        );
+        const response = await cachedFunc(boardId);
+        return response;
     }
 
     public async getAllMondayUsers(): Promise<Record<string, string>> {
-        const cachedFunc = defineCachedFunction(async () => 
-            await this.mondayService.getAllMondayUsers(),
+        const cachedFunc = defineCachedFunction(
+            async () => await this.mondayService.getAllMondayUsers(),
             {
-                maxAge: 60 * 60
-            });
-        return await cachedFunc();
+                maxAge: 60 * 60,
+                name: 'getAllMondayUsers',
+            }
+        );
+        const response = await cachedFunc();
+        return response;
     }
 }
