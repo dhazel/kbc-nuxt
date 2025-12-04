@@ -1,7 +1,20 @@
-import {ActivityLog, IMondayService, ItemsResponse,} from "./IMondayService";
+import {ActivityLog, IMondayService, Item} from "./IMondayService";
 
 export class CachedMondayService implements IMondayService {
     constructor(private mondayService: IMondayService) {}
+
+    public async getAllItemCreationActivityLogs(
+        boards: number[],
+        startDate: Date,
+        endDate: Date
+    ): Promise<ActivityLog[]> {
+        const cachedFunc = defineCachedFunction(async (boards, startDate, endDate) => 
+            await this.mondayService.getAllItemCreationActivityLogs(boards, startDate, endDate),
+            {
+                maxAge: 10 * 60
+            });
+        return await cachedFunc(boards, startDate, endDate);
+    }
 
     /**
      * @param boardIds - Collection of board IDs
@@ -22,7 +35,7 @@ export class CachedMondayService implements IMondayService {
      * @param activityLogs - Collection of activity logs
      * @returns Collection of all the items referenced by the given activity logs
      */
-    public async getAllRelatedItems(activityLogs: ActivityLog[]): Promise<ItemsResponse> {
+    public async getAllRelatedItems(activityLogs: ActivityLog[]): Promise<Item[]> {
         const cachedFunc = defineCachedFunction(async (activityLogs) => 
             await this.mondayService.getAllRelatedItems(activityLogs),
             {
