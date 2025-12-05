@@ -1,0 +1,95 @@
+import type {
+    IIntercessorReportService,
+    PrayerOrderData,
+} from './IIntercessorReportService';
+import type { IMondayService, Item } from '../Monday/IMondayService';
+
+export class YearlyInformedReportService implements IIntercessorReportService {
+    constructor(private mondayService: IMondayService) {}
+
+    async getWorkedPrayerOrders(
+        startDate: Date,
+        endDate: Date
+    ): Promise<PrayerOrderData[]> {
+        try {
+            const boardIds = [
+                5250873809, // AHAC
+                8747424435, // Impact
+                18213975268, // NCF
+            ];
+
+            let prayerOrders: PrayerOrderData[] = [];
+
+            const statusActivityLogs = await this.mondayService.getAllStatusActivityLogs(boardIds, startDate, endDate);
+
+            const activityLogs = this.mondayService.filterActivityLogsByStatus(statusActivityLogs, 'updated');
+
+            const items = await this.mondayService.getAllRelatedItems(activityLogs);
+
+            prayerOrders = this.makePrayerOrderList(
+                activityLogs,
+                items,
+                await this.mondayService.getStatusLabels(boardIds[0]),
+                await this.mondayService.getAllMondayUsers()
+            );
+
+            return prayerOrders;
+        } catch (error) {
+            console.error('Error in getWorkedPrayerOrders:', error);
+            throw error;
+        }
+    }
+
+    private makePrayerOrderList(
+        closedChanges: any,
+        items: Item[],
+        labelMap: Record<number, string>,
+        allUsersMap: Record<string, string>
+    ) {
+        const prayerOrders: PrayerOrderData[] = [];
+        for (const changeLog of closedChanges) {
+            const unixMs = Math.round(
+                parseInt(changeLog.created_at) / 10000
+            );
+            const changeLogData = JSON.parse(changeLog.data);
+            let item = items.filter(
+                (item: Item) => changeLogData.pulse_id == item.id
+            )[0];
+            let status = 'Unknown';
+            if (item) {
+                const statusColumnValue = item.column_values.find(
+                    (cv) => cv.id === 'status'
+                );
+                if (statusColumnValue) {
+                    try {
+                        const parsedValue = JSON.parse(
+                            statusColumnValue.value
+                        );
+                        const index = parsedValue?.index;
+                        status = labelMap[index] || 'Unknown';
+                    } catch {
+                        status = 'Unknown';
+                    }
+                }
+            } else {
+                status = 'Deleted';
+                item = {
+                    id: 'none',
+                    name: changeLogData.pulse_name,
+                    column_values: [],
+                    group: { id: 'none', title: 'Unknown' },
+                };
+            }
+            prayerOrders.push({
+                status: status,
+                workedDate: new Date(unixMs),
+                title: item.name,
+                board: changeLog.boardName || 'Unknown',
+                intercessor: allUsersMap[changeLog.user_id] || 'Unknown',
+                group: item.group?.title || 'Unknown',
+            });
+        }
+        return prayerOrders;
+    }
+
+}
