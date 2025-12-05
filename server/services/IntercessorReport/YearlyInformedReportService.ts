@@ -22,7 +22,7 @@ export class YearlyInformedReportService implements IIntercessorReportService {
 
             const statusActivityLogs = await this.mondayService.getAllStatusActivityLogs(boardIds, startDate, endDate);
 
-            const activityLogs = this.mondayService.filterActivityLogsByStatus(statusActivityLogs, 'updated');
+            const activityLogs = this.mondayService.filterActivityLogsByStatus(statusActivityLogs, 'replied');
 
             const items = await this.mondayService.getAllRelatedItems(activityLogs);
 
