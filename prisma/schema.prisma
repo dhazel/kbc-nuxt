@@ -23,7 +23,8 @@ model User {
   createdPrayerOrders  PrayerOrder[] @relation("PrayerOrderCreator")
   roles           Role[]
   messages        Message[]
-  organizations   Organization[]
+  organizations   Organization[] @relation("UserOrganizations")
+  intercessorFor  Organization[] @relation("UserIntercessors")
 
   @@map("users")
 }
@@ -43,8 +44,9 @@ model Organization {
   description String?
   createdAt   DateTime @default(now())
 
-  users       User[]
+  users       User[] @relation("UserOrganizations")
   prayerOrders PrayerOrder[]
+  intercessors User[] @relation("UserIntercessors")
 
   @@map("organizations")
 }
