@@ -17,10 +17,12 @@ model User {
   email           String  @unique
   joinedAt        DateTime @default(now())
   visitCount      Int     @default(0)
+  prayerOrders    Int     @default(0)
+  prayerResponses Int     @default(0)
 
-  createdThreads  Thread[] @relation("ThreadCreator")
-  orders          PrayerOrder[]
+  createdPrayerOrders  PrayerOrder[] @relation("PrayerOrderCreator")
   roles           Role[]
+  messages        Message[]
 
   @@map("users")
 }
@@ -34,11 +36,14 @@ model Role {
   @@map("roles")
 }
 
-model Thread {
+model PrayerOrder {
   id                  Int       @id @default(autoincrement())
   creatorId           Int
-  creator             User      @relation("ThreadCreator", fields: [creatorId], references: [id])
-  
+  creator             User      @relation("PrayerOrderCreator", fields: [creatorId], references: [id])
+
+  typeId              Int       // Required: links to thread type
+  type                ThreadType @relation(fields: [typeId], references: [id])
+
   title               String?   // Optional subject/title for the thread
   firstMessageContent String    // Content of the original/root post
   
@@ -49,14 +54,15 @@ model Thread {
   
   @@index([creatorId])
   @@index([createdAt])
+  @@index([typeId])  // Added for type-based queries
 
-  @@map("threads")
+  @@map("prayer_orders")
 }
 
 model Message {
   id         Int      @id @default(autoincrement())
-  threadId   Int
-  thread     Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  prayerOrderId   Int
+  prayerOrder     PrayerOrder   @relation(fields: [prayerOrderId], references: [id], onDelete: Cascade)
   
   authorId   Int
   author     User     @relation(fields: [authorId], references: [id])
@@ -67,9 +73,19 @@ model Message {
   updatedAt  DateTime @updatedAt
   deletedAt  DateTime? // Optional: for soft deletes
   
-  @@index([threadId, createdAt(desc)]) // Critical for efficient chronological fetching + pagination
+  @@index([prayerOrderId, createdAt(desc)]) // Critical for efficient chronological fetching + pagination
   @@index([authorId])
   @@index([deletedAt]) // Helps with soft-delete queries
 
-  @@map("messages")
+   @@map("messages")
+}
+
+model ThreadType {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String?
+
+  prayerOrders     PrayerOrder[]
+
+  @@map("thread_types")
 }
