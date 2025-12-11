@@ -23,6 +23,7 @@ model User {
   createdPrayerOrders  PrayerOrder[] @relation("PrayerOrderCreator")
   roles           Role[]
   messages        Message[]
+  organizations   Organization[]
 
   @@map("users")
 }
@@ -36,6 +37,18 @@ model Role {
   @@map("roles")
 }
 
+model Organization {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String?
+  createdAt   DateTime @default(now())
+
+  users       User[]
+  prayerOrders PrayerOrder[]
+
+  @@map("organizations")
+}
+
 model PrayerOrder {
   id                  Int       @id @default(autoincrement())
   creatorId           Int
@@ -43,6 +56,9 @@ model PrayerOrder {
 
   typeId              Int       // Required: links to thread type
   type                ThreadType @relation(fields: [typeId], references: [id])
+
+  organizationId      Int       // Required: links to organization
+  organization        Organization @relation(fields: [organizationId], references: [id])
 
   title               String?   // Optional subject/title for the thread
   firstMessageContent String    // Content of the original/root post
@@ -55,6 +71,7 @@ model PrayerOrder {
   @@index([creatorId])
   @@index([createdAt])
   @@index([typeId])  // Added for type-based queries
+  @@index([organizationId])  // Added for org-based queries
 
   @@map("prayer_orders")
 }
