@@ -48,7 +48,21 @@ model Organization {
   prayerOrders PrayerOrder[]
   intercessors User[] @relation("UserIntercessors")
 
+  subscriptionId Int?
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+
   @@map("organizations")
+}
+
+model Subscription {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String?
+  createdAt   DateTime @default(now())
+
+  organizations Organization[]
+
+  @@map("subscriptions")
 }
 
 model PrayerOrder {
