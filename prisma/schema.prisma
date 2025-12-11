@@ -15,26 +15,14 @@ model User {
   id              Int     @id @default(autoincrement())
   name            String
   email           String  @unique
-  prayerOrders    Int     @default(0)
-  prayerResponses Int     @default(0)
   joinedAt        DateTime @default(now())
   visitCount      Int     @default(0)
 
+  createdThreads  Thread[] @relation("ThreadCreator")
   orders          PrayerOrder[]
   roles           Role[]
 
   @@map("users")
-}
-
-model PrayerOrder {
-  id      Int    @id @default(autoincrement())
-  title   String
-  body    String
-  userId  Int
-
-  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("prayer_orders")
 }
 
 model Role {
@@ -44,4 +32,44 @@ model Role {
   users  User[]
 
   @@map("roles")
+}
+
+model Thread {
+  id                  Int       @id @default(autoincrement())
+  creatorId           Int
+  creator             User      @relation("ThreadCreator", fields: [creatorId], references: [id])
+  
+  title               String?   // Optional subject/title for the thread
+  firstMessageContent String    // Content of the original/root post
+  
+  messages            Message[] // All replies/follow-ups (flat)
+  
+  createdAt           DateTime  @default(now())
+  lastActivityAt      DateTime  @default(now()) @updatedAt // Automatically updates on new messages
+  
+  @@index([creatorId])
+  @@index([createdAt])
+
+  @@map("threads")
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  threadId   Int
+  thread     Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  
+  authorId   Int
+  author     User     @relation(fields: [authorId], references: [id])
+  
+  content    String
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime? // Optional: for soft deletes
+  
+  @@index([threadId, createdAt(desc)]) // Critical for efficient chronological fetching + pagination
+  @@index([authorId])
+  @@index([deletedAt]) // Helps with soft-delete queries
+
+  @@map("messages")
 }
