@@ -1,9 +1,7 @@
-import type {
-    IIntercessorReportService,
-} from './IIntercessorReportService';
-import type { PrayerOrderData } from "./PrayerOrderData";
+import type { IIntercessorReportService } from './IIntercessorReportService';
+import type { PrayerOrderData } from '@/types/prayerOrder';
+import { PrayerOrderType } from '@/types/prayerOrder';
 import type { IMondayService, Item } from '../Monday/IMondayService';
-import { PrayerOrderType } from './PrayerOrderType';
 
 export class SppInformedReportService implements IIntercessorReportService {
     constructor(private mondayService: IMondayService) {}
@@ -20,11 +18,21 @@ export class SppInformedReportService implements IIntercessorReportService {
 
             let prayerOrders: PrayerOrderData[] = [];
 
-            const activityLogs = await this.mondayService.getAllStatusActivityLogs(boardIds, startDate, endDate);
+            const activityLogs =
+                await this.mondayService.getAllStatusActivityLogs(
+                    boardIds,
+                    startDate,
+                    endDate
+                );
 
-            const closedActivityLogs = this.mondayService.filterActivityLogsByStatus(activityLogs, 'closed');
+            const closedActivityLogs =
+                this.mondayService.filterActivityLogsByStatus(
+                    activityLogs,
+                    'closed'
+                );
 
-            const closedItems = await this.mondayService.getAllRelatedItems(closedActivityLogs);
+            const closedItems =
+                await this.mondayService.getAllRelatedItems(closedActivityLogs);
 
             prayerOrders = this.makePrayerOrderList(
                 closedActivityLogs,
@@ -48,9 +56,7 @@ export class SppInformedReportService implements IIntercessorReportService {
     ) {
         const prayerOrders: PrayerOrderData[] = [];
         for (const changeLog of closedChanges) {
-            const unixMs = Math.round(
-                parseInt(changeLog.created_at) / 10000
-            );
+            const unixMs = Math.round(parseInt(changeLog.created_at) / 10000);
             const changeLogData = JSON.parse(changeLog.data);
             let item = items.filter(
                 (item: Item) => changeLogData.pulse_id == item.id
@@ -62,9 +68,7 @@ export class SppInformedReportService implements IIntercessorReportService {
                 );
                 if (statusColumnValue) {
                     try {
-                        const parsedValue = JSON.parse(
-                            statusColumnValue.value
-                        );
+                        const parsedValue = JSON.parse(statusColumnValue.value);
                         const index = parsedValue?.index;
                         status = labelMap[index] || 'Unknown';
                     } catch {
@@ -92,5 +96,4 @@ export class SppInformedReportService implements IIntercessorReportService {
         }
         return prayerOrders;
     }
-
 }

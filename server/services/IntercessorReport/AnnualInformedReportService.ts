@@ -1,9 +1,7 @@
-import type {
-    IIntercessorReportService,
-} from './IIntercessorReportService';
-import type { PrayerOrderData } from "./PrayerOrderData";
+import type { IIntercessorReportService } from './IIntercessorReportService';
+import type { PrayerOrderData } from '@/types/prayerOrder';
+import { PrayerOrderType } from '@/types/prayerOrder';
 import type { IMondayService, Item } from '../Monday/IMondayService';
-import { PrayerOrderType } from './PrayerOrderType';
 
 export class AnnualInformedReportService implements IIntercessorReportService {
     constructor(private mondayService: IMondayService) {}
@@ -21,11 +19,20 @@ export class AnnualInformedReportService implements IIntercessorReportService {
 
             let prayerOrders: PrayerOrderData[] = [];
 
-            const statusActivityLogs = await this.mondayService.getAllStatusActivityLogs(boardIds, startDate, endDate);
+            const statusActivityLogs =
+                await this.mondayService.getAllStatusActivityLogs(
+                    boardIds,
+                    startDate,
+                    endDate
+                );
 
-            const activityLogs = this.mondayService.filterActivityLogsByStatus(statusActivityLogs, 'replied');
+            const activityLogs = this.mondayService.filterActivityLogsByStatus(
+                statusActivityLogs,
+                'replied'
+            );
 
-            const items = await this.mondayService.getAllRelatedItems(activityLogs);
+            const items =
+                await this.mondayService.getAllRelatedItems(activityLogs);
 
             prayerOrders = this.makePrayerOrderList(
                 activityLogs,
@@ -49,9 +56,7 @@ export class AnnualInformedReportService implements IIntercessorReportService {
     ) {
         const prayerOrders: PrayerOrderData[] = [];
         for (const changeLog of closedChanges) {
-            const unixMs = Math.round(
-                parseInt(changeLog.created_at) / 10000
-            );
+            const unixMs = Math.round(parseInt(changeLog.created_at) / 10000);
             const changeLogData = JSON.parse(changeLog.data);
             let item = items.filter(
                 (item: Item) => changeLogData.pulse_id == item.id
@@ -63,9 +68,7 @@ export class AnnualInformedReportService implements IIntercessorReportService {
                 );
                 if (statusColumnValue) {
                     try {
-                        const parsedValue = JSON.parse(
-                            statusColumnValue.value
-                        );
+                        const parsedValue = JSON.parse(statusColumnValue.value);
                         const index = parsedValue?.index;
                         status = labelMap[index] || 'Unknown';
                     } catch {
@@ -93,5 +96,4 @@ export class AnnualInformedReportService implements IIntercessorReportService {
         }
         return prayerOrders;
     }
-
 }

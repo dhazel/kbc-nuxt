@@ -1,4 +1,4 @@
-import { PrayerOrderData } from "./PrayerOrderData";
+import type { PrayerOrderData } from '@/types/prayerOrder';
 
 export interface IIntercessorReportService {
     getWorkedPrayerOrders(

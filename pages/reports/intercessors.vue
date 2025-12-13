@@ -39,44 +39,32 @@
             <p v-if="error" class="text-red-500">{{ error }}</p>
         </div>
 
-        <div v-if="intercessorTotals.length > 0" class="overflow-x-auto">
-            <h2 class="text-xl mb-2">Worked Prayer Orders per Intercessor</h2>
-            <DataTable :value="intercessorTotals" class="p-datatable-sm">
-                <Column field="intercessor" header="Intercessor" sortable />
-                <Column field="count" header="Total Worked Orders" sortable />
-            </DataTable>
-        </div>
-        <div v-if="orders.length > 0" class="overflow-x-auto mt-8">
-            <h2 class="text-xl mb-2">Worked Prayer Orders</h2>
-            <DataTable :value="orders" class="p-datatable-sm">
-                <Column field="status" header="Current Status" />
-                <Column field="workedDate" header="Worked Date" sortable>
-                    <template #body="slotProps">
-                        {{
-                            new Date(
-                                slotProps.data.workedDate
-                            ).toLocaleDateString()
-                        }}
-                    </template>
-                </Column>
-                <Column field="title" header="Title" sortable />
-                <Column field="intercessor" header="Intercessor" sortable />
-                <Column field="board" header="Board" sortable />
-                <Column field="group" header="Group" sortable />
-            </DataTable>
-        </div>
+        <TabView v-if="orders.length > 0">
+            <TabPanel v-if="orders.length > 0" header="Month-to-month">
+                <IntercessorReportTable :orders="ordersMonthToMonth" />
+            </TabPanel>
+            <TabPanel v-if="orders.length > 0" header="Annual Informed">
+                <IntercessorReportTable :orders="ordersAnnualInformed" />
+            </TabPanel>
+            <TabPanel v-if="orders.length > 0" header="Annual Inspired">
+                <IntercessorReportTable :orders="ordersAnnualInspired" />
+            </TabPanel>
+        </TabView>
 
         <p v-else-if="!loading && !error">No orders found.</p>
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type { PrayerOrderData } from '@/types/prayerOrder';
+import { PrayerOrderType } from '@/types/prayerOrder';
 import { navigateTo, useNuxtApp } from '#app';
 import { onMounted, ref } from 'vue';
 import DatePicker from 'primevue/datepicker';
 import Button from 'primevue/button';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
+import TabView from 'primevue/tabview';
+import TabPanel from 'primevue/tabpanel';
+import IntercessorReportTable from '@/components/IntercessorReportTable.vue';
 
 const { $auth, $userService } = useNuxtApp();
 
@@ -105,24 +93,12 @@ onMounted(async () => {
 
 const startDate = ref('');
 const endDate = ref('');
-const orders = ref([]);
+const orders = ref<PrayerOrderData[]>([]);
+const ordersMonthToMonth = ref<PrayerOrderData[]>([]);
+const ordersAnnualInformed = ref<PrayerOrderData[]>([]);
+const ordersAnnualInspired = ref<PrayerOrderData[]>([]);
 const loading = ref(false);
 const error = ref('');
-
-const intercessorTotals = computed(() => {
-    const totals = {};
-    orders.value.forEach((order) => {
-        if (totals[order.intercessor]) {
-            totals[order.intercessor]++;
-        } else {
-            totals[order.intercessor] = 1;
-        }
-    });
-    return Object.entries(totals).map(([intercessor, count]) => ({
-        intercessor,
-        count,
-    }));
-});
 
 const fetchOrders = async () => {
     if (!startDate.value || !endDate.value) {
@@ -147,12 +123,22 @@ const fetchOrders = async () => {
             },
         });
         orders.value = response;
+        ordersMonthToMonth.value = response.filter((o) =>
+            [PrayerOrderType.m2mInformed, PrayerOrderType.m2mInspired]
+                .includes(o.type)
+        );
+        ordersAnnualInformed.value = response.filter(
+            (o) => o.type == PrayerOrderType.annualInformed
+        );
+        ordersAnnualInspired.value = response.filter(
+            (o) => o.type == PrayerOrderType.annualInspired
+        );
     } catch (err) {
         if (err.statusCode === 413) {
             error.value = err.statusText;
-        }
-        else {
-            error.value = 'Failed to fetch worked prayer orders. Please try again.';
+        } else {
+            error.value =
+                'Failed to fetch worked prayer orders. Please try again.';
         }
         console.error('Fetch error:', err);
     } finally {

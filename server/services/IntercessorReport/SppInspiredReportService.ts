@@ -1,9 +1,7 @@
-import type {
-    IIntercessorReportService,
-} from './IIntercessorReportService';
-import type { PrayerOrderData } from "./PrayerOrderData";
+import type { IIntercessorReportService } from './IIntercessorReportService';
+import type { PrayerOrderData } from '@/types/prayerOrder';
+import { PrayerOrderType } from '@/types/prayerOrder';
 import type { IMondayService, Item } from '../Monday/IMondayService';
-import { PrayerOrderType } from './PrayerOrderType';
 
 export class SppInspiredReportService implements IIntercessorReportService {
     constructor(private mondayService: IMondayService) {}
@@ -20,11 +18,16 @@ export class SppInspiredReportService implements IIntercessorReportService {
 
             let prayerOrders: PrayerOrderData[] = [];
 
-            const newActivityLogs = await this.mondayService.getAllItemCreationActivityLogs(boardIds, startDate, endDate);
+            const newActivityLogs =
+                await this.mondayService.getAllItemCreationActivityLogs(
+                    boardIds,
+                    startDate,
+                    endDate
+                );
 
-            const newInspiredItems = (await this.mondayService
-                .getAllRelatedItems(newActivityLogs))
-                .filter(l => l.group?.title.toLowerCase().includes('inspired'));
+            const newInspiredItems = (
+                await this.mondayService.getAllRelatedItems(newActivityLogs)
+            ).filter((l) => l.group?.title.toLowerCase().includes('inspired'));
 
             prayerOrders = this.makePrayerOrderList(
                 newActivityLogs,
@@ -48,9 +51,7 @@ export class SppInspiredReportService implements IIntercessorReportService {
     ) {
         const prayerOrders: PrayerOrderData[] = [];
         for (const changeLog of changeLogs) {
-            const unixMs = Math.round(
-                parseInt(changeLog.created_at) / 10000
-            );
+            const unixMs = Math.round(parseInt(changeLog.created_at) / 10000);
             const changeLogData = JSON.parse(changeLog.data);
             let filteredItems = items.filter(
                 (item: Item) => changeLogData.pulse_id == item.id
@@ -65,9 +66,7 @@ export class SppInspiredReportService implements IIntercessorReportService {
                 );
                 if (statusColumnValue) {
                     try {
-                        const parsedValue = JSON.parse(
-                            statusColumnValue.value
-                        );
+                        const parsedValue = JSON.parse(statusColumnValue.value);
                         const index = parsedValue?.index;
                         status = labelMap[index] || 'Unknown';
                     } catch {
@@ -95,5 +94,4 @@ export class SppInspiredReportService implements IIntercessorReportService {
         }
         return prayerOrders;
     }
-
 }

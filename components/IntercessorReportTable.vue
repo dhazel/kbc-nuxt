@@ -1,0 +1,52 @@
+<script setup lang="ts">
+import { computed } from 'vue';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import type { PrayerOrderData } from '@/types/prayerOrder';
+
+interface Props {
+    orders: PrayerOrderData[];
+}
+
+const props = defineProps<Props>();
+
+const intercessorTotals = computed(() => {
+    const totals: Record<string, number> = {};
+    props.orders.forEach((order) => {
+        if (totals[order.intercessor]) {
+            totals[order.intercessor]++;
+        } else {
+            totals[order.intercessor] = 1;
+        }
+    });
+    return Object.entries(totals).map(([intercessor, count]) => ({
+        intercessor,
+        count,
+    }));
+});
+</script>
+
+<template>
+    <div class="overflow-x-auto">
+        <h2 class="text-xl mb-2">Worked Prayer Orders per Intercessor</h2>
+        <DataTable :value="intercessorTotals" class="p-datatable-sm">
+            <Column field="intercessor" header="Intercessor" sortable />
+            <Column field="count" header="Total Worked Orders" sortable />
+        </DataTable>
+        <h2 class="text-xl mb-2 mt-5">Worked Prayer Orders</h2>
+        <DataTable :value="orders" class="p-datatable-sm">
+            <Column field="status" header="Current Status" />
+            <Column field="workedDate" header="Worked Date" sortable>
+                <template #body="slotProps">
+                    {{
+                        new Date(slotProps.data.workedDate).toLocaleDateString()
+                    }}
+                </template>
+            </Column>
+            <Column field="title" header="Title" sortable />
+            <Column field="intercessor" header="Intercessor" sortable />
+            <Column field="board" header="Board" sortable />
+            <Column field="group" header="Group" sortable />
+        </DataTable>
+    </div>
+</template>
