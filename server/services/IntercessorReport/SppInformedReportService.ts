@@ -3,6 +3,7 @@ import type {
 } from './IIntercessorReportService';
 import type { PrayerOrderData } from "./PrayerOrderData";
 import type { IMondayService, Item } from '../Monday/IMondayService';
+import { PrayerOrderType } from './PrayerOrderType';
 
 export class SppInformedReportService implements IIntercessorReportService {
     constructor(private mondayService: IMondayService) {}
@@ -80,6 +81,7 @@ export class SppInformedReportService implements IIntercessorReportService {
                 };
             }
             prayerOrders.push({
+                type: PrayerOrderType.m2mInformed,
                 status: status,
                 workedDate: new Date(unixMs),
                 title: item.name,

@@ -3,6 +3,7 @@ import type {
 } from './IIntercessorReportService';
 import type { PrayerOrderData } from "./PrayerOrderData";
 import type { IMondayService, Item } from '../Monday/IMondayService';
+import { PrayerOrderType } from './PrayerOrderType';
 
 export class AnnualInformedReportService implements IIntercessorReportService {
     constructor(private mondayService: IMondayService) {}
@@ -81,6 +82,7 @@ export class AnnualInformedReportService implements IIntercessorReportService {
                 };
             }
             prayerOrders.push({
+                type: PrayerOrderType.annualInformed,
                 status: status,
                 workedDate: new Date(unixMs),
                 title: item.name,
