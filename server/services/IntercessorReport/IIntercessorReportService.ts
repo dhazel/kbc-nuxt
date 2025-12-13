@@ -1,11 +1,4 @@
-export interface PrayerOrderData {
-    status: string;
-    workedDate: Date;
-    title: string;
-    board: string;
-    intercessor: string;
-    group: string;
-}
+import { PrayerOrderData } from "./PrayerOrderData";
 
 export interface IIntercessorReportService {
     getWorkedPrayerOrders(

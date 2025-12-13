@@ -1,7 +1,7 @@
 import type {
     IIntercessorReportService,
-    PrayerOrderData,
 } from './IIntercessorReportService';
+import type { PrayerOrderData } from "./PrayerOrderData";
 
 export class AggregateIntercessorReportService implements IIntercessorReportService {
     constructor(private intercessorReportServices: IIntercessorReportService[]) {}

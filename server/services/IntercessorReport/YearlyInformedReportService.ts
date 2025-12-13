@@ -1,7 +1,7 @@
 import type {
     IIntercessorReportService,
-    PrayerOrderData,
 } from './IIntercessorReportService';
+import type { PrayerOrderData } from "./PrayerOrderData";
 import type { IMondayService, Item } from '../Monday/IMondayService';
 
 export class YearlyInformedReportService implements IIntercessorReportService {
