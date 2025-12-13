@@ -5,7 +5,7 @@ import { CachedMondayService } from '../services/Monday/CachedMondayService';
 import { AggregateIntercessorReportService } from '../services/IntercessorReport/AggregateIntercessorReportService';
 import { SppInspiredReportService } from '../services/IntercessorReport/SppInspiredReportService';
 import { MondayBackoffAdapter } from '../adapters/MondayBackoffAdapter';
-import { YearlyInformedReportService } from '../services/IntercessorReport/YearlyInformedReportService';
+import { AnnualInformedReportService } from '../services/IntercessorReport/AnnualInformedReportService';
 
 export default defineNitroPlugin((nitroApp) => {
     nitroApp.hooks.hook('request', (event) => {
@@ -15,7 +15,7 @@ export default defineNitroPlugin((nitroApp) => {
         event.context.intercessorReportService = new AggregateIntercessorReportService([
             new SppInformedReportService(mondayService),
             new SppInspiredReportService(mondayService),
-            new YearlyInformedReportService(mondayService),
+            new AnnualInformedReportService(mondayService),
         ]);
     });
 });

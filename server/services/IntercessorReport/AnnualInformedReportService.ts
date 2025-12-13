@@ -4,7 +4,7 @@ import type {
 import type { PrayerOrderData } from "./PrayerOrderData";
 import type { IMondayService, Item } from '../Monday/IMondayService';
 
-export class YearlyInformedReportService implements IIntercessorReportService {
+export class AnnualInformedReportService implements IIntercessorReportService {
     constructor(private mondayService: IMondayService) {}
 
     async getWorkedPrayerOrders(
