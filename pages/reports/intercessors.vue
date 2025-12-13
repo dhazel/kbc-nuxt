@@ -11,8 +11,8 @@
                     >
                     <DatePicker
                         id="startDate"
-                        v-model="startDate"
-                        model-type="string"
+                        v-model="store.startDate"
+                        model-type="Date"
                         date-format="yy-mm-dd"
                     />
                 </div>
@@ -22,51 +22,52 @@
                     >
                     <DatePicker
                         id="endDate"
-                        v-model="endDate"
-                        model-type="string"
+                        v-model="store.endDate"
+                        model-type="Date"
                         date-format="yy-mm-dd"
                     />
                 </div>
                 <div class="flex items-end">
                     <Button
                         label="Fetch Orders"
-                        :loading="loading"
+                        :loading="store.loading"
                         class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                        @click="fetchOrders"
+                        @click="store.fetchOrders"
                     />
                 </div>
             </div>
-            <p v-if="error" class="text-red-500">{{ error }}</p>
+            <p v-if="store.error" class="text-red-500">{{ store.error }}</p>
         </div>
 
-        <TabView v-if="orders.length > 0">
-            <TabPanel v-if="orders.length > 0" header="Month-to-month">
-                <IntercessorReportTable :orders="ordersMonthToMonth" />
+        <TabView v-if="store.orders.length > 0">
+            <TabPanel v-if="store.orders.length > 0" header="Month-to-month">
+                <IntercessorReportTable :orders="store.ordersMonthToMonth" />
             </TabPanel>
-            <TabPanel v-if="orders.length > 0" header="Annual Informed">
-                <IntercessorReportTable :orders="ordersAnnualInformed" />
+            <TabPanel v-if="store.orders.length > 0" header="Annual Informed">
+                <IntercessorReportTable :orders="store.ordersAnnualInformed" />
             </TabPanel>
-            <TabPanel v-if="orders.length > 0" header="Annual Inspired">
-                <IntercessorReportTable :orders="ordersAnnualInspired" />
+            <TabPanel v-if="store.orders.length > 0" header="Annual Inspired">
+                <IntercessorReportTable :orders="store.ordersAnnualInspired" />
             </TabPanel>
         </TabView>
 
-        <p v-else-if="!loading && !error">No orders found.</p>
+        <p v-else-if="!store.loading && !store.error">No orders found.</p>
     </div>
 </template>
 
 <script setup lang="ts">
-import type { PrayerOrderData } from '@/types/prayerOrder';
-import { PrayerOrderType } from '@/types/prayerOrder';
 import { navigateTo, useNuxtApp } from '#app';
-import { onMounted, ref } from 'vue';
+import { onMounted } from 'vue';
 import DatePicker from 'primevue/datepicker';
 import Button from 'primevue/button';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import IntercessorReportTable from '@/components/IntercessorReportTable.vue';
+import { useIntercessorReportStore } from '@/stores/intercessorReport';
 
 const { $auth, $userService } = useNuxtApp();
+
+const store = useIntercessorReportStore();
 
 const isAdmin = ref(false);
 
@@ -90,59 +91,4 @@ onMounted(async () => {
         navigateTo('/');
     }
 });
-
-const startDate = ref('');
-const endDate = ref('');
-const orders = ref<PrayerOrderData[]>([]);
-const ordersMonthToMonth = ref<PrayerOrderData[]>([]);
-const ordersAnnualInformed = ref<PrayerOrderData[]>([]);
-const ordersAnnualInspired = ref<PrayerOrderData[]>([]);
-const loading = ref(false);
-const error = ref('');
-
-const fetchOrders = async () => {
-    if (!startDate.value || !endDate.value) {
-        error.value = 'Please select both start and end dates.';
-        return;
-    }
-
-    loading.value = true;
-    error.value = '';
-
-    try {
-        const response = await $fetch('/api/reports/closed-prayer-orders', {
-            query: {
-                startDate:
-                    startDate.value instanceof Date
-                        ? startDate.value.toISOString().split('T')[0]
-                        : startDate.value,
-                endDate:
-                    endDate.value instanceof Date
-                        ? endDate.value.toISOString().split('T')[0]
-                        : endDate.value,
-            },
-        });
-        orders.value = response;
-        ordersMonthToMonth.value = response.filter((o) =>
-            [PrayerOrderType.m2mInformed, PrayerOrderType.m2mInspired]
-                .includes(o.type)
-        );
-        ordersAnnualInformed.value = response.filter(
-            (o) => o.type == PrayerOrderType.annualInformed
-        );
-        ordersAnnualInspired.value = response.filter(
-            (o) => o.type == PrayerOrderType.annualInspired
-        );
-    } catch (err) {
-        if (err.statusCode === 413) {
-            error.value = err.statusText;
-        } else {
-            error.value =
-                'Failed to fetch worked prayer orders. Please try again.';
-        }
-        console.error('Fetch error:', err);
-    } finally {
-        loading.value = false;
-    }
-};
 </script>

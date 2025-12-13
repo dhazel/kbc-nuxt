@@ -13,6 +13,7 @@ export default defineNuxtConfig({
         '@nuxt/fonts',
         '@nuxtjs/kinde',
         '@nuxtjs/color-mode',
+        '@pinia/nuxt',
     ],
 
     nitro: {
