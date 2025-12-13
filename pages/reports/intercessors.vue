@@ -3,7 +3,7 @@
         <h1 class="text-2xl font-bold mb-4">Intercessor Report</h1>
 
         <div class="mb-4">
-            <h2 class="text-xl mb-2">Worked Prayer Orders</h2>
+            <h2 class="text-xl mb-2">Prayer Order Activity</h2>
             <div class="flex gap-4 mb-4">
                 <div>
                     <label for="startDate" class="block text-sm font-medium"
@@ -29,7 +29,7 @@
                 </div>
                 <div class="flex items-end">
                     <Button
-                        label="Fetch Orders"
+                        label="Fetch Prayer Data"
                         :loading="store.loading"
                         class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                         @click="store.fetchOrders"
