@@ -28,25 +28,32 @@ const intercessorTotals = computed(() => {
 
 <template>
     <div class="overflow-x-auto">
-        <h2 class="text-xl mb-2">Worked Prayer Orders per Intercessor</h2>
-        <DataTable :value="intercessorTotals" class="p-datatable-sm">
-            <Column field="intercessor" header="Intercessor" sortable />
-            <Column field="count" header="Total Worked Orders" sortable />
-        </DataTable>
-        <h2 class="text-xl mb-2 mt-5">Worked Prayer Orders</h2>
-        <DataTable :value="orders" class="p-datatable-sm">
-            <Column field="status" header="Current Status" />
-            <Column field="workedDate" header="Worked Date" sortable>
-                <template #body="slotProps">
-                    {{
-                        new Date(slotProps.data.workedDate).toLocaleDateString()
-                    }}
-                </template>
-            </Column>
-            <Column field="title" header="Title" sortable />
-            <Column field="intercessor" header="Intercessor" sortable />
-            <Column field="board" header="Board" sortable />
-            <Column field="group" header="Group" sortable />
-        </DataTable>
+        <div v-if="orders.length === 0" class="text-center py-8">
+            <p class="text-gray-500">There are no worked orders.</p>
+        </div>
+        <div v-else>
+            <h2 class="text-xl mb-2">Worked Prayer Orders per Intercessor</h2>
+            <DataTable :value="intercessorTotals" class="p-datatable-sm">
+                <Column field="intercessor" header="Intercessor" sortable />
+                <Column field="count" header="Total Worked Orders" sortable />
+            </DataTable>
+            <h2 class="text-xl mb-2 mt-5">Worked Prayer Orders</h2>
+            <DataTable :value="orders" class="p-datatable-sm">
+                <Column field="status" header="Current Status" />
+                <Column field="workedDate" header="Worked Date" sortable>
+                    <template #body="slotProps">
+                        {{
+                            new Date(
+                                slotProps.data.workedDate
+                            ).toLocaleDateString()
+                        }}
+                    </template>
+                </Column>
+                <Column field="title" header="Title" sortable />
+                <Column field="intercessor" header="Intercessor" sortable />
+                <Column field="board" header="Board" sortable />
+                <Column field="group" header="Group" sortable />
+            </DataTable>
+        </div>
     </div>
 </template>
