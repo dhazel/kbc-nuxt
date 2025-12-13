@@ -77,7 +77,7 @@ export class AnnualInspiredReportService implements IIntercessorReportService {
                     id: 'none',
                     name: changeLogData.pulse_name,
                     column_values: [],
-                    group: { id: 'none', title: 'Unknown' },
+                    group: { id: 'none', title: 'Deleted' },
                 };
             }
             prayerOrders.push({
