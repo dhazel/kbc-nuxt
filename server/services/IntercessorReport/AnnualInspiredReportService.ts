@@ -6,6 +6,12 @@ import type { IMondayService, Item } from '../Monday/IMondayService';
 export class AnnualInspiredReportService implements IIntercessorReportService {
     constructor(private mondayService: IMondayService) {}
 
+    private boardIds: number[] = [
+        3938663417, // AHAC
+        8747424404, // Impact
+        18213991693, // NCF
+    ];
+
     async getWorkedPrayerOrders(
         startDate: Date,
         endDate: Date
@@ -21,7 +27,7 @@ export class AnnualInspiredReportService implements IIntercessorReportService {
 
             const newActivityLogs =
                 await this.mondayService.getAllItemCreationActivityLogs(
-                    boardIds,
+                    this.boardIds,
                     startDate,
                     endDate
                 );

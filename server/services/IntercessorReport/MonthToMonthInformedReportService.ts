@@ -3,8 +3,15 @@ import type { PrayerOrderData } from '@/types/prayerOrder';
 import { PrayerOrderType } from '@/types/prayerOrder';
 import type { IMondayService, Item } from '../Monday/IMondayService';
 
-export class MonthToMonthInformedReportService implements IIntercessorReportService {
+export class MonthToMonthInformedReportService
+    implements IIntercessorReportService
+{
     constructor(private mondayService: IMondayService) {}
+
+    private boardIds: number[] = [
+        18130780948, 9731839830, 9675066534, 9913642037, 9804560302,
+        18080835095,
+    ];
 
     async getWorkedPrayerOrders(
         startDate: Date,
@@ -20,7 +27,7 @@ export class MonthToMonthInformedReportService implements IIntercessorReportServ
 
             const activityLogs =
                 await this.mondayService.getAllStatusActivityLogs(
-                    boardIds,
+                    this.boardIds,
                     startDate,
                     endDate
                 );
