@@ -96,7 +96,7 @@ export class MonthToMonthInspiredReportService
                 status: status,
                 workedDate: new Date(unixMs),
                 title: item.name,
-                board: changeLog.boardName || 'Unknown',
+                board: item.board?.name || 'Unknown',
                 intercessor: this.allUsersMap![changeLog.user_id] || 'Unknown',
                 group: item.group?.title || 'Unknown',
             });

@@ -28,6 +28,7 @@ export interface Item {
     id: string;
     name: string;
     column_values: ColumnValue[];
+    board?: { id: string; name: string };
     group?: { id: string; title: string };
 }
 
