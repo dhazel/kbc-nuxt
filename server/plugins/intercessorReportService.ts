@@ -1,9 +1,9 @@
-import { SppInformedReportService } from '../services/IntercessorReport/SppInformedReportService';
+import { MonthToMonthInformedReportService } from '../services/IntercessorReport/MonthToMonthInformedReportService';
 import { MondayAdapter } from '../adapters/MondayAdapter';
 import { MondayService } from '../services/Monday/MondayService';
 import { CachedMondayService } from '../services/Monday/CachedMondayService';
 import { AggregateIntercessorReportService } from '../services/IntercessorReport/AggregateIntercessorReportService';
-import { SppInspiredReportService } from '../services/IntercessorReport/SppInspiredReportService';
+import { MonthToMonthInspiredReportService } from '../services/IntercessorReport/MonthToMonthInspiredReportService';
 import { MondayBackoffAdapter } from '../adapters/MondayBackoffAdapter';
 import { AnnualInformedReportService } from '../services/IntercessorReport/AnnualInformedReportService';
 import { AnnualInspiredReportService } from '../services/IntercessorReport/AnnualInspiredReportService';
@@ -14,8 +14,8 @@ export default defineNitroPlugin((nitroApp) => {
             new MondayService(new MondayBackoffAdapter(new MondayAdapter()))
         );
         event.context.intercessorReportService = new AggregateIntercessorReportService([
-            new SppInformedReportService(mondayService),
-            new SppInspiredReportService(mondayService),
+            new MonthToMonthInformedReportService(mondayService),
+            new MonthToMonthInspiredReportService(mondayService),
             new AnnualInformedReportService(mondayService),
             new AnnualInspiredReportService(mondayService),
         ]);

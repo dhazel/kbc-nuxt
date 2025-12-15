@@ -3,7 +3,7 @@ import type { PrayerOrderData } from '@/types/prayerOrder';
 import { PrayerOrderType } from '@/types/prayerOrder';
 import type { IMondayService, Item } from '../Monday/IMondayService';
 
-export class SppInformedReportService implements IIntercessorReportService {
+export class MonthToMonthInspiredReportService implements IIntercessorReportService {
     constructor(private mondayService: IMondayService) {}
 
     async getWorkedPrayerOrders(
@@ -18,25 +18,20 @@ export class SppInformedReportService implements IIntercessorReportService {
 
             let prayerOrders: PrayerOrderData[] = [];
 
-            const activityLogs =
-                await this.mondayService.getAllStatusActivityLogs(
+            const newActivityLogs =
+                await this.mondayService.getAllItemCreationActivityLogs(
                     boardIds,
                     startDate,
                     endDate
                 );
 
-            const closedActivityLogs =
-                this.mondayService.filterActivityLogsByStatus(
-                    activityLogs,
-                    'closed'
-                );
-
-            const closedItems =
-                await this.mondayService.getAllRelatedItems(closedActivityLogs);
+            const newInspiredItems = (
+                await this.mondayService.getAllRelatedItems(newActivityLogs)
+            ).filter((l) => l.group?.title.toLowerCase().includes('inspired'));
 
             prayerOrders = this.makePrayerOrderList(
-                closedActivityLogs,
-                closedItems,
+                newActivityLogs,
+                newInspiredItems,
                 await this.mondayService.getStatusLabels(boardIds[0]),
                 await this.mondayService.getAllMondayUsers()
             );
@@ -49,18 +44,21 @@ export class SppInformedReportService implements IIntercessorReportService {
     }
 
     private makePrayerOrderList(
-        closedChanges: any,
+        changeLogs: any,
         items: Item[],
         labelMap: Record<number, string>,
         allUsersMap: Record<string, string>
     ) {
         const prayerOrders: PrayerOrderData[] = [];
-        for (const changeLog of closedChanges) {
+        for (const changeLog of changeLogs) {
             const unixMs = Math.round(parseInt(changeLog.created_at) / 10000);
             const changeLogData = JSON.parse(changeLog.data);
-            let item = items.filter(
+            let filteredItems = items.filter(
                 (item: Item) => changeLogData.pulse_id == item.id
-            )[0];
+            );
+            if (filteredItems.length === 0) continue;
+
+            let item = filteredItems[0];
             let status = 'Unknown';
             if (item) {
                 const statusColumnValue = item.column_values.find(
@@ -85,7 +83,7 @@ export class SppInformedReportService implements IIntercessorReportService {
                 };
             }
             prayerOrders.push({
-                type: PrayerOrderType.m2mInformed,
+                type: PrayerOrderType.monthToMonthInspired,
                 status: status,
                 workedDate: new Date(unixMs),
                 title: item.name,

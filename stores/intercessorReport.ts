@@ -39,8 +39,8 @@ export const useIntercessorReportStore = defineStore('intercessorReport', {
                 this.ordersMonthToMonth = response.filter(
                     (o: PrayerOrderData) =>
                         [
-                            PrayerOrderType.m2mInformed,
-                            PrayerOrderType.m2mInspired,
+                            PrayerOrderType.monthToMonthInformed,
+                            PrayerOrderType.monthToMonthInspired,
                         ].includes(o.type)
                 );
                 this.ordersAnnualInformed = response.filter(
