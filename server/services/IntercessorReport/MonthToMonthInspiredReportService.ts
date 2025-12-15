@@ -13,11 +13,25 @@ export class MonthToMonthInspiredReportService
         18080835095,
     ];
 
+    private statusLabels?: Record<number, string>;
+    private allUsersMap?: Record<string, string>;
+
+    private async ensureReady(): Promise<void> {
+        if (!this.statusLabels || !this.allUsersMap) {
+            this.statusLabels = await this.mondayService.getStatusLabels(
+                this.boardIds[0]
+            );
+            this.allUsersMap = await this.mondayService.getAllMondayUsers();
+        }
+    }
+
     async getWorkedPrayerOrders(
         startDate: Date,
         endDate: Date
     ): Promise<PrayerOrderData[]> {
         try {
+            await this.ensureReady();
+
             let prayerOrders: PrayerOrderData[] = [];
 
             const newActivityLogs =
@@ -33,9 +47,7 @@ export class MonthToMonthInspiredReportService
 
             prayerOrders = this.makePrayerOrderList(
                 newActivityLogs,
-                newInspiredItems,
-                await this.mondayService.getStatusLabels(this.boardIds[0]),
-                await this.mondayService.getAllMondayUsers()
+                newInspiredItems
             );
 
             return prayerOrders;
@@ -45,12 +57,7 @@ export class MonthToMonthInspiredReportService
         }
     }
 
-    private makePrayerOrderList(
-        changeLogs: any,
-        items: Item[],
-        labelMap: Record<number, string>,
-        allUsersMap: Record<string, string>
-    ) {
+    private makePrayerOrderList(changeLogs: any, items: Item[]) {
         const prayerOrders: PrayerOrderData[] = [];
         for (const changeLog of changeLogs) {
             const unixMs = Math.round(parseInt(changeLog.created_at) / 10000);
@@ -70,7 +77,7 @@ export class MonthToMonthInspiredReportService
                     try {
                         const parsedValue = JSON.parse(statusColumnValue.value);
                         const index = parsedValue?.index;
-                        status = labelMap[index] || 'Unknown';
+                        status = this.statusLabels![index] || 'Unknown';
                     } catch {
                         status = 'Unknown';
                     }
@@ -90,7 +97,7 @@ export class MonthToMonthInspiredReportService
                 workedDate: new Date(unixMs),
                 title: item.name,
                 board: changeLog.boardName || 'Unknown',
-                intercessor: allUsersMap[changeLog.user_id] || 'Unknown',
+                intercessor: this.allUsersMap![changeLog.user_id] || 'Unknown',
                 group: item.group?.title || 'Unknown',
             });
         }

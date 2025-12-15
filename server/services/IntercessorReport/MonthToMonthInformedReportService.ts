@@ -13,15 +13,24 @@ export class MonthToMonthInformedReportService
         18080835095,
     ];
 
+    private statusLabels?: Record<number, string>;
+    private allUsersMap?: Record<string, string>;
+
+    private async ensureReady(): Promise<void> {
+        if (!this.statusLabels || !this.allUsersMap) {
+            this.statusLabels = await this.mondayService.getStatusLabels(
+                this.boardIds[0]
+            );
+            this.allUsersMap = await this.mondayService.getAllMondayUsers();
+        }
+    }
+
     async getWorkedPrayerOrders(
         startDate: Date,
         endDate: Date
     ): Promise<PrayerOrderData[]> {
         try {
-            const boardIds = [
-                18130780948, 9731839830, 9675066534, 9913642037, 9804560302,
-                18080835095,
-            ];
+            await this.ensureReady();
 
             let prayerOrders: PrayerOrderData[] = [];
 
@@ -43,9 +52,7 @@ export class MonthToMonthInformedReportService
 
             prayerOrders = this.makePrayerOrderList(
                 closedActivityLogs,
-                closedItems,
-                await this.mondayService.getStatusLabels(boardIds[0]),
-                await this.mondayService.getAllMondayUsers()
+                closedItems
             );
 
             return prayerOrders;
@@ -55,12 +62,7 @@ export class MonthToMonthInformedReportService
         }
     }
 
-    private makePrayerOrderList(
-        closedChanges: any,
-        items: Item[],
-        labelMap: Record<number, string>,
-        allUsersMap: Record<string, string>
-    ) {
+    private makePrayerOrderList(closedChanges: any, items: Item[]) {
         const prayerOrders: PrayerOrderData[] = [];
         for (const changeLog of closedChanges) {
             const unixMs = Math.round(parseInt(changeLog.created_at) / 10000);
@@ -77,7 +79,7 @@ export class MonthToMonthInformedReportService
                     try {
                         const parsedValue = JSON.parse(statusColumnValue.value);
                         const index = parsedValue?.index;
-                        status = labelMap[index] || 'Unknown';
+                        status = this.statusLabels![index] || 'Unknown';
                     } catch {
                         status = 'Unknown';
                     }
@@ -97,7 +99,7 @@ export class MonthToMonthInformedReportService
                 workedDate: new Date(unixMs),
                 title: item.name,
                 board: changeLog.boardName || 'Unknown',
-                intercessor: allUsersMap[changeLog.user_id] || 'Unknown',
+                intercessor: this.allUsersMap![changeLog.user_id] || 'Unknown',
                 group: item.group?.title || 'Unknown',
             });
         }

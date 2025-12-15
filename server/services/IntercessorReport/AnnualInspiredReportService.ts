@@ -12,16 +12,24 @@ export class AnnualInspiredReportService implements IIntercessorReportService {
         18213991693, // NCF
     ];
 
+    private statusLabels?: Record<number, string>;
+    private allUsersMap?: Record<string, string>;
+
+    private async ensureReady(): Promise<void> {
+        if (!this.statusLabels || !this.allUsersMap) {
+            this.statusLabels = await this.mondayService.getStatusLabels(
+                this.boardIds[0]
+            );
+            this.allUsersMap = await this.mondayService.getAllMondayUsers();
+        }
+    }
+
     async getWorkedPrayerOrders(
         startDate: Date,
         endDate: Date
     ): Promise<PrayerOrderData[]> {
         try {
-            const boardIds = [
-                3938663417, // AHAC
-                8747424404, // Impact
-                18213991693, // NCF
-            ];
+            await this.ensureReady();
 
             let prayerOrders: PrayerOrderData[] = [];
 
@@ -38,9 +46,7 @@ export class AnnualInspiredReportService implements IIntercessorReportService {
 
             prayerOrders = this.makePrayerOrderList(
                 newActivityLogs,
-                newInspiredItems,
-                await this.mondayService.getStatusLabels(boardIds[0]),
-                await this.mondayService.getAllMondayUsers()
+                newInspiredItems
             );
 
             return prayerOrders;
@@ -50,12 +56,7 @@ export class AnnualInspiredReportService implements IIntercessorReportService {
         }
     }
 
-    private makePrayerOrderList(
-        closedChanges: any,
-        items: Item[],
-        labelMap: Record<number, string>,
-        allUsersMap: Record<string, string>
-    ) {
+    private makePrayerOrderList(closedChanges: any, items: Item[]) {
         const prayerOrders: PrayerOrderData[] = [];
         for (const changeLog of closedChanges) {
             const unixMs = Math.round(parseInt(changeLog.created_at) / 10000);
@@ -72,7 +73,7 @@ export class AnnualInspiredReportService implements IIntercessorReportService {
                     try {
                         const parsedValue = JSON.parse(statusColumnValue.value);
                         const index = parsedValue?.index;
-                        status = labelMap[index] || 'Unknown';
+                        status = this.statusLabels![index] || 'Unknown';
                     } catch {
                         status = 'Unknown';
                     }
@@ -92,7 +93,7 @@ export class AnnualInspiredReportService implements IIntercessorReportService {
                 workedDate: new Date(unixMs),
                 title: item.name,
                 board: changeLog.boardName || 'Unknown',
-                intercessor: allUsersMap[changeLog.user_id] || 'Unknown',
+                intercessor: this.allUsersMap![changeLog.user_id] || 'Unknown',
                 group: item.group?.title || 'Unknown',
             });
         }
