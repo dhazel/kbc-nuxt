@@ -57,10 +57,10 @@ export const useIntercessorReportStore = defineStore('intercessorReport', {
                     statusText?: string;
                 };
                 if (error.statusCode === 413) {
-                    this.error = error.statusText || 'Request too large';
+                    this.error = error.statusText || 'Request too large. Please try a narrower date range.';
                 } else {
                     this.error =
-                        'Failed to fetch worked prayer orders. Please try again.';
+                        'Failed to fetch worked prayer orders. Please try again or try a narrower date range.';
                 }
                 console.error('Fetch error:', err);
             } finally {
