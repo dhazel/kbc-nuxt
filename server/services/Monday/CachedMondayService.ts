@@ -109,18 +109,17 @@ export class CachedMondayService implements IMondayService {
      * @returns A map of status IDs to their label text
      */
     public async getStatusLabels(
-        boardId: number
-    ): Promise<Record<number, string>> {
+        boardIds: number[]
+    ): Promise<Record<string, Record<number, string>>> {
         const cachedFunc = defineCachedFunction(
-            async (boardId) =>
-                await this.mondayService.getStatusLabels(boardId),
+            async (boardIds: number[]) =>
+                await this.mondayService.getStatusLabels(boardIds),
             {
                 maxAge: 60 * 60,
                 name: 'getStatusLabels',
             }
         );
-        const response = await cachedFunc(boardId);
-        return response;
+        return await cachedFunc(boardIds);
     }
 
     public async getAllMondayUsers(): Promise<Record<string, string>> {

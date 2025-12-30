@@ -145,28 +145,38 @@ export class MondayService implements IMondayService {
      * @returns A map of status IDs to their label text
      */
     public async getStatusLabels(
-        boardId: number
-    ): Promise<Record<number, string>> {
-        const boardQuery = `query { boards(ids: [${boardId}]) { columns { id title type settings_str } } }`;
+        boardIds: number[]
+    ): Promise<Record<string, Record<number, string>>> {
+        const boardQuery = `query { boards(ids: [${boardIds.join(',')}]) { id columns { id title type settings_str } } }`;
         const boardResponse = await this.mondayAdapter.query(boardQuery);
-        const boardData = boardResponse.data.boards[0] as {
+        const labelMap: Record<string, Record<number, string>> = {};
+        for (const boardData of boardResponse.data.boards as {
+            id: string;
             columns: (Column & { settings_str: string })[];
-        };
-        const statusColumn = boardData.columns.find(
-            (col: Column & { settings_str: string }) => col.type === 'status'
-        );
-        if (!statusColumn) throw new Error('Status column not found');
-        const settings = JSON.parse(statusColumn.settings_str);
-        const labels = settings.labels || {};
-        const labelMap: Record<number, string> = {};
-        if (Array.isArray(labels)) {
-            labels.forEach((l: { id: number; name: string }) => {
-                labelMap[l.id] = l.name;
-            });
-        } else if (typeof labels === 'object') {
-            Object.entries(labels).forEach(([key, value]) => {
-                labelMap[parseInt(key)] = value as string;
-            });
+        }[]) {
+            const statusColumn = boardData.columns.find(
+                (col: Column & { settings_str: string }) =>
+                    col.type === 'status'
+            );
+            if (!statusColumn) {
+                console.warn(
+                    `Status column not found for board ${boardData.id}`
+                );
+                continue;
+            }
+            const settings = JSON.parse(statusColumn.settings_str);
+            const labels = settings.labels || {};
+            const boardLabelMap: Record<number, string> = {};
+            if (Array.isArray(labels)) {
+                labels.forEach((l: { id: number; name: string }) => {
+                    boardLabelMap[l.id] = l.name;
+                });
+            } else if (typeof labels === 'object') {
+                Object.entries(labels).forEach(([key, value]) => {
+                    boardLabelMap[parseInt(key)] = value as string;
+                });
+            }
+            labelMap[boardData.id] = boardLabelMap;
         }
         return labelMap;
     }

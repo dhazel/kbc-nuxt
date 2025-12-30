@@ -13,13 +13,13 @@ export class MonthToMonthInformedReportService
         18080835095,
     ];
 
-    private statusLabels?: Record<number, string>;
+    private statusLabels?: Record<string, Record<number, string>>;
     private allUsersMap?: Record<string, string>;
 
     private async ensureReady(): Promise<void> {
         if (!this.statusLabels || !this.allUsersMap) {
             this.statusLabels = await this.mondayService.getStatusLabels(
-                this.boardIds[0]
+                this.boardIds
             );
             this.allUsersMap = await this.mondayService.getAllMondayUsers();
         }
@@ -79,7 +79,10 @@ export class MonthToMonthInformedReportService
                     try {
                         const parsedValue = JSON.parse(statusColumnValue.value);
                         const index = parsedValue?.index;
-                        status = this.statusLabels![index] || 'Unknown';
+                        const boardId = item.board?.id;
+                        status = boardId
+                            ? this.statusLabels![boardId]?.[index] || 'Unknown'
+                            : 'Unknown';
                     } catch {
                         status = 'Unknown';
                     }

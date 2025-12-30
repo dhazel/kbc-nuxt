@@ -78,7 +78,9 @@ export interface IMondayService {
      * @param boardId - Id of a board on Monday.com
      * @returns A map of status IDs to their label text
      */
-    getStatusLabels(boardId: number): Promise<Record<number, string>>;
+    getStatusLabels(
+        boardIds: number[]
+    ): Promise<Record<string, Record<number, string>>>;
 
     getAllMondayUsers(): Promise<Record<string, string>>;
 
