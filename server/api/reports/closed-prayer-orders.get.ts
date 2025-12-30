@@ -1,5 +1,5 @@
-import { ResultSizeError } from "~/server/errors/ResultSizeError";
-
+import { ResultSizeError } from '~/server/errors/ResultSizeError';
+import { QueryError } from '~/server/errors/QueryError';
 
 export default defineEventHandler(async (event) => {
     const kinde = event.context.kinde;
@@ -39,17 +39,24 @@ export default defineEventHandler(async (event) => {
 
     try {
         const intercessorReportService = event.context.intercessorReportService;
-        const orders = await intercessorReportService.getWorkedPrayerOrders(start, end);
+        const orders = await intercessorReportService.getWorkedPrayerOrders(
+            start,
+            end
+        );
         return orders;
     } catch (error) {
         if (error instanceof ResultSizeError) {
-             throw createError({                                                                                 
-               statusCode: 413,
-               statusMessage: `Too many activity logs. Try a narrower date range.`
-             });                                                                                                 
-        }
-        else {
-            console.error('Error in closed-prayer-orders endpoint:', error);
+            throw createError({
+                statusCode: 413,
+                statusMessage: `Too many activity logs. Try a narrower date range.`,
+            });
+        } else if (error instanceof QueryError) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: 'Monday query error',
+            });
+        } else {
+            console.error('Error in report endpoint:', error);
             throw createError({
                 statusCode: 500,
                 message: 'Internal server error',

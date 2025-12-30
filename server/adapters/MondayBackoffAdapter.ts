@@ -1,4 +1,5 @@
 import type { IMondayAdapter } from './IMondayAdapter';
+import { QueryError } from '../errors/QueryError';
 
 interface BackoffOptions {
     maxRetries?: number;
@@ -42,6 +43,10 @@ export class MondayBackoffAdapter implements IMondayAdapter {
                     return result;
                 }
             } catch (error: unknown) {
+                // Do not retry QueryError
+                if (error instanceof QueryError) {
+                    throw error;
+                }
                 // Retry on network errors
                 if (attempt === this.options.maxRetries) {
                     throw error;
@@ -53,7 +58,9 @@ export class MondayBackoffAdapter implements IMondayAdapter {
                     this.options.baseDelayMs *
                     Math.pow(2, attempt) *
                     (1 + Math.random() * this.options.jitterFactor);
-                console.info(`Monday query retrying; Attempt: ${attempt + 1}; Delay: ${Math.floor(delay)} (ms)`);
+                console.info(
+                    `Monday query retrying; Attempt: ${attempt + 1}; Delay: ${Math.floor(delay)} (ms)`
+                );
                 await new Promise((resolve) => setTimeout(resolve, delay));
             }
         }

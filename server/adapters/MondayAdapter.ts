@@ -1,5 +1,6 @@
 import mondaySdk from 'monday-sdk-js';
 import type { IMondayAdapter } from './IMondayAdapter';
+import { QueryError } from '../errors/QueryError';
 
 export class MondayAdapter implements IMondayAdapter {
     private token: string;
@@ -14,7 +15,7 @@ export class MondayAdapter implements IMondayAdapter {
             const response = await fetch('https://api.monday.com/v2', {
                 method: 'POST',
                 headers: {
-                    'Authorization': this.token,  // Raw personal token, no "Bearer" or other prefix
+                    Authorization: this.token, // Raw personal token, no "Bearer" or other prefix
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ query }),
@@ -37,22 +38,24 @@ export class MondayAdapter implements IMondayAdapter {
 
                 if (response.status === 429) {
                     console.trace('Monday API call failed:', error);
-                }
-                else {
+                } else {
                     console.error('Monday API call failed:', response);
                 }
 
                 returnValue['errors'] = [error];
-            }
-            else {
+            } else {
                 if (data.data) {
                     returnValue['data'] = data.data;
                 }
                 if (data.errors) {
                     returnValue['errors'] = data.errors;
-                    data.errors.forEach(
-                        (e: any) => console.error('Monday API call error:', JSON.stringify(e))
+                    data.errors.forEach((e: any) =>
+                        console.error(
+                            'Monday API call error:',
+                            JSON.stringify(e)
+                        )
                     );
+                    throw QueryError.fromGraphQLErrors(data.errors);
                 }
             }
             return returnValue;
