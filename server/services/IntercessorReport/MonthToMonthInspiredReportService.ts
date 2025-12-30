@@ -45,6 +45,8 @@ export class MonthToMonthInspiredReportService
                 await this.mondayService.getAllRelatedItems(newActivityLogs)
             ).filter((l) => l.group?.title.toLowerCase().includes('inspired'));
 
+            await this.loadMissingStatusLabels(newInspiredItems);
+
             prayerOrders = this.makePrayerOrderList(
                 newActivityLogs,
                 newInspiredItems
@@ -105,5 +107,21 @@ export class MonthToMonthInspiredReportService
             });
         }
         return prayerOrders;
+    }
+
+    private async loadMissingStatusLabels(items: Item[]): Promise<void> {
+        const itemBoardIds = new Set<string>();
+        for (const item of items) {
+            if (item.board?.id) itemBoardIds.add(item.board.id);
+        }
+        const missingBoardIds: number[] = [];
+        for (const id of itemBoardIds) {
+            if (!this.statusLabels![id]) missingBoardIds.push(parseInt(id));
+        }
+        if (missingBoardIds.length > 0) {
+            const fetched =
+                await this.mondayService.getStatusLabels(missingBoardIds);
+            this.statusLabels = { ...this.statusLabels, ...fetched };
+        }
     }
 }

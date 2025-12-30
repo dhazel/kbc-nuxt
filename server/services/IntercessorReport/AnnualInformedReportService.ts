@@ -48,6 +48,8 @@ export class AnnualInformedReportService implements IIntercessorReportService {
             const items =
                 await this.mondayService.getAllRelatedItems(activityLogs);
 
+            await this.loadMissingStatusLabels(items);
+
             prayerOrders = this.makePrayerOrderList(activityLogs, items);
 
             return prayerOrders;
@@ -102,5 +104,21 @@ export class AnnualInformedReportService implements IIntercessorReportService {
             });
         }
         return prayerOrders;
+    }
+
+    private async loadMissingStatusLabels(items: Item[]): Promise<void> {
+        const itemBoardIds = new Set<string>();
+        for (const item of items) {
+            if (item.board?.id) itemBoardIds.add(item.board.id);
+        }
+        const missingBoardIds: number[] = [];
+        for (const id of itemBoardIds) {
+            if (!this.statusLabels![id]) missingBoardIds.push(parseInt(id));
+        }
+        if (missingBoardIds.length > 0) {
+            const fetched =
+                await this.mondayService.getStatusLabels(missingBoardIds);
+            this.statusLabels = { ...this.statusLabels, ...fetched };
+        }
     }
 }

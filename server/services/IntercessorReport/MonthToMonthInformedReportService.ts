@@ -50,6 +50,8 @@ export class MonthToMonthInformedReportService
             const closedItems =
                 await this.mondayService.getAllRelatedItems(closedActivityLogs);
 
+            await this.loadMissingStatusLabels(closedItems);
+
             prayerOrders = this.makePrayerOrderList(
                 closedActivityLogs,
                 closedItems
@@ -107,5 +109,21 @@ export class MonthToMonthInformedReportService
             });
         }
         return prayerOrders;
+    }
+
+    private async loadMissingStatusLabels(items: Item[]): Promise<void> {
+        const itemBoardIds = new Set<string>();
+        for (const item of items) {
+            if (item.board?.id) itemBoardIds.add(item.board.id);
+        }
+        const missingBoardIds: number[] = [];
+        for (const id of itemBoardIds) {
+            if (!this.statusLabels![id]) missingBoardIds.push(parseInt(id));
+        }
+        if (missingBoardIds.length > 0) {
+            const fetched =
+                await this.mondayService.getStatusLabels(missingBoardIds);
+            this.statusLabels = { ...this.statusLabels, ...fetched };
+        }
     }
 }
