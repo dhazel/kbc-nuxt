@@ -32,7 +32,7 @@ export class MondayService implements IMondayService {
         if (itemIds.length > 0) {
             const itemsQuery = `query { items(ids: [${itemIds.join(',')}], limit: 10000) { id name board { id name } group { id title } column_values { id value } } }`;
             const itemsResponse = await this.mondayAdapter.query(itemsQuery);
-            items = itemsResponse.data.items?? [];
+            items = itemsResponse.data.items ?? [];
         }
         return items;
     }
@@ -70,13 +70,18 @@ export class MondayService implements IMondayService {
         const inclusiveEndDate = new Date(endDate);
         inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
         const maxActivityLog = 10000;
-        const activityQuery = `query { boards(ids: [${boards.join(',')}]) { name activity_logs(from: "${startDate.toISOString()}", to: "${inclusiveEndDate.toISOString()}", limit: ${maxActivityLog}) { id event data user_id created_at } } }`;
+        const activityQuery = `query { boards(ids: [${boards.join(',')}]) { id name activity_logs(from: "${startDate.toISOString()}", to: "${inclusiveEndDate.toISOString()}", limit: ${maxActivityLog}) { id event data user_id created_at } } }`;
         const activityResponse = await this.mondayAdapter.query(activityQuery);
         const allActivityLogs = activityResponse.data.boards.flatMap(
-            (board: { name: string; activity_logs: ActivityLog[] }) =>
+            (board: {
+                id: number;
+                name: string;
+                activity_logs: ActivityLog[];
+            }) =>
                 board.activity_logs.map((log) => ({
                     ...log,
                     boardName: board.name,
+                    boardId: board.id,
                 }))
         );
         if (allActivityLogs.length >= maxActivityLog) {
@@ -108,13 +113,18 @@ export class MondayService implements IMondayService {
         const inclusiveEndDate = new Date(endDate);
         inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
         const maxActivityLog = 10000;
-        const activityQuery = `query { boards(ids: [${boards.join(',')}]) { name activity_logs(from: "${startDate.toISOString()}", to: "${inclusiveEndDate.toISOString()}", column_ids: ["status"], limit: ${maxActivityLog}) { id event data user_id created_at } } }`;
+        const activityQuery = `query { boards(ids: [${boards.join(',')}]) { id name activity_logs(from: "${startDate.toISOString()}", to: "${inclusiveEndDate.toISOString()}", column_ids: ["status"], limit: ${maxActivityLog}) { id event data user_id created_at } } }`;
         const activityResponse = await this.mondayAdapter.query(activityQuery);
         const allActivityLogs = activityResponse.data.boards.flatMap(
-            (board: { name: string; activity_logs: ActivityLog[] }) =>
+            (board: {
+                id: number;
+                name: string;
+                activity_logs: ActivityLog[];
+            }) =>
                 board.activity_logs.map((log) => ({
                     ...log,
                     boardName: board.name,
+                    boardId: board.id,
                 }))
         );
         const activityLogs = allActivityLogs;

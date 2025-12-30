@@ -17,6 +17,7 @@ export interface ActivityLog {
     user_id: string;
     created_at: string;
     boardName?: string;
+    boardId?: number;
 }
 
 export interface ColumnValue {
@@ -44,7 +45,10 @@ export interface IMondayService {
      * @param statusText - The text of the status that the activity log references
      * @returns Collection of activity logs filtered to contain only those with the given status
      */
-    filterActivityLogsByStatus(activityLogs: ActivityLog[], statusText: string): ActivityLog[];
+    filterActivityLogsByStatus(
+        activityLogs: ActivityLog[],
+        statusText: string
+    ): ActivityLog[];
 
     /**
      * @param boards - Collection of board IDs
