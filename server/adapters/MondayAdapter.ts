@@ -59,7 +59,10 @@ export class MondayAdapter implements IMondayAdapter {
                 }
             }
             return returnValue;
-        } catch (error) {
+        } catch (error: unknown) {
+            if (error instanceof QueryError) {
+                throw error;
+            }
             console.error('Fetch error:', error);
             throw 'Request failed';
         }
