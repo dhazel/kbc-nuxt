@@ -28,13 +28,24 @@ export class MondayService implements IMondayService {
             ),
         ];
 
-        let items = [];
-        if (itemIds.length > 0) {
-            const itemsQuery = `query { items(ids: [${itemIds.join(',')}], limit: 10000) { id name board { id name } group { id title } column_values { id value } } }`;
-            const itemsResponse = await this.mondayAdapter.query(itemsQuery);
-            items = itemsResponse.data.items ?? [];
-        }
-        return items;
+        if (itemIds.length === 0) return [];
+
+        const chunkSize = 100;
+        const chunks = itemIds.reduce((acc, id, i) => {
+            if (i % chunkSize === 0) acc.push([]);
+            acc[acc.length - 1].push(id);
+            return acc;
+        }, [] as number[][]);
+
+        const queryTemplate = (ids: number[]) =>
+            `query { items(ids: [${ids.join(',')}], limit: 10000) { id name board { id name } group { id title } column_values { id value } } }`;
+
+        const promises = chunks.map((chunk: number[]) =>
+            this.mondayAdapter.query(queryTemplate(chunk))
+        );
+
+        const responses = await Promise.all(promises);
+        return responses.flatMap((res) => res.data.items ?? []);
     }
 
     /**
