@@ -10,6 +10,7 @@ export class AnnualInspiredReportService implements IIntercessorReportService {
         3938663417, // AHAC
         8747424404, // Impact
         18213991693, // NCF
+        18391559101, // Impact T
     ];
 
     private statusLabels?: Record<string, Record<number, string>>;

@@ -9,8 +9,15 @@ export class MonthToMonthInformedReportService
     constructor(private mondayService: IMondayService) {}
 
     private boardIds: number[] = [
-        18130780948, 9731839830, 9675066534, 9913642037, 9804560302,
+        18130780948,
+        9731839830,
+        9675066534,
+        9913642037,
+        9804560302,
         18080835095,
+        18107014606, // SDC SPP
+        18391341242, // MW
+        18391844201, // ElS
     ];
 
     private statusLabels?: Record<string, Record<number, string>>;
