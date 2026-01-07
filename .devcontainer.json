@@ -1,9 +1,9 @@
 {
     "image":"mcr.microsoft.com/devcontainers/javascript-node",
-    "remoteUser": "node",
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspace/${localWorkspaceFolderBasename},type=bind,consistency=cached,relabel=private",
     "workspaceFolder": "/workspace/${localWorkspaceFolderBasename}",
     "postCreateCommand": "echo 'cd ${workspaceFolder}' >> ~/.bashrc",
+    "updateRemoteUserUID": false,
     "features": {
         "ghcr.io/devcontainers-extra/features/neovim-homebrew:1": {},
         "ghcr.io/devcontainers-extra/features/ripgrep:1": {}
@@ -15,7 +15,10 @@
             "onAutoForward": "notify"
         }
     },
-    "runArgs": ["--network", "host"],
+    "runArgs": [
+        "--network", "host",
+        "--userns=keep-id"
+    ],
     "mounts": [
         "source=.config/nvim,target=/home/node/.config/nvim,type=bind,consistency=cached,relabel=private",
         "source=${localWorkspaceFolder}/.config/nvim-data,target=/home/node/.config/nvim-data,type=bind,consistency=cached,relabel=private",
