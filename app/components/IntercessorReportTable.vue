@@ -39,7 +39,7 @@ const intercessorTotals = computed(() => {
             </DataTable>
             <h2 class="text-xl mb-2 mt-5">Prayers</h2>
             <DataTable :value="orders" class="p-datatable-sm">
-                <Column field="status" header="Current Status" />
+                <Column field="intercessor" header="Intercessor" sortable />
                 <Column field="workedDate" header="Prayer Date" sortable>
                     <template #body="slotProps">
                         {{
@@ -50,9 +50,9 @@ const intercessorTotals = computed(() => {
                     </template>
                 </Column>
                 <Column field="title" header="Title" sortable />
-                <Column field="intercessor" header="Intercessor" sortable />
                 <Column field="board" header="Board" sortable />
                 <Column field="group" header="Group" sortable />
+                <Column field="status" header="Current Status" />
             </DataTable>
         </div>
     </div>
