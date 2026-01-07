@@ -1,6 +1,6 @@
 import type { IIntercessorReportService } from './IIntercessorReportService';
-import type { PrayerOrderData } from '@/types/prayerOrder';
-import { PrayerOrderType } from '@/types/prayerOrder';
+import type { PrayerOrderData } from '~/../types/prayerOrder';
+import { PrayerOrderType } from '~/../types/prayerOrder';
 import type { IMondayService, Item } from '../Monday/IMondayService';
 
 export class MonthToMonthInformedReportService

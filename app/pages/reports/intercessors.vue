@@ -62,8 +62,8 @@ import DatePicker from 'primevue/datepicker';
 import Button from 'primevue/button';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
-import IntercessorReportTable from '@/components/IntercessorReportTable.vue';
-import { useIntercessorReportStore } from '@/stores/intercessorReport';
+import IntercessorReportTable from '~/components/IntercessorReportTable.vue';
+import { useIntercessorReportStore } from '~/stores/intercessorReport';
 
 const { $auth, $userService } = useNuxtApp();
 

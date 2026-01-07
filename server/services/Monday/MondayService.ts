@@ -6,7 +6,7 @@ import type {
     Item,
     User,
 } from './IMondayService';
-import { ResultSizeError } from '~/server/errors/ResultSizeError';
+import { ResultSizeError } from '../../errors/ResultSizeError';
 
 export class MondayService implements IMondayService {
     constructor(private mondayAdapter: IMondayAdapter) {}

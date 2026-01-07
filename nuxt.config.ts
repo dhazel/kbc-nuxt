@@ -98,6 +98,6 @@ export default defineNuxtConfig({
 // TypeScript declaration for injected $userService
 declare module '#app' {
     interface NuxtApp {
-        $userService: import('~/utilities/UserKvService').UserKvService;
+        $userService: import('~/app/utils/UserKvService').UserKvService;
     }
 }

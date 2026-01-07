@@ -23,6 +23,4 @@ export class SppKvService implements ISppService {
     }
 }
 
-// Re-export interfaces for convenience
-export type { ISppService } from "./ISppService";
 

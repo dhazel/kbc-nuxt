@@ -1,5 +1,5 @@
-import { ResultSizeError } from '~/server/errors/ResultSizeError';
-import { QueryError } from '~/server/errors/QueryError';
+import { ResultSizeError } from '../../errors/ResultSizeError';
+import { QueryError } from '../../errors/QueryError';
 
 export default defineEventHandler(async (event) => {
     const kinde = event.context.kinde;

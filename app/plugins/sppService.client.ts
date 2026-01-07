@@ -1,8 +1,8 @@
-import { SppService } from '~/utilities/SppService';
-import { SppKvService } from '~/utilities/SppKvService';
-import { IndexedDbStorage } from '~/utilities/IndexedDbStorage';
-import type { IClientKvStore } from '~/utilities/IClientKvStore';
-import { ClientKvStorage } from '~/utilities/ClientKvStorage';
+import { SppService } from '~/utils/SppService';
+import { SppKvService } from '~/utils/SppKvService';
+import { IndexedDbStorage } from '~/utils/IndexedDbStorage';
+import type { IClientKvStore } from '~/utils/IClientKvStore';
+import { ClientKvStorage } from '~/utils/ClientKvStorage';
 
 export default defineNuxtPlugin((nuxtApp) => {
     const headers = useRequestHeaders(['cookie']);

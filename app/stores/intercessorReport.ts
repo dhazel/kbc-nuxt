@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import type { PrayerOrderData } from '@/types/prayerOrder';
-import { PrayerOrderType } from '@/types/prayerOrder';
+import type { PrayerOrderData } from '~/../types/prayerOrder';
+import { PrayerOrderType } from '~/../types/prayerOrder';
 
 export const useIntercessorReportStore = defineStore('intercessorReport', {
     state: () => ({

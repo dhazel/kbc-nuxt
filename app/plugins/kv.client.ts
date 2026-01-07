@@ -1,4 +1,4 @@
-import { ClientKvStorage } from '~/utilities/ClientKvStorage';
+import { ClientKvStorage } from '~/utils/ClientKvStorage';
 
 export default defineNuxtPlugin((nuxtApp) => {
   const clientStorage = new ClientKvStorage();

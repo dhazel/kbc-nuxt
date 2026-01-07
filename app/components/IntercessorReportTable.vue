@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import type { PrayerOrderData } from '@/types/prayerOrder';
+import type { PrayerOrderData } from '~types/prayerOrder';
 
 interface Props {
     orders: PrayerOrderData[];

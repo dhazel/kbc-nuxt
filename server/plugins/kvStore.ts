@@ -1,5 +1,5 @@
 import { createStorage, type Storage } from 'unstorage'
-import { netlifyDriver } from '~/utilities/NetlifyKvStore'
+import { netlifyDriver } from '~/utils/NetlifyKvStore'
 
 export default defineNitroPlugin((nitroApp) => {
   const config = useRuntimeConfig()

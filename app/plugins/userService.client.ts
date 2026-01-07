@@ -1,8 +1,8 @@
-import { UserKvService, type UserProfile } from '~/utilities/UserKvService';
-import { IndexedDbStorage } from '~/utilities/IndexedDbStorage';
-import type { IClientKvStore } from '~/utilities/IClientKvStore';
-import { ApiUserService } from '~/utilities/ApiUserService';
-import { ClientKvStorage } from '~/utilities/ClientKvStorage';
+import { UserKvService, type UserProfile } from '~/utils/UserKvService';
+import { IndexedDbStorage } from '~/utils/IndexedDbStorage';
+import type { IClientKvStore } from '~/utils/IClientKvStore';
+import { ApiUserService } from '~/utils/ApiUserService';
+import { ClientKvStorage } from '~/utils/ClientKvStorage';
 
 export default defineNuxtPlugin(async (): Promise<object> => {
     const $auth = useNuxtApp().$auth;
