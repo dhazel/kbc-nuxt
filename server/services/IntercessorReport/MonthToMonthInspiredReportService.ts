@@ -2,21 +2,26 @@ import type { IIntercessorReportService } from './IIntercessorReportService';
 import type { PrayerOrderData } from '~/../types/prayerOrder';
 import { PrayerOrderType } from '~/../types/prayerOrder';
 import type { IMondayService, Item } from '../Monday/IMondayService';
+import type { IBoardIdProvider } from '../BoardIdProvider/IBoardIdProvider';
 
-export class MonthToMonthInspiredReportService
-    implements IIntercessorReportService
-{
-    constructor(private mondayService: IMondayService) {}
+export class MonthToMonthInspiredReportService implements IIntercessorReportService {
+    constructor(
+        private mondayService: IMondayService,
+        private boardIdProvider: IBoardIdProvider
+    ) {}
 
-    private boardIds: number[] = [
-        18130780948, 9731839830, 9675066534, 9913642037, 9804560302,
-        18080835095,
-    ];
+    private boardIds!: number[];
 
     private statusLabels?: Record<string, Record<number, string>>;
     private allUsersMap?: Record<string, string>;
 
     private async ensureReady(): Promise<void> {
+        if (!this.boardIds) {
+            this.boardIds = await this.boardIdProvider.getBoardIds(
+                'month-to-month',
+                'inspired'
+            );
+        }
         if (!this.statusLabels || !this.allUsersMap) {
             this.statusLabels = await this.mondayService.getStatusLabels(
                 this.boardIds

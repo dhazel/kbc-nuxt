@@ -2,22 +2,25 @@ import type { IIntercessorReportService } from './IIntercessorReportService';
 import type { PrayerOrderData } from '~/../types/prayerOrder';
 import { PrayerOrderType } from '~/../types/prayerOrder';
 import type { IMondayService, Item } from '../Monday/IMondayService';
+import type { IBoardIdProvider } from '../BoardIdProvider/IBoardIdProvider';
 
 export class AnnualInformedReportService implements IIntercessorReportService {
-    constructor(private mondayService: IMondayService) {}
+    constructor(
+        private mondayService: IMondayService,
+        private boardIdProvider: IBoardIdProvider
+    ) {}
 
-    private boardIds: number[] = [
-        5250873809, // AHAC
-        8747424435, // Impact
-        18213975268, // NCF
-        9183242337, // Impact PCII
-        18391558969, // Impact T
-    ];
-
+    private boardIds!: number[];
     private statusLabels?: Record<string, Record<number, string>>;
     private allUsersMap?: Record<string, string>;
 
     private async ensureReady(): Promise<void> {
+        if (!this.boardIds) {
+            this.boardIds = await this.boardIdProvider.getBoardIds(
+                'annual',
+                'informed'
+            );
+        }
         if (!this.statusLabels || !this.allUsersMap) {
             this.statusLabels = await this.mondayService.getStatusLabels(
                 this.boardIds

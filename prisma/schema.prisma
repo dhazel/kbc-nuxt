@@ -61,6 +61,7 @@ model Subscription {
   createdAt   DateTime @default(now())
 
   organizations Organization[]
+  boardMappings BoardMapping[]
 
   @@map("subscriptions")
 }
@@ -119,6 +120,19 @@ model ThreadType {
   description String?
 
   prayerOrders     PrayerOrder[]
+  boardMappings    BoardMapping[]
 
   @@map("thread_types")
+}
+
+model BoardMapping {
+  id             Int        @id @default(autoincrement())
+  subscriptionId Int
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+  threadTypeId   Int
+  threadType     ThreadType @relation(fields: [threadTypeId], references: [id])
+  mondayBoardId  BigInt
+
+  @@unique([subscriptionId, threadTypeId, mondayBoardId])
+  @@map("board_mappings")
 }

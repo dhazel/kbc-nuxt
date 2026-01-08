@@ -13,11 +13,19 @@ export default defineNitroPlugin((nitroApp) => {
         const mondayService = new CachedMondayService(
             new MondayService(new MondayBackoffAdapter(new MondayAdapter()))
         );
-        event.context.intercessorReportService = new AggregateIntercessorReportService([
-            new MonthToMonthInformedReportService(mondayService),
-            new MonthToMonthInspiredReportService(mondayService),
-            new AnnualInformedReportService(mondayService),
-            new AnnualInspiredReportService(mondayService),
-        ]);
+        const boardIdProvider = event.context.boardIdProvider;
+        event.context.intercessorReportService =
+            new AggregateIntercessorReportService([
+                new MonthToMonthInformedReportService(
+                    mondayService,
+                    boardIdProvider
+                ),
+                new MonthToMonthInspiredReportService(
+                    mondayService,
+                    boardIdProvider
+                ),
+                new AnnualInformedReportService(mondayService, boardIdProvider),
+                new AnnualInspiredReportService(mondayService, boardIdProvider),
+            ]);
     });
 });
