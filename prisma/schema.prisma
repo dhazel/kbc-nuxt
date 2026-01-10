@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
@@ -12,41 +12,42 @@ datasource db {
 }
 
 model User {
-  id              Int     @id @default(autoincrement())
+  id              Int      @id @default(autoincrement())
   name            String
-  email           String  @unique
+  email           String   @unique
   joinedAt        DateTime @default(now())
-  visitCount      Int     @default(0)
-  prayerOrders    Int     @default(0)
-  prayerResponses Int     @default(0)
+  visitCount      Int      @default(0)
+  prayerOrders    Int      @default(0)
+  prayerResponses Int      @default(0)
 
-  createdPrayerOrders  PrayerOrder[] @relation("PrayerOrderCreator")
-  roles           Role[]
-  messages        Message[]
-  organizations   Organization[] @relation("UserOrganizations")
-  intercessorFor  Organization[] @relation("UserIntercessors")
+  createdPrayerOrders PrayerOrder[]  @relation("PrayerOrderCreator")
+  roles               Role[]
+  messages            Message[]
+  organizations       Organization[] @relation("UserOrganizations")
+  intercessorFor      Organization[] @relation("UserIntercessors")
 
   @@map("users")
 }
 
 model Role {
-  id     Int    @id @default(autoincrement())
-  name   String
+  id   Int    @id @default(autoincrement())
+  name String
 
-  users  User[]
+  users User[]
 
   @@map("roles")
 }
 
 model Organization {
-  id          Int     @id @default(autoincrement())
-  name        String  @unique
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
   description String?
   createdAt   DateTime @default(now())
 
-  users       User[] @relation("UserOrganizations")
+  users        User[]        @relation("UserOrganizations")
   prayerOrders PrayerOrder[]
-  intercessors User[] @relation("UserIntercessors")
+  intercessors User[]        @relation("UserIntercessors")
+  mondayBoards MondayBoard[]
 
   subscriptionId Int?
   subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
@@ -55,8 +56,8 @@ model Organization {
 }
 
 model Subscription {
-  id          Int     @id @default(autoincrement())
-  name        String  @unique
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
   description String?
   createdAt   DateTime @default(now())
 
@@ -67,51 +68,49 @@ model Subscription {
 }
 
 model PrayerOrder {
-  id                  Int       @id @default(autoincrement())
-  creatorId           Int
-  creator             User      @relation("PrayerOrderCreator", fields: [creatorId], references: [id])
+  id        Int  @id @default(autoincrement())
+  creatorId Int
+  creator   User @relation("PrayerOrderCreator", fields: [creatorId], references: [id])
 
-  typeId              Int       // Required: links to thread type
-  type                ThreadType @relation(fields: [typeId], references: [id])
+  typeId Int // Required: links to thread type
+  type   ThreadType @relation(fields: [typeId], references: [id])
 
-  organizationId      Int       // Required: links to organization
-  organization        Organization @relation(fields: [organizationId], references: [id])
+  organizationId Int // Required: links to organization
+  organization   Organization @relation(fields: [organizationId], references: [id])
 
-  title               String?   // Optional subject/title for the thread
-  firstMessageContent String    // Content of the original/root post
-  
-  messages            Message[] // All replies/follow-ups (flat)
-  
-  createdAt           DateTime  @default(now())
-  lastActivityAt      DateTime  @default(now()) @updatedAt // Automatically updates on new messages
-  
+  title               String? // Optional subject/title for the thread
+  firstMessageContent String // Content of the original/root post
+
+  messages Message[] // All replies/follow-ups (flat)
+
+  createdAt      DateTime @default(now())
+  lastActivityAt DateTime @default(now()) @updatedAt // Automatically updates on new messages
+
   @@index([creatorId])
   @@index([createdAt])
-  @@index([typeId])  // Added for type-based queries
-  @@index([organizationId])  // Added for org-based queries
-
+  @@index([typeId]) // Added for type-based queries
+  @@index([organizationId]) // Added for org-based queries
   @@map("prayer_orders")
 }
 
 model Message {
-  id         Int      @id @default(autoincrement())
-  prayerOrderId   Int
-  prayerOrder     PrayerOrder   @relation(fields: [prayerOrderId], references: [id], onDelete: Cascade)
-  
-  authorId   Int
-  author     User     @relation(fields: [authorId], references: [id])
-  
-  content    String
-  
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  deletedAt  DateTime? // Optional: for soft deletes
-  
+  id            Int         @id @default(autoincrement())
+  prayerOrderId Int
+  prayerOrder   PrayerOrder @relation(fields: [prayerOrderId], references: [id], onDelete: Cascade)
+
+  authorId Int
+  author   User @relation(fields: [authorId], references: [id])
+
+  content String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Optional: for soft deletes
+
   @@index([prayerOrderId, createdAt(desc)]) // Critical for efficient chronological fetching + pagination
   @@index([authorId])
   @@index([deletedAt]) // Helps with soft-delete queries
-
-   @@map("messages")
+  @@map("messages")
 }
 
 model ThreadType {
@@ -119,20 +118,34 @@ model ThreadType {
   name        String  @unique
   description String?
 
-  prayerOrders     PrayerOrder[]
-  boardMappings    BoardMapping[]
+  prayerOrders  PrayerOrder[]
+  boardMappings BoardMapping[]
 
   @@map("thread_types")
 }
 
 model BoardMapping {
-  id             Int        @id @default(autoincrement())
+  id             Int          @id @default(autoincrement())
   subscriptionId Int
   subscription   Subscription @relation(fields: [subscriptionId], references: [id])
   threadTypeId   Int
-  threadType     ThreadType @relation(fields: [threadTypeId], references: [id])
-  mondayBoardId  BigInt
+  threadType     ThreadType   @relation(fields: [threadTypeId], references: [id])
+  mondayBoard_fk Int?
+  mondayBoard    MondayBoard? @relation(fields: [mondayBoard_fk], references: [id])
 
-  @@unique([subscriptionId, threadTypeId, mondayBoardId])
+  @@unique([subscriptionId, threadTypeId, mondayBoard_fk])
   @@map("board_mappings")
+}
+
+model MondayBoard {
+  id             Int            @id @default(autoincrement())
+  mondayBoardId  BigInt         @unique
+  boardName      String?
+  organizationId Int?
+  organization   Organization?  @relation(fields: [organizationId], references: [id])
+  boardMappings  BoardMapping[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@map("monday_boards")
 }

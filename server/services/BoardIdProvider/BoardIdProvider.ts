@@ -24,12 +24,21 @@ export class BoardIdProvider implements IBoardIdProvider {
                 },
             },
             select: {
-                mondayBoardId: true,
+                mondayBoard: {
+                    select: {
+                        mondayBoardId: true,
+                    },
+                },
             },
         });
 
-        return boardMappings.map((mapping: { mondayBoardId: bigint }) =>
-            Number(mapping.mondayBoardId)
-        );
+        return boardMappings
+            .map(
+                (mapping: { mondayBoard: { mondayBoardId: bigint } | null }) =>
+                    mapping.mondayBoard
+                        ? Number(mapping.mondayBoard.mondayBoardId)
+                        : 0
+            )
+            .filter((id) => id !== 0);
     }
 }
