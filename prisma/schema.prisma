@@ -130,10 +130,10 @@ model BoardMapping {
   subscription   Subscription @relation(fields: [subscriptionId], references: [id])
   threadTypeId   Int
   threadType     ThreadType   @relation(fields: [threadTypeId], references: [id])
-  mondayBoard_fk Int?
-  mondayBoard    MondayBoard? @relation(fields: [mondayBoard_fk], references: [id])
+  mondayBoardId  Int?
+  mondayBoard    MondayBoard? @relation(fields: [mondayBoardId], references: [id])
 
-  @@unique([subscriptionId, threadTypeId, mondayBoard_fk])
+  @@unique([subscriptionId, threadTypeId, mondayBoardId])
   @@map("board_mappings")
 }
 
