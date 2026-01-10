@@ -23,3 +23,7 @@
 - **Cursor/Copilot**: No specific rules found in .cursor/rules or .github/copilot-instructions.md.
 - **Commit Style**: Use descriptive commit messages in present tense (e.g., 'Add feature X').
 - **PR Guidelines**: Ensure PRs are small, focused, and include a test plan.
+
+## Executing a Plan
+
+- Execute the plan one step at a time. After each step, check for errors, summarize the result, and wait for confirmation before the next step.
