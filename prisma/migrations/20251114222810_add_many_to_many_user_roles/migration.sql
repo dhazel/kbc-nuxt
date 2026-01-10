@@ -35,3 +35,7 @@ INSERT INTO "_RoleToUser" ("A", "B") SELECT "id", "userId" FROM temp_roles;
 
 -- Drop temp table
 DROP TABLE temp_roles;
+
+-- Ensure roles has the admin role
+INSERT INTO "roles" ("name") VALUES
+("admin")
