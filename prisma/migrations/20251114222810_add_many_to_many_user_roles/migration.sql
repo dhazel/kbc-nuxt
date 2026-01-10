@@ -4,14 +4,15 @@
   - You are about to drop the column `userId` on the `roles` table. All the data in the column will be lost.
 
 */
--- Create temp copy of roles table
-CREATE TEMP TABLE temp_roles AS SELECT * FROM "roles";
-
 -- DropForeignKey
 ALTER TABLE "public"."roles" DROP CONSTRAINT "roles_userId_fkey";
 
 -- AlterTable
 ALTER TABLE "roles" DROP COLUMN "userId";
+
+-- Ensure roles has the admin role
+INSERT INTO "roles" ("name") VALUES
+('admin');
 
 -- CreateTable
 CREATE TABLE "_RoleToUser" (
@@ -30,12 +31,3 @@ ALTER TABLE "_RoleToUser" ADD CONSTRAINT "_RoleToUser_A_fkey" FOREIGN KEY ("A") 
 -- AddForeignKey
 ALTER TABLE "_RoleToUser" ADD CONSTRAINT "_RoleToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
--- Migrate data from temp_roles to join table
-INSERT INTO "_RoleToUser" ("A", "B") SELECT "id", "userId" FROM temp_roles;
-
--- Drop temp table
-DROP TABLE temp_roles;
-
--- Ensure roles has the admin role
-INSERT INTO "roles" ("name") VALUES
-("admin")
