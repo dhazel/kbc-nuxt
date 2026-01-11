@@ -1,6 +1,6 @@
 import type { PrismaClient } from '@prisma/client';
-import type { IUserService } from '../../utils/IUserService';
-import type { UserProfile } from '../../utils/UserKvService';
+import type { IUserService } from '../../app/utils/IUserService';
+import type { UserProfile } from '../../app/utils/UserKvService';
 
 export class UserService implements IUserService {
     constructor(private prisma: PrismaClient) {}
