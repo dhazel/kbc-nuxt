@@ -17,6 +17,7 @@ model User {
   email           String   @unique
   joinedAt        DateTime @default(now())
   visitCount      Int      @default(0)
+  mondayId         String?
 
   createdPrayerOrders PrayerOrder[]  @relation("PrayerOrderCreator")
   roles               Role[]
@@ -83,6 +84,7 @@ model PrayerOrder {
 
   createdAt      DateTime @default(now())
   lastActivityAt DateTime @default(now()) @updatedAt // Automatically updates on new messages
+  mondayId         String?
 
   @@index([creatorId])
   @@index([createdAt])
@@ -104,6 +106,7 @@ model Message {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // Optional: for soft deletes
+  mondayId         String?
 
   @@index([prayerOrderId, createdAt(desc)]) // Critical for efficient chronological fetching + pagination
   @@index([authorId])
