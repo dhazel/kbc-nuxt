@@ -16,8 +16,6 @@ export class UserService implements IUserService {
                     email: user.email,
                     joinedAt: user.joinedAt,
                     name: user.name,
-                    prayerOrders: user.prayerOrders,
-                    prayerResponses: user.prayerResponses,
                     visitCount: user.visitCount,
                     roles: user.roles.map((role) => role.name),
                 };
@@ -35,15 +33,11 @@ export class UserService implements IUserService {
                 where: { email: profile.email },
                 update: {
                     name: profile.name,
-                    prayerOrders: profile.prayerOrders,
-                    prayerResponses: profile.prayerResponses,
                     visitCount: profile.visitCount,
                 },
                 create: {
                     email: profile.email,
                     name: profile.name,
-                    prayerOrders: profile.prayerOrders,
-                    prayerResponses: profile.prayerResponses,
                     visitCount: profile.visitCount,
                     joinedAt: profile.joinedAt,
                 },

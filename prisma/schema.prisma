@@ -17,8 +17,6 @@ model User {
   email           String   @unique
   joinedAt        DateTime @default(now())
   visitCount      Int      @default(0)
-  prayerOrders    Int      @default(0)
-  prayerResponses Int      @default(0)
 
   createdPrayerOrders PrayerOrder[]  @relation("PrayerOrderCreator")
   roles               Role[]

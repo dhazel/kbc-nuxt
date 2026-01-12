@@ -5,8 +5,6 @@ export interface UserProfile {
     email: string;
     joinedAt: Date;
     name: string;
-    prayerOrders: number;
-    prayerResponses: number;
     visitCount: number;
     roles: string[];
 }
@@ -32,8 +30,6 @@ export class UserKvService implements IUserService {
                     email: userEmail,
                     joinedAt: new Date(parsed.joinedAt),
                     name: parsed.name,
-                    prayerOrders: parsed.prayerOrders,
-                    prayerResponses: parsed.prayerResponses,
                     visitCount: parsed.visitCount,
                     roles: parsed.roles || [],
                 };
