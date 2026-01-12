@@ -20,6 +20,16 @@ export interface ActivityLog {
     boardId?: number;
 }
 
+export interface ItemUpdate {
+    id: string;
+    body: string;
+    bodyText: string;
+    created_at: string;
+    edited_at: string;
+    creator: User;
+    item: Item;
+}
+
 export interface ColumnValue {
     id: string;
     value: string;
@@ -73,6 +83,17 @@ export interface IMondayService {
         startDate: Date,
         endDate: Date
     ): Promise<ActivityLog[]>;
+
+    /**
+     * @param startDate - Start of the date range
+     * @param endDate - End of the date range
+     * @returns Collection of all Item messages, called "Updates" within Monday,
+     *  that happened within the given date range
+     */
+    getAllItemMessages(
+        startDate: Date,
+        endDate: Date
+    ): Promise<ItemUpdate[]>;
 
     /**
      * @param boardId - Id of a board on Monday.com

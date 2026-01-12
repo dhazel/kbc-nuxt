@@ -4,12 +4,62 @@ import type {
     Column,
     IMondayService,
     Item,
+    ItemUpdate,
     User,
 } from './IMondayService';
 import { ResultSizeError } from '../../errors/ResultSizeError';
 
 export class MondayService implements IMondayService {
     constructor(private mondayAdapter: IMondayAdapter) {}
+
+    /**
+     * @param startDate - Start of the date range
+     * @param endDate - End of the date range
+     * @returns Collection of all Item messages, called "Updates" within Monday,
+     *  that happened within the given date range
+     */
+    public async getAllItemMessages(startDate: Date, endDate: Date): Promise<ItemUpdate[]> {
+        const inclusiveEndDate = new Date(endDate);
+        inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
+        const maxUpdates = 10000;
+        const query = `
+            query GetBoardUpdatesInPeriod {
+              updates(
+                limit: ${maxUpdates}
+                from_date: "${startDate.toISOString()}"
+                to_date: "${inclusiveEndDate.toISOString()}"
+              ) {
+                id
+                body
+                text_body
+                created_at
+                edited_at
+                creator {
+                  id
+                  name
+                }
+                item_id
+                item {
+                  id
+                  name
+                  board {
+                    id
+                    name
+                  }
+                }
+              }
+            } 
+        `;
+        const response = await this.mondayAdapter.query(query);
+        const updates = response.data.updates.map(update => {
+            const itemUpdate: ItemUpdate = {
+                ...update,
+                bodyText: update.text_body,
+            };
+            return itemUpdate;
+        })
+        return updates;
+    }
 
     /**
      * @param activityLogs - Collection of activity logs

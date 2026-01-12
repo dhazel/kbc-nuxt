@@ -1,7 +1,23 @@
-import type { ActivityLog, IMondayService, Item } from './IMondayService';
+import type { ActivityLog, IMondayService, Item, ItemUpdate } from './IMondayService';
 
 export class CachedMondayService implements IMondayService {
     constructor(private mondayService: IMondayService) {}
+
+    public async getAllItemMessages(startDate: Date, endDate: Date): Promise<ItemUpdate[]> {
+        const cachedFunc = defineCachedFunction(
+            async (startDate, endDate) =>
+                await this.mondayService.getAllItemMessages(
+                    startDate,
+                    endDate
+                ),
+            {
+                maxAge: 10 * 60,
+                name: 'getAllItemMessages',
+            }
+        );
+        const response = await cachedFunc(startDate, endDate);
+        return response;
+    }
 
     public async getAllItemCreationActivityLogs(
         boards: number[],
