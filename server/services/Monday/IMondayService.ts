@@ -8,6 +8,7 @@ export interface Column {
 export interface User {
     id: string;
     name: string;
+    email: string | undefined;
 }
 
 export interface ActivityLog {
@@ -103,7 +104,7 @@ export interface IMondayService {
         boardIds: number[]
     ): Promise<Record<string, Record<number, string>>>;
 
-    getAllMondayUsers(): Promise<Record<string, string>>;
+    getAllMondayUsers(): Promise<User[]>;
 
     /**
      * @param boardIds - Collection of board IDs

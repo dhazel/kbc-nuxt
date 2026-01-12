@@ -1,4 +1,4 @@
-import type { ActivityLog, IMondayService, Item, ItemUpdate } from './IMondayService';
+import type { ActivityLog, IMondayService, Item, ItemUpdate, User } from './IMondayService';
 
 export class CachedMondayService implements IMondayService {
     constructor(private mondayService: IMondayService) {}
@@ -138,7 +138,7 @@ export class CachedMondayService implements IMondayService {
         return await cachedFunc(boardIds);
     }
 
-    public async getAllMondayUsers(): Promise<Record<string, string>> {
+    public async getAllMondayUsers(): Promise<User[]> {
         const cachedFunc = defineCachedFunction(
             async () => await this.mondayService.getAllMondayUsers(),
             {

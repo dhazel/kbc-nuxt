@@ -1,7 +1,7 @@
 import type { IIntercessorReportService } from './IIntercessorReportService';
 import type { PrayerOrderData } from '~/../types/prayerOrder';
 import { PrayerOrderType } from '~/../types/prayerOrder';
-import type { IMondayService, Item } from '../Monday/IMondayService';
+import type { IMondayService, Item, User } from '../Monday/IMondayService';
 import type { IBoardIdProvider } from '../BoardIdProvider/IBoardIdProvider';
 
 export class MonthToMonthInformedReportService implements IIntercessorReportService {
@@ -26,7 +26,14 @@ export class MonthToMonthInformedReportService implements IIntercessorReportServ
             this.statusLabels = await this.mondayService.getStatusLabels(
                 this.boardIds
             );
-            this.allUsersMap = await this.mondayService.getAllMondayUsers();
+            const allUsers = await this.mondayService.getAllMondayUsers();
+            this.allUsersMap = allUsers.reduce(
+                (map: Record<string, string>, user: User) => {
+                    map[user.id] = user.name;
+                    return map;
+                },
+                {}
+            );
         }
     }
 

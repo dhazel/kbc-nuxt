@@ -242,18 +242,11 @@ export class MondayService implements IMondayService {
         return labelMap;
     }
 
-    public async getAllMondayUsers(): Promise<Record<string, string>> {
-        const usersQuery = `query { users { id name } }`;
+    public async getAllMondayUsers(): Promise<User[]> {
+        const usersQuery = `query { users { id name email } }`;
         const usersResponse = await this.mondayAdapter.query(usersQuery);
         const allUsers = usersResponse.data.users as User[];
-        const allUsersMap: Record<string, string> = allUsers.reduce(
-            (map: Record<string, string>, user: User) => {
-                map[user.id] = user.name;
-                return map;
-            },
-            {}
-        );
-        return allUsersMap;
+        return allUsers;
     }
 
     /**
