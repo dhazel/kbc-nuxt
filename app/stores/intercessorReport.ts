@@ -25,7 +25,7 @@ export const useIntercessorReportStore = defineStore('intercessorReport', {
 
             try {
                 const response = await $fetch(
-                    '/api/reports/closed-prayer-orders',
+                    '/api/reports/intercessor-activity',
                     {
                         query: {
                             startDate: this.startDate
@@ -57,7 +57,9 @@ export const useIntercessorReportStore = defineStore('intercessorReport', {
                     statusText?: string;
                 };
                 if (error.statusCode === 413) {
-                    this.error = error.statusText || 'Request too large. Please try a narrower date range.';
+                    this.error =
+                        error.statusText ||
+                        'Request too large. Please try a narrower date range.';
                 } else {
                     this.error =
                         'Failed to fetch worked prayer orders. Please try again or try a narrower date range.';
