@@ -7,6 +7,7 @@ export interface Column {
 
 export interface User {
     id: string;
+    mondayId: string;
     name: string;
     email: string | undefined;
 }
@@ -91,10 +92,7 @@ export interface IMondayService {
      * @returns Collection of all Item messages, called "Updates" within Monday,
      *  that happened within the given date range
      */
-    getAllItemMessages(
-        startDate: Date,
-        endDate: Date
-    ): Promise<ItemUpdate[]>;
+    getAllItemMessages(startDate: Date, endDate: Date): Promise<ItemUpdate[]>;
 
     /**
      * @param boardId - Id of a board on Monday.com

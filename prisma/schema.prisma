@@ -26,6 +26,7 @@ model User {
   intercessorFor      Organization[] @relation("UserIntercessors")
 
   @@map("users")
+  @@unique([mondayId])
 }
 
 model Role {

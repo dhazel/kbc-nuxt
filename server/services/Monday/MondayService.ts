@@ -18,7 +18,10 @@ export class MondayService implements IMondayService {
      * @returns Collection of all Item messages, called "Updates" within Monday,
      *  that happened within the given date range
      */
-    public async getAllItemMessages(startDate: Date, endDate: Date): Promise<ItemUpdate[]> {
+    public async getAllItemMessages(
+        startDate: Date,
+        endDate: Date
+    ): Promise<ItemUpdate[]> {
         const inclusiveEndDate = new Date(endDate);
         inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
         const maxUpdates = 10000;
@@ -51,13 +54,13 @@ export class MondayService implements IMondayService {
             } 
         `;
         const response = await this.mondayAdapter.query(query);
-        const updates = response.data.updates.map(update => {
+        const updates = response.data.updates.map((update) => {
             const itemUpdate: ItemUpdate = {
                 ...update,
                 bodyText: update.text_body,
             };
             return itemUpdate;
-        })
+        });
         return updates;
     }
 
@@ -245,7 +248,12 @@ export class MondayService implements IMondayService {
     public async getAllMondayUsers(): Promise<User[]> {
         const usersQuery = `query { users { id name email } }`;
         const usersResponse = await this.mondayAdapter.query(usersQuery);
-        const allUsers = usersResponse.data.users as User[];
+        const allUsers = usersResponse.data.users.map(
+            (user: { id: string; name: string; email?: string }) => ({
+                ...user,
+                mondayId: user.id,
+            })
+        ) as User[];
         return allUsers;
     }
 
