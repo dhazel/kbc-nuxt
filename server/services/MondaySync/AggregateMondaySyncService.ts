@@ -4,10 +4,8 @@ export class AggregateMondaySyncService implements IMondaySyncService {
     constructor(private mondaySyncServices: IMondaySyncService[]) {}
 
     async sync(): Promise<void> {
-        await Promise.all(
-            this.mondaySyncServices.map(async (service) => {
-                return await service.sync();
-            })
-        );
+        for (const service of this.mondaySyncServices) {
+            await service.sync();
+        }
     }
 }
