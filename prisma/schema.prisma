@@ -12,12 +12,12 @@ datasource db {
 }
 
 model User {
-  id              Int      @id @default(autoincrement())
-  name            String
-  email           String   @unique
-  joinedAt        DateTime @default(now())
-  visitCount      Int      @default(0)
-  mondayId         String?
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String   @unique
+  joinedAt   DateTime @default(now())
+  visitCount Int      @default(0)
+  mondayId   String?
 
   createdPrayerOrders PrayerOrder[]  @relation("PrayerOrderCreator")
   roles               Role[]
@@ -25,8 +25,8 @@ model User {
   organizations       Organization[] @relation("UserOrganizations")
   intercessorFor      Organization[] @relation("UserIntercessors")
 
-  @@map("users")
   @@unique([mondayId])
+  @@map("users")
 }
 
 model Role {
@@ -67,6 +67,25 @@ model Subscription {
   @@map("subscriptions")
 }
 
+model Status {
+  id                  Int                  @id @default(autoincrement())
+  name                String               @unique
+  color               String?
+  prayerOrderStatuses PrayerOrderStatus[] // Many-to-many via junction
+
+  @@map("statuses")
+}
+
+model PrayerOrderStatus {
+  prayerOrderId Int
+  prayerOrder   PrayerOrder @relation(fields: [prayerOrderId], references: [id], onDelete: Cascade)
+  statusId      Int
+  status        Status      @relation(fields: [statusId], references: [id], onDelete: Cascade)
+
+  @@unique([prayerOrderId, statusId]) // Prevents duplicate Statuses per PrayerOrder
+  @@map("prayer_order_statuses")
+}
+
 model PrayerOrder {
   id        Int  @id @default(autoincrement())
   creatorId Int
@@ -83,9 +102,10 @@ model PrayerOrder {
 
   messages Message[] // All replies/follow-ups (flat)
 
-  createdAt      DateTime @default(now())
-  lastActivityAt DateTime @default(now()) @updatedAt // Automatically updates on new messages
-  mondayId         String?
+  createdAt         DateTime           @default(now())
+  lastActivityAt      DateTime             @default(now()) @updatedAt // Automatically updates on new messages
+  mondayId            String?
+  prayerOrderStatuses PrayerOrderStatus[]
 
   @@index([creatorId])
   @@index([createdAt])
@@ -107,7 +127,7 @@ model Message {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // Optional: for soft deletes
-  mondayId         String?
+  mondayId  String?
 
   @@index([prayerOrderId, createdAt(desc)]) // Critical for efficient chronological fetching + pagination
   @@index([authorId])
