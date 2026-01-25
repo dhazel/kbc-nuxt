@@ -92,7 +92,7 @@ model PrayerOrder {
   creator   User @relation("PrayerOrderCreator", fields: [creatorId], references: [id])
 
   typeId Int // Required: links to thread type
-  type   ThreadType @relation(fields: [typeId], references: [id])
+  type   IntercessionType @relation(fields: [typeId], references: [id])
 
   organizationId Int // Required: links to organization
   organization   Organization @relation(fields: [organizationId], references: [id])
@@ -135,7 +135,7 @@ model Message {
   @@map("messages")
 }
 
-model ThreadType {
+model IntercessionType {
   id          Int     @id @default(autoincrement())
   name        String  @unique
   description String?
@@ -151,7 +151,7 @@ model BoardMapping {
   subscriptionId Int
   subscription   Subscription @relation(fields: [subscriptionId], references: [id])
   threadTypeId   Int
-  threadType     ThreadType   @relation(fields: [threadTypeId], references: [id])
+  threadType     IntercessionType   @relation(fields: [threadTypeId], references: [id])
   mondayBoardId  Int?
   mondayBoard    MondayBoard? @relation(fields: [mondayBoardId], references: [id])
 
