@@ -143,19 +143,19 @@ model IntercessionType {
   prayerOrders  PrayerOrder[]
   boardMappings BoardMapping[]
 
-  @@map("thread_types")
+  @@map("intercession_types")
 }
 
 model BoardMapping {
   id             Int          @id @default(autoincrement())
   subscriptionId Int
   subscription   Subscription @relation(fields: [subscriptionId], references: [id])
-  threadTypeId   Int
-  threadType     IntercessionType   @relation(fields: [threadTypeId], references: [id])
+  intercessionTypeId   Int
+  intercessionType     IntercessionType   @relation(fields: [intercessionTypeId], references: [id])
   mondayBoardId  Int?
   mondayBoard    MondayBoard? @relation(fields: [mondayBoardId], references: [id])
 
-  @@unique([subscriptionId, threadTypeId, mondayBoardId])
+  @@unique([subscriptionId, intercessionTypeId, mondayBoardId])
   @@map("board_mappings")
 }
 

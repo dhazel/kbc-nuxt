@@ -9,5 +9,5 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 401, message: 'Not Authenticated' });
     }
 
-    return await event.context.threadTypeService.getAllThreadTypes();
+    return await event.context.intercessionTypeService.getAllIntercessionTypes();
 });

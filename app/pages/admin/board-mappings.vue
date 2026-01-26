@@ -15,9 +15,17 @@
             class="p-datatable-sm"
             :loading="loading"
         >
-            <Column field="mondayBoard.boardName" header="Monday Board" sortable/>
-            <Column field="subscription.name" header="Subscription" sortable/>
-            <Column field="threadType.name" header="Intercession Type" sortable/>
+            <Column
+                field="mondayBoard.boardName"
+                header="Monday Board"
+                sortable
+            />
+            <Column field="subscription.name" header="Subscription" sortable />
+            <Column
+                field="intercessionType.name"
+                header="Intercession Type"
+                sortable
+            />
             <Column header="Actions">
                 <template #body="slotProps">
                     <Button
@@ -100,7 +108,7 @@ const hideDialog = () => {
 
 const confirmDelete = (mapping) => {
     confirm.require({
-        message: `Are you sure you want to delete the mapping between "${mapping.mondayBoard.boardName}",  "${mapping.subscription.name}" and "${mapping.threadType.name}"?`,
+        message: `Are you sure you want to delete the mapping between "${mapping.mondayBoard.boardName}",  "${mapping.subscription.name}" and "${mapping.intercessionType.name}"?`,
         header: 'Confirm Delete',
         icon: 'pi pi-exclamation-triangle',
         accept: () => deleteMapping(mapping.id),

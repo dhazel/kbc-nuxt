@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const body = await readBody(event);
-    const { subscriptionId, threadTypeId, mondayBoardId } = body;
+    const { subscriptionId, intercessionTypeId, mondayBoardId } = body;
 
     if (subscriptionId !== undefined && typeof subscriptionId !== 'number') {
         throw createError({
@@ -38,10 +38,13 @@ export default defineEventHandler(async (event) => {
             message: 'subscriptionId must be a number',
         });
     }
-    if (threadTypeId !== undefined && typeof threadTypeId !== 'number') {
+    if (
+        intercessionTypeId !== undefined &&
+        typeof intercessionTypeId !== 'number'
+    ) {
         throw createError({
             statusCode: 400,
-            message: 'threadTypeId must be a number',
+            message: 'intercessionTypeId must be a number',
         });
     }
     if (
@@ -58,7 +61,7 @@ export default defineEventHandler(async (event) => {
     try {
         return await event.context.boardMappingService.updateBoardMapping(id, {
             subscriptionId,
-            threadTypeId,
+            intercessionTypeId,
             mondayBoardId,
         });
     } catch (error) {

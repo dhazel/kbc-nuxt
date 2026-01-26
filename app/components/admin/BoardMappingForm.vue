@@ -36,18 +36,18 @@
             </div>
 
             <div class="field">
-                <label for="threadType">Intercession Type *</label>
+                <label for="intercessionType">Intercession Type *</label>
                 <Dropdown
-                    id="threadType"
-                    v-model="formData.threadTypeId"
-                    :options="threadTypes"
+                    id="intercessionType"
+                    v-model="formData.intercessionTypeId"
+                    :options="intercessionTypes"
                     option-label="name"
                     option-value="id"
                     placeholder="Select an intercession type"
-                    :class="{ 'p-invalid': errors.threadTypeId }"
+                    :class="{ 'p-invalid': errors.intercessionTypeId }"
                 />
-                <small v-if="errors.threadTypeId" class="p-error">{{
-                    errors.threadTypeId
+                <small v-if="errors.intercessionTypeId" class="p-error">{{
+                    errors.intercessionTypeId
                 }}</small>
             </div>
         </div>
@@ -92,26 +92,26 @@ const toast = useToast();
 
 // Data
 const subscriptions = ref([]);
-const threadTypes = ref([]);
+const intercessionTypes = ref([]);
 const mondayBoards = ref([]);
 const saving = ref(false);
 const formData = reactive({
     subscriptionId: null as number | null,
-    threadTypeId: null as number | null,
+    intercessionTypeId: null as number | null,
     mondayBoardId: null as number | null,
 });
 const errors = reactive({
     subscriptionId: '',
-    threadTypeId: '',
+    intercessionTypeId: '',
 });
 
 // Methods
 const fetchOptions = async () => {
     try {
-        [subscriptions.value, threadTypes.value, mondayBoards.value] =
+        [subscriptions.value, intercessionTypes.value, mondayBoards.value] =
             await Promise.all([
                 $fetch('/api/subscriptions'),
-                $fetch('/api/thread-types'),
+                $fetch('/api/intercession-types'),
                 $fetch('/api/monday-boards'),
             ]);
     } catch (error) {
@@ -128,15 +128,17 @@ const validateForm = () => {
     errors.subscriptionId = formData.subscriptionId
         ? ''
         : 'Subscription is required';
-    errors.threadTypeId = formData.threadTypeId
+    errors.intercessionTypeId = formData.intercessionTypeId
         ? ''
         : 'Intercession Type is required';
     errors.mondayBoardId = formData.mondayBoardId
         ? ''
         : 'Monday Board is required';
-    return !errors.subscriptionId
-        && !errors.threadTypeId
-        && !errors.mondayBoardId;
+    return (
+        !errors.subscriptionId &&
+        !errors.intercessionTypeId &&
+        !errors.mondayBoardId
+    );
 };
 
 const submitForm = async () => {
@@ -146,7 +148,7 @@ const submitForm = async () => {
         saving.value = true;
         const data = {
             subscriptionId: formData.subscriptionId!,
-            threadTypeId: formData.threadTypeId!,
+            intercessionTypeId: formData.intercessionTypeId!,
             mondayBoardId: formData.mondayBoardId,
         };
 
@@ -187,15 +189,15 @@ watch(
     (newMapping) => {
         if (newMapping) {
             formData.subscriptionId = newMapping.subscriptionId;
-            formData.threadTypeId = newMapping.threadTypeId;
+            formData.intercessionTypeId = newMapping.intercessionTypeId;
             formData.mondayBoardId = newMapping.mondayBoardId;
         } else {
             formData.subscriptionId = null;
-            formData.threadTypeId = null;
+            formData.intercessionTypeId = null;
             formData.mondayBoardId = null;
         }
         errors.subscriptionId = '';
-        errors.threadTypeId = '';
+        errors.intercessionTypeId = '';
     },
     { immediate: true }
 );

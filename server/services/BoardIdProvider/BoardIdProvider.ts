@@ -16,7 +16,7 @@ export class BoardIdProvider implements IBoardIdProvider {
                         mode: 'insensitive',
                     },
                 },
-                threadType: {
+                intercessionType: {
                     name: {
                         contains: prayerOrderType,
                         mode: 'insensitive',

@@ -3,7 +3,7 @@ import type { IBoardMappingService } from '../../app/utils/IBoardMappingService'
 import type {
     BoardMappingDTO,
     SubscriptionDTO,
-    ThreadTypeDTO,
+    IntercessionTypeDTO,
     MondayBoardDTO,
 } from '../../app/utils/BoardMappingDTOs';
 
@@ -14,7 +14,7 @@ export class BoardMappingService implements IBoardMappingService {
         const results = await this.prisma.boardMapping.findMany({
             include: {
                 subscription: true,
-                threadType: true,
+                intercessionType: true,
                 mondayBoard: true,
             },
         });
@@ -26,7 +26,7 @@ export class BoardMappingService implements IBoardMappingService {
             where: { id },
             include: {
                 subscription: true,
-                threadType: true,
+                intercessionType: true,
                 mondayBoard: true,
             },
         });
@@ -35,7 +35,7 @@ export class BoardMappingService implements IBoardMappingService {
 
     async createBoardMapping(data: {
         subscriptionId: number;
-        threadTypeId: number;
+        intercessionTypeId: number;
         mondayBoardId?: number;
     }) {
         // Validate foreign keys
@@ -46,10 +46,10 @@ export class BoardMappingService implements IBoardMappingService {
             throw new Error('Subscription not found');
         }
 
-        const threadType = await this.prisma.threadType.findUnique({
-            where: { id: data.threadTypeId },
+        const intercessionType = await this.prisma.intercessionType.findUnique({
+            where: { id: data.intercessionTypeId },
         });
-        if (!threadType) {
+        if (!intercessionType) {
             throw new Error('ThreadType not found');
         }
 
@@ -66,7 +66,7 @@ export class BoardMappingService implements IBoardMappingService {
             data,
             include: {
                 subscription: true,
-                threadType: true,
+                intercessionType: true,
                 mondayBoard: true,
             },
         });
@@ -77,7 +77,7 @@ export class BoardMappingService implements IBoardMappingService {
         id: number,
         data: {
             subscriptionId?: number;
-            threadTypeId?: number;
+            intercessionTypeId?: number;
             mondayBoardId?: number;
         }
     ) {
@@ -99,11 +99,12 @@ export class BoardMappingService implements IBoardMappingService {
             }
         }
 
-        if (data.threadTypeId) {
-            const threadType = await this.prisma.threadType.findUnique({
-                where: { id: data.threadTypeId },
-            });
-            if (!threadType) {
+        if (data.intercessionTypeId) {
+            const intercessionType =
+                await this.prisma.intercessionType.findUnique({
+                    where: { id: data.intercessionTypeId },
+                });
+            if (!intercessionType) {
                 throw new Error('ThreadType not found');
             }
         }
@@ -124,7 +125,7 @@ export class BoardMappingService implements IBoardMappingService {
             data,
             include: {
                 subscription: true,
-                threadType: true,
+                intercessionType: true,
                 mondayBoard: true,
             },
         });
@@ -156,7 +157,7 @@ export class BoardMappingService implements IBoardMappingService {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private mapToThreadTypeDTO(tt: any): ThreadTypeDTO {
+    private mapToIntercessionTypeDTO(tt: any): IntercessionTypeDTO {
         return {
             id: tt.id,
             name: tt.name,
@@ -182,8 +183,10 @@ export class BoardMappingService implements IBoardMappingService {
             id: bm.id,
             subscriptionId: bm.subscriptionId,
             subscription: this.mapToSubscriptionDTO(bm.subscription),
-            threadTypeId: bm.threadTypeId,
-            threadType: this.mapToThreadTypeDTO(bm.threadType),
+            intercessionTypeId: bm.intercessionTypeId,
+            intercessionType: this.mapToIntercessionTypeDTO(
+                bm.intercessionType
+            ),
             mondayBoardId: bm.mondayBoardId,
             mondayBoard: bm.mondayBoard
                 ? this.mapToMondayBoardDTO(bm.mondayBoard)

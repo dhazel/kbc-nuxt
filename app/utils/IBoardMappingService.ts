@@ -5,14 +5,14 @@ export interface IBoardMappingService {
     getBoardMappingById(id: number): Promise<BoardMappingDTO | null>;
     createBoardMapping(data: {
         subscriptionId: number;
-        threadTypeId: number;
+        intercessionTypeId: number;
         mondayBoardId?: number;
     }): Promise<BoardMappingDTO>;
     updateBoardMapping(
         id: number,
         data: {
             subscriptionId?: number;
-            threadTypeId?: number;
+            intercessionTypeId?: number;
             mondayBoardId?: number;
         }
     ): Promise<BoardMappingDTO>;

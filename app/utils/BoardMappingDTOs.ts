@@ -5,7 +5,7 @@ export interface SubscriptionDTO {
     createdAt: Date;
 }
 
-export interface ThreadTypeDTO {
+export interface IntercessionTypeDTO {
     id: number;
     name: string;
     description?: string | null;
@@ -24,8 +24,8 @@ export interface BoardMappingDTO {
     id: number;
     subscriptionId: number;
     subscription: SubscriptionDTO;
-    threadTypeId: number;
-    threadType: ThreadTypeDTO;
+    intercessionTypeId: number;
+    intercessionType: IntercessionTypeDTO;
     mondayBoardId?: number | null;
     mondayBoard?: MondayBoardDTO | null;
 }
