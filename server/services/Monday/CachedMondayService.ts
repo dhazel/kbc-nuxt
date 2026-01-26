@@ -1,15 +1,22 @@
-import type { ActivityLog, IMondayService, Item, ItemUpdate, User } from './IMondayService';
+import type {
+    ActivityLog,
+    Board,
+    IMondayService,
+    Item,
+    ItemUpdate,
+    User,
+} from './IMondayService';
 
 export class CachedMondayService implements IMondayService {
     constructor(private mondayService: IMondayService) {}
 
-    public async getAllItemMessages(startDate: Date, endDate: Date): Promise<ItemUpdate[]> {
+    public async getAllItemMessages(
+        startDate: Date,
+        endDate: Date
+    ): Promise<ItemUpdate[]> {
         const cachedFunc = defineCachedFunction(
             async (startDate, endDate) =>
-                await this.mondayService.getAllItemMessages(
-                    startDate,
-                    endDate
-                ),
+                await this.mondayService.getAllItemMessages(startDate, endDate),
             {
                 maxAge: 10 * 60,
                 name: 'getAllItemMessages',
@@ -147,6 +154,22 @@ export class CachedMondayService implements IMondayService {
             }
         );
         const response = await cachedFunc();
+        return response;
+    }
+
+    /**
+     * @param boardIds - Collection of board IDs
+     * @returns Array of Board objects with mondayId and name
+     */
+    public async getBoards(boardIds: number[]): Promise<Board[]> {
+        const cachedFunc = defineCachedFunction(
+            async (boardIds) => await this.mondayService.getBoards(boardIds),
+            {
+                maxAge: 60 * 60,
+                name: 'getBoards',
+            }
+        );
+        const response = await cachedFunc(boardIds);
         return response;
     }
 }

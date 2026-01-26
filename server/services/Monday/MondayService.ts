@@ -1,6 +1,7 @@
 import type { IMondayAdapter } from '../../adapters/IMondayAdapter';
 import type {
     ActivityLog,
+    Board,
     Column,
     IMondayService,
     Item,
@@ -54,7 +55,7 @@ export class MondayService implements IMondayService {
             } 
         `;
         const response = await this.mondayAdapter.query(query);
-        const updates = response.data.updates.map((update) => {
+        const updates = response.data.updates.map((update: any) => {
             const itemUpdate: ItemUpdate = {
                 ...update,
                 bodyText: update.text_body,
@@ -277,5 +278,19 @@ export class MondayService implements IMondayService {
             }
         );
         return result;
+    }
+
+    /**
+     * @param boardIds - Collection of board IDs
+     * @returns Array of Board objects with mondayId and name
+     */
+    public async getBoards(boardIds: number[]): Promise<Board[]> {
+        const query = `query { boards(ids: [${boardIds.join(',')}]) { id name } }`;
+        const response = await this.mondayAdapter.query(query);
+        const boards = response.data.boards;
+        return boards.map((board: { id: string; name: string }) => ({
+            mondayId: parseInt(board.id),
+            name: board.name,
+        }));
     }
 }

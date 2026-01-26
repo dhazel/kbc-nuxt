@@ -5,6 +5,11 @@ export interface Column {
     settings_str?: string;
 }
 
+export interface Board {
+    mondayId: number;
+    name: string;
+}
+
 export interface User {
     id: string;
     mondayId: string;
@@ -111,4 +116,10 @@ export interface IMondayService {
     getGroupsForBoards(
         boardIds: number[]
     ): Promise<Record<number, { id: string; title: string }[]>>;
+
+    /**
+     * @param boardIds - Collection of board IDs
+     * @returns Array of Board objects with mondayId and name
+     */
+    getBoards(boardIds: number[]): Promise<Board[]>;
 }
