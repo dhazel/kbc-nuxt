@@ -165,9 +165,22 @@ model MondayBoard {
   boardName      String?
   organizationId Int?
   organization   Organization?  @relation(fields: [organizationId], references: [id])
-  boardMappings  BoardMapping[]
-  createdAt      DateTime       @default(now())
+  boardMappings          BoardMapping[]
+  mondayPrayerOrderSync   MondayPrayerOrderSync?
+  createdAt               DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
   @@map("monday_boards")
+}
+
+model MondayPrayerOrderSync {
+  id             Int                   @id @default(autoincrement())
+  mondayBoardId  Int                   @unique
+  mondayBoard    MondayBoard           @relation(fields: [mondayBoardId], references: [id])
+  lastSyncedAt   DateTime?
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+
+  @@index([mondayBoardId])
+  @@map("monday_prayer_order_syncs")
 }
