@@ -16,6 +16,11 @@
             :loading="loading"
         >
             <Column
+                field="mondayBoard.mondayBoardId"
+                header="Monday Board #"
+                sortable
+            />
+            <Column
                 field="mondayBoard.boardName"
                 header="Monday Board"
                 sortable
