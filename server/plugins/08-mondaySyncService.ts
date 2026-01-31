@@ -12,7 +12,7 @@ export default defineNitroPlugin((nitroApp) => {
             new MondayService(new MondayBackoffAdapter(new MondayAdapter()))
         );
         event.context.mondaySyncService = new AggregateMondaySyncService([
-            new MondayUsersSyncService(mondayService, event.context.prisma),
+            // new MondayUsersSyncService(mondayService, event.context.prisma),
             new MondayBoardNameSyncService(mondayService, event.context.prisma),
         ]);
     });
