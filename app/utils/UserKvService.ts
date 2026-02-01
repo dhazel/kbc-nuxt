@@ -1,6 +1,6 @@
 import type { IClientKvStore } from './IClientKvStore';
 import type { IUserService } from './IUserService';
-import type { UserProfile } from './UserProfile';
+import type UserProfile from './UserProfile';
 
 export class UserKvService implements IUserService {
     constructor(private kvStore: IClientKvStore) {}
@@ -25,6 +25,7 @@ export class UserKvService implements IUserService {
                     name: parsed.name,
                     visitCount: parsed.visitCount,
                     roles: parsed.roles || [],
+                    permissions: [],
                 };
             }
 
