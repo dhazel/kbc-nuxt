@@ -1,9 +1,13 @@
 <template>
-    <div>
-        <AvatarMeta />
+    <PageGuard>
+        <div>
+            <AvatarMeta />
 
-        <Button v-if="$auth.loggedIn" @click="handleLogout"> Sign Out </Button>
-    </div>
+            <Button v-if="$auth.loggedIn" @click="handleLogout">
+                Sign Out
+            </Button>
+        </div>
+    </PageGuard>
 </template>
 
 <script setup lang="ts">

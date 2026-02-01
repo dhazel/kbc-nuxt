@@ -9,7 +9,7 @@ import { navigateTo, useNuxtApp } from '#app';
 import { usePermissionsStore } from '~/stores/permissions';
 
 const props = defineProps<{
-    permission: string;
+    permission?: string;
 }>();
 
 const { $auth } = useNuxtApp();
@@ -24,11 +24,15 @@ onMounted(async () => {
         return;
     }
 
-    await permissionsStore.fetchPermissions();
-    if (permissionsStore.permissions.includes(props.permission)) {
-        hasPermission.value = true;
+    if (props.permission) {
+        await permissionsStore.fetchPermissions();
+        if (permissionsStore.permissions.includes(props.permission)) {
+            hasPermission.value = true;
+        } else {
+            navigateTo('/');
+        }
     } else {
-        navigateTo('/');
+        hasPermission.value = true;
     }
     loading.value = false;
 });
