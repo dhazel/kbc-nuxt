@@ -1,9 +1,13 @@
 import type { PrismaClient } from '@prisma/client';
 import type { IUserService } from '../../app/utils/IUserService';
-import type { UserProfile } from '../../app/utils/UserKvService';
+import type UserProfile from '../../app/utils/UserProfile';
+import type { IPermissionProvider } from './PermissionProvider/IPermissionProvider';
 
 export class UserService implements IUserService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(
+        private prisma: PrismaClient,
+        private permissionProvider: IPermissionProvider
+    ) {}
 
     async getUserProfileByEmail(email: string): Promise<UserProfile | null> {
         try {
@@ -12,13 +16,17 @@ export class UserService implements IUserService {
                 include: { roles: true },
             });
             if (user) {
-                return {
+                const returnUser: UserProfile = {
                     email: user.email,
                     joinedAt: user.joinedAt,
                     name: user.name,
                     visitCount: user.visitCount,
                     roles: user.roles.map((role) => role.name),
+                    permissions: [],
                 };
+                returnUser.permissions =
+                    this.permissionProvider.GetForUser(returnUser);
+                return returnUser;
             }
             return null;
         } catch (error) {

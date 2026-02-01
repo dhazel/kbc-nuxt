@@ -1,7 +1,11 @@
+import { RolePassThroughPermissionProvider } from '../services/PermissionProvider/RolePassThroughPermissionProvider';
 import { UserService } from '../services/UserService';
 
 export default defineNitroPlugin((nitroApp) => {
     nitroApp.hooks.hook('request', (event) => {
-        event.context.userService = new UserService(event.context.prisma);
+        event.context.userService = new UserService(
+            event.context.prisma,
+            new RolePassThroughPermissionProvider()
+        );
     });
 });

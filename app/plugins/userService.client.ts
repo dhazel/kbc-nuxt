@@ -1,4 +1,5 @@
-import { UserKvService, type UserProfile } from '~/utils/UserKvService';
+import { UserKvService } from '~/utils/UserKvService';
+import { type UserProfile } from '~/utils/UserProfile';
 import { IndexedDbStorage } from '~/utils/IndexedDbStorage';
 import type { IClientKvStore } from '~/utils/IClientKvStore';
 import { ApiUserService } from '~/utils/ApiUserService';

@@ -1,13 +1,6 @@
 import type { IClientKvStore } from './IClientKvStore';
 import type { IUserService } from './IUserService';
-
-export interface UserProfile {
-    email: string;
-    joinedAt: Date;
-    name: string;
-    visitCount: number;
-    roles: string[];
-}
+import type { UserProfile } from './UserProfile';
 
 export class UserKvService implements IUserService {
     constructor(private kvStore: IClientKvStore) {}

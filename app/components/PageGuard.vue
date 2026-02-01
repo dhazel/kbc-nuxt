@@ -24,7 +24,7 @@ onMounted(async () => {
         const profile = await $userService.getUserProfileByEmail(
             $auth.user.email
         );
-        if (profile && profile.roles.includes(props.permission)) {
+        if (profile && profile.permissions.includes(props.permission)) {
             hasPermission.value = true;
         } else {
             navigateTo('/');
