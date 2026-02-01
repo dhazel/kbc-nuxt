@@ -1,4 +1,4 @@
-import type { UserProfile } from './UserProfile';
+import type UserProfile from './UserProfile';
 
 export interface IUserService {
   getUserProfileByEmail(userEmail: string): Promise<UserProfile | null>;
