@@ -1,71 +1,77 @@
 <template>
-    <div class="p-6">
-        <h1 class="text-2xl font-bold mb-4">Board Mappings Management</h1>
+    <PageGuard permission="admin">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold mb-4">Board Mappings Management</h1>
 
-        <div class="mb-4">
-            <Button
-                label="Add New Mapping"
-                icon="pi pi-plus"
-                @click="showCreateDialog"
-            />
+            <div class="mb-4">
+                <Button
+                    label="Add New Mapping"
+                    icon="pi pi-plus"
+                    @click="showCreateDialog"
+                />
+            </div>
+
+            <DataTable
+                :value="boardMappings"
+                class="p-datatable-sm"
+                :loading="loading"
+            >
+                <Column
+                    field="mondayBoard.mondayBoardId"
+                    header="Monday Board #"
+                    sortable
+                />
+                <Column
+                    field="mondayBoard.boardName"
+                    header="Monday Board"
+                    sortable
+                />
+                <Column
+                    field="subscription.name"
+                    header="Subscription"
+                    sortable
+                />
+                <Column
+                    field="intercessionType.name"
+                    header="Intercession Type"
+                    sortable
+                />
+                <Column header="Actions">
+                    <template #body="slotProps">
+                        <Button
+                            icon="pi pi-pencil"
+                            class="p-button-rounded p-button-success p-mr-2"
+                            @click="editMapping(slotProps.data)"
+                        />
+                        <Button
+                            icon="pi pi-trash"
+                            class="p-button-rounded p-button-danger"
+                            @click="confirmDelete(slotProps.data)"
+                        />
+                    </template>
+                </Column>
+            </DataTable>
+
+            <!-- Create/Edit Dialog -->
+            <Dialog
+                :visible="dialogVisible"
+                :header="dialogHeader"
+                modal
+                @hide="hideDialog"
+            >
+                <BoardMappingForm
+                    v-if="dialogVisible"
+                    :mapping="selectedMapping"
+                    :is-edit="isEditMode"
+                    @save="onSave"
+                    @cancel="hideDialog"
+                />
+            </Dialog>
+
+            <!-- Delete Confirmation -->
+            <ConfirmDialog />
         </div>
-
-        <DataTable
-            :value="boardMappings"
-            class="p-datatable-sm"
-            :loading="loading"
-        >
-            <Column
-                field="mondayBoard.mondayBoardId"
-                header="Monday Board #"
-                sortable
-            />
-            <Column
-                field="mondayBoard.boardName"
-                header="Monday Board"
-                sortable
-            />
-            <Column field="subscription.name" header="Subscription" sortable />
-            <Column
-                field="intercessionType.name"
-                header="Intercession Type"
-                sortable
-            />
-            <Column header="Actions">
-                <template #body="slotProps">
-                    <Button
-                        icon="pi pi-pencil"
-                        class="p-button-rounded p-button-success p-mr-2"
-                        @click="editMapping(slotProps.data)"
-                    />
-                    <Button
-                        icon="pi pi-trash"
-                        class="p-button-rounded p-button-danger"
-                        @click="confirmDelete(slotProps.data)"
-                    />
-                </template>
-            </Column>
-        </DataTable>
-
-        <!-- Create/Edit Dialog -->
-        <Dialog
-            :visible="dialogVisible"
-            :header="dialogHeader"
-            modal
-            @hide="hideDialog"
-        >
-            <BoardMappingForm
-                v-if="dialogVisible"
-                :mapping="selectedMapping"
-                :is-edit="isEditMode"
-                @save="onSave"
-                @cancel="hideDialog"
-            />
-        </Dialog>
-
-        <!-- Delete Confirmation -->
-        <ConfirmDialog />
-    </div>
+    </PageGuard>
 </template>
 
 <script setup lang="ts">
@@ -73,10 +79,6 @@ import { ref, computed, onMounted } from 'vue';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import BoardMappingForm from '~/components/admin/BoardMappingForm.vue';
-
-definePageMeta({
-    middleware: 'admin',
-});
 
 const confirm = useConfirm();
 const toast = useToast();
