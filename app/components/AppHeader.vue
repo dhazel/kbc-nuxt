@@ -33,26 +33,31 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useNuxtApp } from '#app';
+import { usePermissionsStore } from '~/stores/permissions';
 
-const { $auth, $userService } = useNuxtApp();
+const { $auth } = useNuxtApp();
+const permissionsStore = usePermissionsStore();
 const colorMode = useColorMode();
 const logoSrc = computed(() =>
     colorMode.value === 'dark'
         ? '/Catalyst_Transparent_dark.png'
         : '/Catalyst_Transparent.png'
 );
-const userProfile = ref(null);
-const showAdmin = computed(
-    () => userProfile.value?.roles.includes('admin') ?? false
+const showAdmin = computed(() =>
+    permissionsStore.permissions.includes('admin')
 );
 
 onMounted(async () => {
-    if ($auth.loggedIn && $auth.user?.email) {
-        userProfile.value = await $userService.getUserProfileByEmail(
-            $auth.user.email
-        );
+    if ($auth.loggedIn) {
+        await permissionsStore.fetchPermissions();
+    }
+});
+
+watch($auth.loggedIn, async (isLoggedIn) => {
+    if (isLoggedIn) {
+        await permissionsStore.fetchPermissions();
     }
 });
 
