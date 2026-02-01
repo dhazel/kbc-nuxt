@@ -14,6 +14,6 @@ const permissionsStore = usePermissionsStore();
 
 const handleLogout = () => {
     permissionsStore.resetPermissions();
-    navigateTo('/api/logout');
+    window.location.href = '/api/logout';
 };
 </script>
