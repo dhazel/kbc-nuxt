@@ -1,5 +1,6 @@
 <template>
-    <slot v-if="hasPermission" />
+    <ProgressSpinner v-if="loading" />
+    <slot v-else-if="hasPermission" />
 </template>
 
 <script setup lang="ts">
@@ -13,6 +14,7 @@ const props = defineProps<{
 const { $auth, $userService } = useNuxtApp();
 
 const hasPermission = ref(false);
+const loading = ref(true);
 
 onMounted(async () => {
     if (!$auth.loggedIn) {
@@ -33,5 +35,6 @@ onMounted(async () => {
         console.error('Failed to fetch user profile:', error);
         navigateTo('/');
     }
+    loading.value = false;
 });
 </script>
