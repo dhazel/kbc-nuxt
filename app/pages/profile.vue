@@ -1,16 +1,19 @@
 <template>
-  <div>
+    <div>
+        <AvatarMeta />
 
-    <AvatarMeta />
-
-    <Button v-if="$auth.loggedIn" >
-        <NuxtLink to="/api/logout" external>
-            Sign Out
-        </NuxtLink>
-    </Button>
-  </div>
+        <Button v-if="$auth.loggedIn" @click="handleLogout"> Sign Out </Button>
+    </div>
 </template>
 
-
 <script setup lang="ts">
+import { usePermissionsStore } from '~/stores/permissions';
+import { navigateTo } from '#app';
+
+const permissionsStore = usePermissionsStore();
+
+const handleLogout = () => {
+    permissionsStore.resetPermissions();
+    navigateTo('/api/logout');
+};
 </script>
