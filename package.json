@@ -12,7 +12,9 @@
         "format": "prettier --write .",
         "test": "vitest",
         "test:run": "vitest run",
-        "test:ui": "vitest --ui"
+        "test:ui": "vitest --ui",
+        "db:deploy": "prisma migrate deploy",
+        "db:generate": "prisma generate"
     },
     "dependencies": {
         "@netlify/blobs": "^10.0.8",
