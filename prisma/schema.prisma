@@ -184,3 +184,11 @@ model MondayPrayerOrderSync {
   @@index([mondayBoardId])
   @@map("monday_prayer_order_syncs")
 }
+
+model GeneralSync {
+  id            Int       @id @default(autoincrement())
+  description   String
+  lastSyncedAt  DateTime?
+  
+  @@map("general_syncs")
+}
