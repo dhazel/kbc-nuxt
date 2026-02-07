@@ -50,9 +50,9 @@ const intercessorTotals = computed(() => {
                     </template>
                 </Column>
                 <Column field="title" header="Title" sortable />
-                <Column field="board" header="Board" sortable />
-                <Column field="group" header="Group" sortable />
-                <Column field="status" header="Current Status" />
+                <Column field="currentBoard" header="Board" sortable />
+                <Column field="currentGroup" header="Group" sortable />
+                <Column field="currentStatus" header="Current Status" />
             </DataTable>
         </div>
     </div>

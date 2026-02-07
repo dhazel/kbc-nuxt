@@ -112,12 +112,12 @@ export class MonthToMonthInformedReportService implements IIntercessorReportServ
             }
             prayerOrders.push({
                 type: PrayerOrderType.monthToMonthInformed,
-                status: status,
+                currentStatus: status,
                 workedDate: new Date(unixMs),
                 title: item.name,
-                board: item.board?.name || 'Unknown',
+                currentBoard: item.board?.name || 'Unknown',
                 intercessor: this.allUsersMap![changeLog.user_id] || 'Unknown',
-                group: item.group?.title || 'Unknown',
+                currentGroup: item.group?.title || 'Unknown',
             });
         }
         return prayerOrders;
