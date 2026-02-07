@@ -1,7 +1,7 @@
 import type { IIntercessorReportService } from './IIntercessorReportService';
 import type { PrayerOrderData } from '~/../types/prayerOrder';
 import { PrayerOrderType } from '~/../types/prayerOrder';
-import type { IMondayService, Item, User } from '../Monday/IMondayService';
+import type { ActivityLog, IMondayService, Item, User } from '../Monday/IMondayService';
 import type { IBoardIdProvider } from '../BoardIdProvider/IBoardIdProvider';
 
 export class AnnualInformedReportService implements IIntercessorReportService {
@@ -71,7 +71,7 @@ export class AnnualInformedReportService implements IIntercessorReportService {
         }
     }
 
-    private makePrayerOrderList(closedChanges: any, items: Item[]) {
+    private makePrayerOrderList(closedChanges: ActivityLog[], items: Item[]) {
         const prayerOrders: PrayerOrderData[] = [];
         for (const changeLog of closedChanges) {
             const unixMs = Math.round(parseInt(changeLog.created_at) / 10000);
@@ -110,6 +110,7 @@ export class AnnualInformedReportService implements IIntercessorReportService {
                 currentStatus: status,
                 workedDate: new Date(unixMs),
                 title: item.name,
+                board: changeLog.boardName || 'Unknown',
                 currentBoard: item.board?.name || 'Unknown',
                 intercessor: this.allUsersMap![changeLog.user_id] || 'Unknown',
                 currentGroup: item.group?.title || 'Unknown',
