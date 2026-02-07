@@ -92,7 +92,24 @@ export class MondayService implements IMondayService {
         }, [] as number[][]);
 
         const queryTemplate = (ids: number[]) =>
-            `query { items(ids: [${ids.join(',')}], limit: 10000) { id name board { id name } group { id title } column_values { id value } } }`;
+            `query {
+                items(
+                    ids: [${ids.join(',')}],
+                    limit: 10000
+                ) {
+                    id
+                    name
+                    board {
+                        id name
+                    }
+                    group {
+                        id title
+                    }
+                    column_values {
+                        id value
+                    }
+                }
+            }`;
 
         const promises = chunks.map((chunk: number[]) =>
             this.mondayAdapter.query(queryTemplate(chunk))
@@ -135,7 +152,19 @@ export class MondayService implements IMondayService {
         const inclusiveEndDate = new Date(endDate);
         inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
         const maxActivityLog = 10000;
-        const activityQuery = `query { boards(ids: [${boards.join(',')}]) { id name activity_logs(from: "${startDate.toISOString()}", to: "${inclusiveEndDate.toISOString()}", limit: ${maxActivityLog}) { id event data user_id created_at } } }`;
+        const activityQuery = `query {
+            boards(ids: [${boards.join(',')}]) {
+                id
+                name
+                activity_logs(
+                    from: "${startDate.toISOString()}",
+                    to: "${inclusiveEndDate.toISOString()}",
+                    limit: ${maxActivityLog}
+                ) {
+                    id event data user_id created_at
+                }
+            }
+        }`;
         const activityResponse = await this.mondayAdapter.query(activityQuery);
         const allActivityLogs = activityResponse.data.boards.flatMap(
             (board: {
@@ -178,7 +207,26 @@ export class MondayService implements IMondayService {
         const inclusiveEndDate = new Date(endDate);
         inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
         const maxActivityLog = 10000;
-        const activityQuery = `query { boards(ids: [${boards.join(',')}]) { id name activity_logs(from: "${startDate.toISOString()}", to: "${inclusiveEndDate.toISOString()}", column_ids: ["status"], limit: ${maxActivityLog}) { id event data user_id created_at } } }`;
+        const activityQuery = `query {
+            boards(
+                ids: [${boards.join(',')}]
+            ) {
+                id
+                name
+                activity_logs(
+                    from: "${startDate.toISOString()}",
+                    to: "${inclusiveEndDate.toISOString()}",
+                    column_ids: ["status"],
+                    limit: ${maxActivityLog}
+                ) {
+                    id
+                    event
+                    data
+                    user_id
+                    created_at
+                }
+            }
+        }`;
         const activityResponse = await this.mondayAdapter.query(activityQuery);
         const allActivityLogs = activityResponse.data.boards.flatMap(
             (board: {
@@ -212,7 +260,19 @@ export class MondayService implements IMondayService {
     public async getStatusLabels(
         boardIds: number[]
     ): Promise<Record<string, Record<number, string>>> {
-        const boardQuery = `query { boards(ids: [${boardIds.join(',')}]) { id columns { id title type settings_str } } }`;
+        const boardQuery = `query {
+            boards(
+                ids: [${boardIds.join(',')}]
+            ) {
+                id
+                columns {
+                    id
+                    title
+                    type
+                    settings_str
+                }
+            }
+        }`;
         const boardResponse = await this.mondayAdapter.query(boardQuery);
         const labelMap: Record<string, Record<number, string>> = {};
         for (const boardData of boardResponse.data.boards as {
@@ -265,7 +325,18 @@ export class MondayService implements IMondayService {
     public async getGroupsForBoards(
         boardIds: number[]
     ): Promise<Record<number, { id: string; title: string }[]>> {
-        const query = `query { boards(ids: [${boardIds.join(',')}], limit: 1000) { id groups { id title } } }`;
+        const query = `query {
+            boards(
+                ids: [${boardIds.join(',')}],
+                limit: 1000
+            ) {
+                id
+                groups {
+                    id
+                    title
+                }
+            }
+        }`;
         const response = await this.mondayAdapter.query(query);
         const boards = response.data.boards;
         const result: Record<number, { id: string; title: string }[]> = {};
@@ -285,7 +356,14 @@ export class MondayService implements IMondayService {
      * @returns Array of Board objects with mondayId and name
      */
     public async getBoards(boardIds: number[]): Promise<Board[]> {
-        const query = `query { boards(ids: [${boardIds.join(',')}]) { id name } }`;
+        const query = `query {
+            boards(
+                ids: [${boardIds.join(',')}]
+            ) {
+                id
+                name
+            }
+        }`;
         const response = await this.mondayAdapter.query(query);
         const boards = response.data.boards;
         return boards.map((board: { id: string; name: string }) => ({
