@@ -1,6 +1,7 @@
+import { PrayerOrderType } from "~~/types/prayerOrder";
+
 export interface IBoardIdProvider {
     getBoardIds(
-        subscriptionType: 'month-to-month' | 'annual',
-        prayerOrderType: 'informed' | 'inspired'
+        prayerOrderType: PrayerOrderType
     ): Promise<number[]>;
 }
