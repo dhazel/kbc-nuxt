@@ -7,10 +7,11 @@ export enum PrayerOrderType {
 
 export interface PrayerOrderData {
     type: PrayerOrderType;
-    currentStatus: string;
     workedDate: Date;
     title: string;
-    currentBoard: string;
+    board: string;
     intercessor: string;
+    currentStatus: string;
+    currentBoard: string;
     currentGroup: string;
 }
