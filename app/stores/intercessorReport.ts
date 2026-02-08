@@ -10,6 +10,7 @@ export const useIntercessorReportStore = defineStore('intercessorReport', {
         ordersMonthToMonth: [] as PrayerOrderData[],
         ordersAnnualInformed: [] as PrayerOrderData[],
         ordersAnnualInspired: [] as PrayerOrderData[],
+        ordersPerBoard: {} as Record<string, PrayerOrderData[]>,
         loading: false,
         error: '',
     }),
@@ -51,6 +52,10 @@ export const useIntercessorReportStore = defineStore('intercessorReport', {
                     (o: PrayerOrderData) =>
                         o.type == PrayerOrderType.annualInspired
                 );
+                this.ordersPerBoard = Object.groupBy(
+                    response,
+                    (po: PrayerOrderData) => po.board
+                ) as Record<string, PrayerOrderData[]>;
             } catch (err: unknown) {
                 const error = err as {
                     statusCode?: number;

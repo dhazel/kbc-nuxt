@@ -65,6 +65,14 @@
                         :orders="store.ordersAnnualInspired"
                     />
                 </TabPanel>
+                <TabPanel
+                    v-if="store.orders.length > 0"
+                    header="Per Board"
+                >
+                    <IntercessorsPerBoard
+                        :orders="store.ordersPerBoard"
+                    />
+                </TabPanel>
             </TabView>
         </div>
     </PageGuard>
@@ -75,7 +83,8 @@ import DatePicker from 'primevue/datepicker';
 import Button from 'primevue/button';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
-import IntercessorReportTable from '~/components/IntercessorReportTable.vue';
+import IntercessorReportTable from '~/components/reports/IntercessorReportTable.vue';
+import IntercessorsPerBoard from '~/components/reports/IntercessorsPerBoard.vue';
 import { useIntercessorReportStore } from '~/stores/intercessorReport';
 
 const store = useIntercessorReportStore();
