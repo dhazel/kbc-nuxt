@@ -7,7 +7,11 @@ interface Props {
     orders: Record<string, PrayerOrderData[]>;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
+
+const sortedBoards = computed(() => {
+    return Object.entries(props.orders).sort(([a], [b]) => a.localeCompare(b));
+});
 </script>
 
 <template>
@@ -17,7 +21,7 @@ defineProps<Props>();
         </div>
         <div v-else>
             <Card
-                v-for="(boardOrders, boardName) in orders"
+                v-for="[boardName, boardOrders] in sortedBoards"
                 :key="boardName"
                 class="mb-4"
             >
