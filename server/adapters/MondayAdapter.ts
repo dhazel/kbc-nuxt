@@ -29,7 +29,7 @@ export class MondayAdapter implements IMondayAdapter {
             // console.log('Status:', response.status);
             // console.log('Response:', JSON.stringify(data, null, 2));
 
-            let returnValue = {};
+            const returnValue = {};
             if (!response.ok) {
                 const error = {
                     status: response.status,

@@ -5,8 +5,7 @@ import type {
     User,
 } from '../Monday/IMondayService';
 import type { IBoardIdProvider } from '../BoardIdProvider/IBoardIdProvider';
-import type { PrayerOrderData } from '~/../types/prayerOrder';
-import { PrayerOrderType } from '~/../types/prayerOrder';
+import type { PrayerOrderData, PrayerOrderType  } from '~/../types/prayerOrder';
 
 export abstract class AbstractIntercessorReportService {
     protected mondayService: IMondayService;

@@ -12,14 +12,14 @@
                         <img
                             alt="intercessor"
                             src="/intercessor4_cropped.jpg"
-                        />
+                        >
                     </template>
                     <template #title>Intercessor Report</template>
                     <template #subtitle
                         >Track work completed by intercessors</template
                     >
                     <template #content>
-                        <p class="m-0"></p>
+                        <p class="m-0"/>
                     </template>
                     <template #footer>
                         <div class="flex gap-4 mt-1">

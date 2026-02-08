@@ -1,5 +1,5 @@
-import UserProfile from "~/utils/UserProfile";
-import { IPermissionProvider } from "./IPermissionProvider";
+import type UserProfile from "~/utils/UserProfile";
+import type { IPermissionProvider } from "./IPermissionProvider";
 
 export class RolePassThroughPermissionProvider implements IPermissionProvider {
     constructor() {}

@@ -64,7 +64,7 @@ export default defineNuxtPlugin(async (): Promise<object> => {
 
     // Set current user if already authenticated
     if ($auth && $auth.loggedIn && $auth.user) {
-        let user = await getOrCreateUser($auth.user);
+        const user = await getOrCreateUser($auth.user);
         if (user !== null) await incrementVisitCount(user);
 
     }
@@ -74,7 +74,7 @@ export default defineNuxtPlugin(async (): Promise<object> => {
         () => $auth?.loggedIn,
         async (isLoggedIn) => {
             if (isLoggedIn && $auth?.user) {
-                let user = await getOrCreateUser($auth.user);
+                const user = await getOrCreateUser($auth.user);
                 if (user !== null) await incrementVisitCount(user);
             }
         }

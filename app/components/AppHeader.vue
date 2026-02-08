@@ -2,14 +2,14 @@
     <MegaMenu :model="items">
         <template #start>
             <NuxtLink to="/" external>
-                <img :src="logoSrc" style="height: 40px" />
+                <img :src="logoSrc" style="height: 40px" >
             </NuxtLink>
         </template>
         <template #item="{ item }">
             <NuxtLink
                 v-if="item.route"
-                :to="item.route"
                 v-show="item.show"
+                :to="item.route"
                 external
             >
                 <span :class="item.icon" />

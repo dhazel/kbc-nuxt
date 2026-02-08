@@ -1,5 +1,5 @@
 <template>
-    <ProgressBar v-if="loading" mode="indeterminate" style="height: 6px"></ProgressBar>
+    <ProgressBar v-if="loading" mode="indeterminate" style="height: 6px"/>
     <slot v-else-if="hasPermission" />
 </template>
 

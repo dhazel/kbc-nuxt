@@ -1,4 +1,4 @@
-import { PrayerOrderType } from "~~/types/prayerOrder";
+import type { PrayerOrderType } from "~~/types/prayerOrder";
 
 export interface IBoardIdProvider {
     getBoardIds(
