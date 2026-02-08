@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
+import Card from 'primevue/card';
 import type { PrayerOrderData } from '~types/prayerOrder';
+import IntercessorsPerBoardTable from '~/components/reports/IntercessorsPerBoardTable.vue';
 
 interface Props {
     orders: Record<string, PrayerOrderData[]>;
 }
 
-const props = defineProps<Props>();
-
-import IntercessorsPerBoardTable from '~/components/reports/IntercessorsPerBoardTable.vue';
+defineProps<Props>();
 </script>
 
 <template>
@@ -19,10 +16,16 @@ import IntercessorsPerBoardTable from '~/components/reports/IntercessorsPerBoard
             <p class="text-gray-500">There are no prayers logged.</p>
         </div>
         <div v-else>
-            <div v-for="(boardOrders, boardName) in orders" :key="boardName">
-                <h2 class="text-xl mb-2 mt-4">{{ boardName }}</h2>
-                <IntercessorsPerBoardTable :orders="boardOrders" />
-            </div>
+            <Card
+                v-for="(boardOrders, boardName) in orders"
+                :key="boardName"
+                class="mb-4"
+            >
+                <template #title>{{ boardName }}</template>
+                <template #content>
+                    <IntercessorsPerBoardTable :orders="boardOrders" />
+                </template>
+            </Card>
         </div>
     </div>
 </template>

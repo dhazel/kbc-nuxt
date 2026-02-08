@@ -13,17 +13,17 @@ const props = defineProps<Props>();
 const intercessorTotals = computed(() => {
     const totals: Record<string, number> = {};
     props.orders.forEach((order) => {
-        if (totals[order.intercessor]) {
-            totals[order.intercessor]++;
-        } else {
-            totals[order.intercessor] = 1;
-        }
+        totals[order.intercessor] = (totals[order.intercessor] || 0) + 1;
     });
     return Object.entries(totals).map(([intercessor, count]) => ({
         intercessor,
         count,
     }));
 });
+
+const totalPrayers = computed(() =>
+    intercessorTotals.value.reduce((sum, item) => sum + item.count, 0)
+);
 </script>
 
 <template>
@@ -35,6 +35,10 @@ const intercessorTotals = computed(() => {
             <DataTable :value="intercessorTotals" class="p-datatable-sm">
                 <Column field="intercessor" header="Intercessor" sortable />
                 <Column field="count" header="Total Prayers" sortable />
+                <template #footer>
+                    <span class="font-bold">Total: </span>
+                    <span class="font-bold">{{ totalPrayers }}</span>
+                </template>
             </DataTable>
         </div>
     </div>
