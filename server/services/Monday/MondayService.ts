@@ -82,6 +82,14 @@ export class MondayService implements IMondayService {
             ),
         ];
 
+        return await this.getItemsById(itemIds);
+    }
+
+    /*
+     * @param itemIds - Collection of monday IDs corresponding to the desired Items
+     * @returns Collection of all the items referenced by the given monday IDs
+     */
+    public async getItemsById(itemIds: number[]): Promise<Item[]> {
         if (itemIds.length === 0) return [];
 
         const chunkSize = 100;
@@ -126,7 +134,7 @@ export class MondayService implements IMondayService {
      */
     public filterActivityLogsByStatus(
         activityLogs: ActivityLog[],
-        statusText: string
+        statusText: string[]
     ) {
         return activityLogs.filter((log: ActivityLog) => {
             if (log.event !== 'update_column_value') return false;
@@ -134,7 +142,9 @@ export class MondayService implements IMondayService {
             if (data.column_id !== 'status') return false;
             const parsedValue = data.value;
             const label = parsedValue?.label.text;
-            return label?.toLowerCase() === statusText.toLowerCase();
+            return statusText.some(
+                (text) => label?.toLowerCase() === text.toLowerCase()
+            );
         });
     }
 

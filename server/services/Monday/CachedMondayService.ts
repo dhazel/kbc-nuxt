@@ -85,6 +85,22 @@ export class CachedMondayService implements IMondayService {
         return response;
     }
 
+    /*
+     * @param itemIds - Collection of monday IDs corresponding to the desired Items
+     * @returns Collection of all the items referenced by the given monday IDs
+     */
+    public async getItemsById(itemIds: number[]): Promise<Item[]> {
+        const cachedFunc = defineCachedFunction(
+            async (itemIds) => await this.mondayService.getItemsById(itemIds),
+            {
+                maxAge: 10 * 60,
+                name: 'getItemsById',
+            }
+        );
+        const response = await cachedFunc(itemIds);
+        return response;
+    }
+
     /**
      * @param activityLogs - Collection of activity logs
      * @param statusText - The text of the status that the activity log references
@@ -92,7 +108,7 @@ export class CachedMondayService implements IMondayService {
      */
     public filterActivityLogsByStatus(
         activityLogs: ActivityLog[],
-        statusText: string
+        statusText: string[]
     ) {
         return this.mondayService.filterActivityLogsByStatus(
             activityLogs,

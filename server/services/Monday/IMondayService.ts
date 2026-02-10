@@ -57,14 +57,20 @@ export interface IMondayService {
      */
     getAllRelatedItems(activityLogs: ActivityLog[]): Promise<Item[]>;
 
+    /*
+     * @param itemIds - Collection of monday IDs corresponding to the desired Items
+     * @returns Collection of all the items referenced by the given monday IDs
+     */
+    getItemsById(itemIds: number[]): Promise<Item[]>;
+
     /**
      * @param activityLogs - Collection of activity logs
-     * @param statusText - The text of the status that the activity log references
+     * @param statusText - Array of status texts that the activity log references
      * @returns Collection of activity logs filtered to contain only those with the given status
      */
     filterActivityLogsByStatus(
         activityLogs: ActivityLog[],
-        statusText: string
+        statusText: string[]
     ): ActivityLog[];
 
     /**
