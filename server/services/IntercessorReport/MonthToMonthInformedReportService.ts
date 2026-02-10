@@ -36,7 +36,7 @@ export class MonthToMonthInformedReportService
             const closedActivityLogs =
                 this.mondayService.filterActivityLogsByStatus(
                     activityLogs,
-                    'closed'
+                    ['closed', 'kbc reply']
                 );
 
             const closedItems =

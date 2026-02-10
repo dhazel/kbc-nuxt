@@ -34,7 +34,7 @@ export class AnnualInformedReportService
 
             const activityLogs = this.mondayService.filterActivityLogsByStatus(
                 statusActivityLogs,
-                'replied'
+                ['replied', 'kbc reply']
             );
 
             const items =
