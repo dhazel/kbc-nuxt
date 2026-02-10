@@ -17,7 +17,7 @@
                 :loading="loading"
             >
                 <Column
-                    field="mondayBoard.mondayBoardId"
+                    field="mondayBoard.mondayId"
                     header="Monday Board #"
                     sortable
                 />

@@ -14,7 +14,7 @@ export class MondayBoardService implements IMondayBoardService {
     private mapToMondayBoardDTO(mb: any): MondayBoardDTO {
         return {
             id: mb.id,
-            mondayBoardId: mb.mondayBoardId.toString(),
+            mondayId: mb.mondayId,
             boardName: mb.boardName,
             organizationId: mb.organizationId,
             createdAt: mb.createdAt,

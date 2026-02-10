@@ -5,9 +5,7 @@ import type { PrismaClient } from '@prisma/client';
 export class BoardIdProvider implements IBoardIdProvider {
     constructor(private prisma: PrismaClient) {}
 
-    async getBoardIds(
-        prayerOrderType: PrayerOrderType
-    ): Promise<number[]> {
+    async getBoardIds(prayerOrderType: PrayerOrderType): Promise<number[]> {
         let subscriptionType = '';
         let intercessionType = '';
         switch (prayerOrderType) {
@@ -48,18 +46,15 @@ export class BoardIdProvider implements IBoardIdProvider {
             select: {
                 mondayBoard: {
                     select: {
-                        mondayBoardId: true,
+                        mondayId: true,
                     },
                 },
             },
         });
 
         return boardMappings
-            .map(
-                (mapping: { mondayBoard: { mondayBoardId: bigint } | null }) =>
-                    mapping.mondayBoard
-                        ? Number(mapping.mondayBoard.mondayBoardId)
-                        : 0
+            .map((mapping: { mondayBoard: { mondayId: string } | null }) =>
+                mapping.mondayBoard ? Number(mapping.mondayBoard.mondayId) : 0
             )
             .filter((id) => id !== 0);
     }

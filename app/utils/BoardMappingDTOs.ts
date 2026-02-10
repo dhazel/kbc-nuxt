@@ -13,7 +13,7 @@ export interface IntercessionTypeDTO {
 
 export interface MondayBoardDTO {
     id: number;
-    mondayBoardId: string;
+    mondayId: string;
     boardName?: string | null;
     organizationId?: number | null;
     createdAt: Date;

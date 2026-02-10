@@ -14,9 +14,9 @@ export class MondayBoardNameSyncService implements IMondaySyncService {
     async sync(): Promise<void> {
         // get all board numbers from the database
         const dbBoards = await this.prisma.mondayBoard.findMany({
-            select: { mondayBoardId: true },
+            select: { mondayId: true },
         });
-        const boardIds = dbBoards.map((b) => Number(b.mondayBoardId));
+        const boardIds = dbBoards.map((b) => Number(b.mondayId));
 
         // get the name of each board from Monday
         const mondayBoards = await this.mondayService.getBoards(boardIds);
@@ -25,7 +25,7 @@ export class MondayBoardNameSyncService implements IMondaySyncService {
         // update each board record in the database with its name from Monday
         await this.prisma.$transaction(async (tx) => {
             for (const dbBoard of dbBoards) {
-                const boardId = Number(dbBoard.mondayBoardId);
+                const boardId = Number(dbBoard.mondayId);
                 const mondayBoard = boardMap.get(boardId);
                 if (
                     mondayBoard &&
@@ -33,7 +33,7 @@ export class MondayBoardNameSyncService implements IMondaySyncService {
                     mondayBoard.name.trim() !== ''
                 ) {
                     await tx.mondayBoard.update({
-                        where: { mondayBoardId: dbBoard.mondayBoardId },
+                        where: { mondayId: dbBoard.mondayId },
                         data: { boardName: mondayBoard.name },
                     });
                 }
