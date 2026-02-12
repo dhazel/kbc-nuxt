@@ -25,44 +25,58 @@ export class MondayService implements IMondayService {
     ): Promise<ItemUpdate[]> {
         const inclusiveEndDate = new Date(endDate);
         inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
-        const maxUpdates = 10000;
-        const query = `
-            query GetBoardUpdatesInPeriod {
-              updates(
-                limit: ${maxUpdates}
-                from_date: "${startDate.toISOString()}"
-                to_date: "${inclusiveEndDate.toISOString()}"
-              ) {
-                id
-                body
-                text_body
-                created_at
-                edited_at
-                creator {
-                  id
-                  name
-                }
-                item_id
-                item {
-                  id
-                  name
-                  board {
+        const allUpdates: ItemUpdate[] = [];
+        let page = 1;
+
+        while (true) {
+            const query = `
+                query GetBoardUpdatesInPeriod {
+                  updates(
+                    limit: 100
+                    page: ${page}
+                    from_date: "${startDate.toISOString()}"
+                    to_date: "${inclusiveEndDate.toISOString()}"
+                  ) {
                     id
-                    name
+                    body
+                    text_body
+                    created_at
+                    edited_at
+                    creator {
+                      id
+                      name
+                    }
+                    item_id
+                    item {
+                      id
+                      name
+                      board {
+                        id
+                        name
+                      }
+                    }
                   }
                 }
-              }
-            } 
-        `;
-        const response = await this.mondayAdapter.query(query);
-        const updates = response.data.updates.map((update: any) => {
-            const itemUpdate: ItemUpdate = {
-                ...update,
-                bodyText: update.text_body,
-            };
-            return itemUpdate;
-        });
-        return updates;
+            `;
+            const response = await this.mondayAdapter.query(query);
+            const updates = response.data.updates;
+
+            if (!updates || updates.length === 0) {
+                break;
+            }
+
+            const mappedUpdates = updates.map(
+                (update: Record<string, unknown>) => ({
+                    ...update,
+                    bodyText: update.text_body,
+                })
+            );
+
+            allUpdates.push(...mappedUpdates);
+            page++;
+        }
+
+        return allUpdates;
     }
 
     /**
@@ -163,7 +177,9 @@ export class MondayService implements IMondayService {
         inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
         const maxActivityLog = 10000;
         const activityQuery = `query {
-            boards(ids: [${boards.join(',')}]) {
+            boards(
+                ids: [${boards.join(',')}]
+            ) {
                 id
                 name
                 activity_logs(

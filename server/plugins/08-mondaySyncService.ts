@@ -5,6 +5,7 @@ import { MondayBackoffAdapter } from '../adapters/MondayBackoffAdapter';
 import { AggregateMondaySyncService } from '../services/MondaySync/AggregateMondaySyncService';
 import { MondayUsersSyncService } from '../services/MondaySync/MondayUsersSyncService';
 import { MondayBoardNameSyncService } from '../services/MondaySync/MondayBoardNameSyncService';
+import { MondayPrayerOrderSyncService } from '../services/MondaySync/MondayPrayerOrderSyncService';
 
 export default defineNitroPlugin((nitroApp) => {
     nitroApp.hooks.hook('request', (event) => {
@@ -12,8 +13,9 @@ export default defineNitroPlugin((nitroApp) => {
             new MondayService(new MondayBackoffAdapter(new MondayAdapter()))
         );
         event.context.mondaySyncService = new AggregateMondaySyncService([
-            // new MondayUsersSyncService(mondayService, event.context.prisma),
+            new MondayUsersSyncService(mondayService, event.context.prisma),
             new MondayBoardNameSyncService(mondayService, event.context.prisma),
+            new MondayPrayerOrderSyncService(mondayService, event.context.prisma),
         ]);
     });
 });
