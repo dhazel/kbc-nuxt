@@ -62,6 +62,24 @@ export class MondayService implements IMondayService {
                       creator_id
                       reaction_type
                     }
+                    replies {
+                      id
+                      body
+                      text_body
+                      created_at
+                      edited_at
+                      likes {
+                        creator_id
+                        reaction_type
+                      }
+                      viewers {
+                        user_id
+                      }
+                      creator {
+                        id
+                        name
+                      }
+                    }
                   }
                 }
             `;
@@ -83,6 +101,17 @@ export class MondayService implements IMondayService {
                         userMondayId: l.creator_id,
                         reactionType: l.reaction_type
                     })),
+                    replies: update.replies.map((reply) => ({
+                        ...reply,
+                        bodyText: reply.text_body,
+                        viewers: reply.viewers.map((v) => ({
+                            userMondayId: v.user_id,
+                        })),
+                        reactions: reply.likes.map((l) => ({
+                            userMondayId: l.creator_id,
+                            reactionType: l.reaction_type
+                        })),
+                    }))
                 })
             );
 
