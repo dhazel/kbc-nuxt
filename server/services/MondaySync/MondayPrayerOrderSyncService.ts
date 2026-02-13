@@ -30,7 +30,7 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
 
         const prayerOrderSyncResults: PrayerOrderSyncResult[] = [];
         for (const board of boards) {
-            console.trace('Syncing PrayerOrders for board: ', board.boardName);
+            console.log('Syncing PrayerOrders for board: ', board.boardName);
             prayerOrderSyncResults.push(await this.syncPrayerOrders(board));
         }
 
@@ -41,7 +41,7 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
         );
         const endDate: Date = new Date();
 
-        console.trace(
+        console.log(
             'Syncing PrayerOrder messages from start date: ',
             startDate
         );
@@ -59,7 +59,7 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
 
         const batches = this.chunkArray(itemUpdates, 100);
         for (const batch of batches) {
-            console.trace('Starting message batch');
+            console.log('Starting message batch');
             await this.prisma.$transaction(async (tx) => {
                 for (const update of batch) {
                     const prayerOrder = await tx.prayerOrder.findFirst({
