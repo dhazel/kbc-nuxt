@@ -55,6 +55,13 @@ export class MondayService implements IMondayService {
                         name
                       }
                     }
+                    viewers {
+                      user_id
+                    }
+                    likes {
+                      creator_id
+                      reaction_type
+                    }
                   }
                 }
             `;
@@ -69,6 +76,13 @@ export class MondayService implements IMondayService {
                 (update: Record<string, unknown>) => ({
                     ...update,
                     bodyText: update.text_body,
+                    viewers: update.viewers.map((v) => ({
+                        userMondayId: v.user_id,
+                    })),
+                    reactions: update.likes.map((l) => ({
+                        userMondayId: l.creator_id,
+                        reactionType: l.reaction_type
+                    })),
                 })
             );
 

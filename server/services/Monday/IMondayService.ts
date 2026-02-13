@@ -35,6 +35,18 @@ export interface ItemUpdate {
     edited_at: string;
     creator: User;
     item: Item;
+    viewers: ViewRecord[];
+    reactions: ReactionRecord[];
+}
+
+export interface ViewRecord {
+    userMondayId: string;
+    date?: Date;
+}
+
+export interface ReactionRecord {
+    userMondayId: string;
+    reactionType: string;
 }
 
 export interface ColumnValue {
