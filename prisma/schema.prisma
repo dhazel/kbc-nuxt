@@ -5,10 +5,17 @@ generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
-
 datasource db {
   provider = "postgresql"
   url      = env("NETLIFY_DATABASE_URL")
+}
+
+enum ReactionType {
+  LIKE
+  LOVE
+  PRAY
+  LAUGH
+  CARE
 }
 
 model User {
@@ -23,6 +30,7 @@ model User {
   roles               Role[]
   messages            Message[]
   messageViews        MessageView[]
+  messageReactions    MessageReaction[]
   organizations       Organization[] @relation("UserOrganizations")
   intercessorFor      Organization[] @relation("UserIntercessors")
 
@@ -129,6 +137,8 @@ model Message {
 
   messageViews    MessageView[]
 
+  messageReactions MessageReaction[]
+
   content String
 
   createdAt DateTime  @default(now())
@@ -155,6 +165,22 @@ model MessageView {
   @@index([messageId]) // Efficient querying of views for a message
   @@index([userId]) // Efficient querying of views by a user
   @@map("message_views")
+}
+
+model MessageReaction {
+  id           Int          @id @default(autoincrement())
+  messageId    Int
+  message      Message      @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  userId       Int
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reactionType ReactionType
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@unique([messageId, userId])
+  @@index([messageId])
+  @@index([userId])
+  @@map("message_reactions")
 }
 
 model IntercessionType {
