@@ -122,6 +122,10 @@ model Message {
   authorId Int
   author   User @relation(fields: [authorId], references: [id])
 
+  parentMessageId Int?
+  parentMessage   Message? @relation("MessageReplies", fields: [parentMessageId], references: [id], onDelete: SetNull)
+  replies         Message[] @relation("MessageReplies")
+
   content String
 
   createdAt DateTime  @default(now())
@@ -132,6 +136,7 @@ model Message {
   @@index([prayerOrderId, createdAt(desc)]) // Critical for efficient chronological fetching + pagination
   @@index([authorId])
   @@index([deletedAt]) // Helps with soft-delete queries
+  @@index([parentMessageId]) // Added for efficient reply querying
   @@map("messages")
 }
 
