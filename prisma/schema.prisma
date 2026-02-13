@@ -22,6 +22,7 @@ model User {
   createdPrayerOrders PrayerOrder[]  @relation("PrayerOrderCreator")
   roles               Role[]
   messages            Message[]
+  messageViews        MessageView[]
   organizations       Organization[] @relation("UserOrganizations")
   intercessorFor      Organization[] @relation("UserIntercessors")
 
@@ -126,6 +127,8 @@ model Message {
   parentMessage   Message? @relation("MessageReplies", fields: [parentMessageId], references: [id], onDelete: SetNull)
   replies         Message[] @relation("MessageReplies")
 
+  messageViews    MessageView[]
+
   content String
 
   createdAt DateTime  @default(now())
@@ -138,6 +141,20 @@ model Message {
   @@index([deletedAt]) // Helps with soft-delete queries
   @@index([parentMessageId]) // Added for efficient reply querying
   @@map("messages")
+}
+
+model MessageView {
+  id        Int      @id @default(autoincrement())
+  messageId Int
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  viewedAt DateTime? // Optional timestamp; null for imported data without views
+
+  @@unique([messageId, userId]) // Ensures one record per user-message (first view)
+  @@index([messageId]) // Efficient querying of views for a message
+  @@index([userId]) // Efficient querying of views by a user
+  @@map("message_views")
 }
 
 model IntercessionType {
