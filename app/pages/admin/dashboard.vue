@@ -15,6 +15,14 @@
                             :loading="syncLoading"
                             :disabled="syncLoading"
                             class="w-full"
+                            @click="syncBasicMondayData"
+                        />
+                        <Button
+                            label="Sync Exhaustive Monday Data"
+                            icon="pi pi-sync"
+                            :loading="syncLoading"
+                            :disabled="syncLoading"
+                            class="w-full mt-3"
                             @click="syncMondayData"
                         />
                     </template>
@@ -39,6 +47,7 @@
 
             <!-- Toast for notifications -->
             <Toast />
+            <ConfirmDialog />
         </div>
     </PageGuard>
 </template>
@@ -46,14 +55,16 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
+import { useConfirm } from 'primevue/useconfirm';
 
 const toast = useToast();
+const confirm = useConfirm();
 const syncLoading = ref(false);
 
-const syncMondayData = async () => {
+const syncBasicMondayData = async () => {
     try {
         syncLoading.value = true;
-        await $fetch('/api/sync/monday', { method: 'POST' });
+        await $fetch('/api/sync/monday-basic', { method: 'POST' });
         toast.add({
             severity: 'success',
             summary: 'Success',
@@ -71,6 +82,36 @@ const syncMondayData = async () => {
     } finally {
         syncLoading.value = false;
     }
+};
+
+const syncMondayData = () => {
+    confirm.require({
+        message:
+            'Are you sure you want to perform exhaustive Monday data sync? This may take longer.',
+        header: 'Confirm Sync',
+        accept: async () => {
+            try {
+                syncLoading.value = true;
+                await $fetch('/api/sync/monday', { method: 'POST' });
+                toast.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Monday data sync completed successfully',
+                    life: 3000,
+                });
+            } catch (error) {
+                console.error('Sync error:', error);
+                toast.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Failed to sync Monday data',
+                    life: 3000,
+                });
+            } finally {
+                syncLoading.value = false;
+            }
+        },
+    });
 };
 </script>
 
