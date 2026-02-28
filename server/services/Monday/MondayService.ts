@@ -166,6 +166,7 @@ export class MondayService implements IMondayService {
                 ) {
                     id
                     name
+                    created_at
                     board {
                         id name
                     }
