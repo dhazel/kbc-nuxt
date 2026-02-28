@@ -22,6 +22,45 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
         return chunks;
     }
 
+    private async processMessage(
+        tx: any,
+        item: any,
+        creatorId: string | number,
+        prayerOrderId: number,
+        parentMessageId?: number
+    ): Promise<any | null> {
+        const author = await tx.user.findFirst({
+            where: { mondayId: creatorId },
+        });
+        if (!author) return null;
+
+        const existing = await tx.message.findFirst({
+            where: { mondayId: item.id },
+        });
+
+        if (existing) {
+            return await tx.message.update({
+                where: { id: existing.id },
+                data: {
+                    content: item.body,
+                    updatedAt: new Date(item.edited_at),
+                },
+            });
+        } else {
+            return await tx.message.create({
+                data: {
+                    prayerOrderId,
+                    authorId: author.id,
+                    content: item.body,
+                    mondayId: item.id,
+                    createdAt: new Date(item.created_at),
+                    updatedAt: new Date(item.edited_at),
+                    ...(parentMessageId !== undefined && { parentMessageId }),
+                },
+            });
+        }
+    }
+
     /**
      * Sync data from Monday
      */
@@ -67,33 +106,12 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
                     });
                     if (!prayerOrder) continue;
 
-                    const author = await tx.user.findFirst({
-                        where: { mondayId: update.creator.id },
-                    });
-                    if (!author) continue;
+                    const mainMessage = await this.processMessage(tx, update, update.creator.id, prayerOrder.id);
+                    if (!mainMessage) continue;
 
-                    const existingMessage = await tx.message.findFirst({
-                        where: { mondayId: update.id },
-                    });
-                    if (existingMessage) {
-                        await tx.message.update({
-                            where: { id: existingMessage.id },
-                            data: {
-                                content: update.body,
-                                updatedAt: new Date(update.edited_at),
-                            },
-                        });
-                    } else {
-                        await tx.message.create({
-                            data: {
-                                prayerOrderId: prayerOrder.id,
-                                authorId: author.id,
-                                content: update.body,
-                                mondayId: update.id,
-                                createdAt: new Date(update.created_at),
-                                updatedAt: new Date(update.edited_at),
-                            },
-                        });
+                    // Process replies
+                    for (const reply of update.replies) {
+                        await this.processMessage(tx, reply, reply.creator.id, prayerOrder.id, mainMessage.id);
                     }
                 }
             });

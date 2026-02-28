@@ -37,18 +37,7 @@ export interface ItemUpdate {
     item: Item;
     viewers: ViewRecord[];
     reactions: ReactionRecord[];
-    replies: ItemUpdateReply[];
-}
-
-export interface ItemUpdateReply {
-    id: string;
-    body: string;
-    bodyText: string;
-    created_at: string;
-    edited_at: string;
-    creator: User;
-    viewers: ViewRecord[];
-    reactions: ReactionRecord[];
+    replies: ItemUpdate[];
 }
 
 export interface ViewRecord {

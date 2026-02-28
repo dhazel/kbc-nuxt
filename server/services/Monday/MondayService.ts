@@ -104,6 +104,8 @@ export class MondayService implements IMondayService {
                     replies: update.replies.map((reply) => ({
                         ...reply,
                         bodyText: reply.text_body,
+                        item: update.item,
+                        replies: [],
                         viewers: reply.viewers.map((v) => ({
                             userMondayId: v.user_id,
                         })),
