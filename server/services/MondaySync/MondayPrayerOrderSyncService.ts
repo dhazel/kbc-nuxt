@@ -194,11 +194,10 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
         );
         const endDate: Date = new Date();
 
-        console.log(
-            'Syncing PrayerOrder messages from start date: ',
-            startDate
-        );
+        console.log('Syncing PrayerOrder messages from start date: ', startDate);
         await this.syncPrayerOrderMessages(startDate, endDate);
+
+        console.log('Done syncing');
     }
 
     async syncPrayerOrderMessages(
