@@ -38,8 +38,9 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
             where: { mondayId: item.id },
         });
 
+        let message;
         if (existing) {
-            return await tx.message.update({
+            message = await tx.message.update({
                 where: { id: existing.id },
                 data: {
                     content: item.body,
@@ -47,7 +48,7 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
                 },
             });
         } else {
-            return await tx.message.create({
+            message = await tx.message.create({
                 data: {
                     prayerOrderId,
                     authorId: author.id,
@@ -58,6 +59,54 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
                     ...(parentMessageId !== undefined && { parentMessageId }),
                 },
             });
+        }
+
+        await this.syncViewers(tx, message.id, item.viewers);
+
+        return message;
+    }
+
+    private async syncViewers(
+        tx: any,
+        messageId: number,
+        newViewers: any[]
+    ): Promise<void> {
+        const currentViews = await tx.messageView.findMany({
+            where: { messageId },
+            select: { id: true, userId: true },
+        });
+        const newUserIds = new Set<number>();
+
+        for (const viewer of newViewers) {
+            const user = await tx.user.findFirst({
+                where: { mondayId: viewer.userMondayId },
+            });
+            if (!user) continue;
+            newUserIds.add(user.id);
+            await tx.messageView.upsert({
+                where: {
+                    messageId_userId: {
+                        messageId,
+                        userId: user.id,
+                    },
+                },
+                update: {
+                    viewedAt: viewer.date,
+                },
+                create: {
+                    messageId,
+                    userId: user.id,
+                    viewedAt: viewer.date,
+                },
+            });
+        }
+
+        for (const current of currentViews) {
+            if (!newUserIds.has(current.userId)) {
+                await tx.messageView.delete({
+                    where: { id: current.id },
+                });
+            }
         }
     }
 
@@ -106,12 +155,23 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
                     });
                     if (!prayerOrder) continue;
 
-                    const mainMessage = await this.processMessage(tx, update, update.creator.id, prayerOrder.id);
+                    const mainMessage = await this.processMessage(
+                        tx,
+                        update,
+                        update.creator.id,
+                        prayerOrder.id
+                    );
                     if (!mainMessage) continue;
 
                     // Process replies
                     for (const reply of update.replies) {
-                        await this.processMessage(tx, reply, reply.creator.id, prayerOrder.id, mainMessage.id);
+                        await this.processMessage(
+                            tx,
+                            reply,
+                            reply.creator.id,
+                            prayerOrder.id,
+                            mainMessage.id
+                        );
                     }
                 }
             });
