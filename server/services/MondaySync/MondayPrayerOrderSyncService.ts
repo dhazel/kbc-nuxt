@@ -14,167 +14,6 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
         private prisma: PrismaClient
     ) {}
 
-    private chunkArray<T>(array: T[], size: number): T[][] {
-        const chunks: T[][] = [];
-        for (let i = 0; i < array.length; i += size) {
-            chunks.push(array.slice(i, i + size));
-        }
-        return chunks;
-    }
-
-    private async processMessage(
-        tx: any,
-        item: any,
-        creatorId: string | number,
-        prayerOrderId: number,
-        parentMessageId?: number
-    ): Promise<any | null> {
-        const author = await tx.user.findFirst({
-            where: { mondayId: creatorId },
-        });
-        if (!author) return null;
-
-        const existing = await tx.message.findFirst({
-            where: { mondayId: item.id },
-        });
-
-        let message;
-        if (existing) {
-            message = await tx.message.update({
-                where: { id: existing.id },
-                data: {
-                    content: item.body,
-                    updatedAt: new Date(item.edited_at),
-                },
-            });
-        } else {
-            message = await tx.message.create({
-                data: {
-                    prayerOrderId,
-                    authorId: author.id,
-                    content: item.body,
-                    mondayId: item.id,
-                    createdAt: new Date(item.created_at),
-                    updatedAt: new Date(item.edited_at),
-                    ...(parentMessageId !== undefined && { parentMessageId }),
-                },
-            });
-        }
-
-        await this.syncViewers(tx, message.id, item.viewers);
-
-        await this.syncReactions(tx, message.id, item.reactions);
-
-        return message;
-    }
-
-    private async syncViewers(
-        tx: any,
-        messageId: number,
-        newViewers: any[]
-    ): Promise<void> {
-        const currentViews = await tx.messageView.findMany({
-            where: { messageId },
-            select: { id: true, userId: true },
-        });
-        const newUserIds = new Set<number>();
-
-        for (const viewer of newViewers) {
-            const user = await tx.user.findFirst({
-                where: { mondayId: viewer.userMondayId },
-            });
-            if (!user) continue;
-            newUserIds.add(user.id);
-            await tx.messageView.upsert({
-                where: {
-                    messageId_userId: {
-                        messageId,
-                        userId: user.id,
-                    },
-                },
-                update: {
-                    viewedAt: viewer.date,
-                },
-                create: {
-                    messageId,
-                    userId: user.id,
-                    viewedAt: viewer.date,
-                },
-            });
-        }
-
-        for (const current of currentViews) {
-            if (!newUserIds.has(current.userId)) {
-                await tx.messageView.delete({
-                    where: { id: current.id },
-                });
-            }
-        }
-    }
-
-    private readonly reactionTypeMap: Record<string, any> = {
-        '+1': 'LIKE',
-        heart: 'LOVE',
-        pray: 'PRAY',
-        laugh: 'LAUGH',
-        care: 'CARE',
-        clap: 'CLAP',
-        celebrate: 'CELEBRATE',
-    };
-
-    private async syncReactions(
-        tx: any,
-        messageId: number,
-        newReactions: any[]
-    ): Promise<void> {
-        const currentReactions = await tx.messageReaction.findMany({
-            where: { messageId },
-            select: { id: true, userId: true },
-        });
-        const newUserIds = new Set<number>();
-
-        for (const reaction of newReactions) {
-            const user = await tx.user.findFirst({
-                where: { mondayId: reaction.userMondayId },
-            });
-            if (!user) continue;
-
-            const mappedType = this.reactionTypeMap[reaction.reactionType];
-            if (!mappedType) {
-                console.warn(
-                    `Skipping unknown reaction type, '${reaction.reactionType}', on Message Id, ${messageId}`
-                );
-                continue;
-            }
-
-            newUserIds.add(user.id);
-            await tx.messageReaction.upsert({
-                where: {
-                    messageId_userId: {
-                        messageId,
-                        userId: user.id,
-                    },
-                },
-                update: {
-                    reactionType: mappedType,
-                },
-                create: {
-                    messageId,
-                    userId: user.id,
-                    reactionType: mappedType,
-                },
-            });
-        }
-
-        for (const current of currentReactions) {
-            if (!newUserIds.has(current.userId)) {
-                await tx.messageReaction.delete({
-                    where: { id: current.id },
-                });
-            }
-        }
-    }
-
     /**
      * Sync data from Monday
      */
@@ -455,6 +294,167 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
             default:
                 console.warn(`Unknown monday status: ${mondayLabel}`);
                 return null;
+        }
+    }
+
+    private chunkArray<T>(array: T[], size: number): T[][] {
+        const chunks: T[][] = [];
+        for (let i = 0; i < array.length; i += size) {
+            chunks.push(array.slice(i, i + size));
+        }
+        return chunks;
+    }
+
+    private async processMessage(
+        tx: any,
+        item: any,
+        creatorId: string | number,
+        prayerOrderId: number,
+        parentMessageId?: number
+    ): Promise<any | null> {
+        const author = await tx.user.findFirst({
+            where: { mondayId: creatorId },
+        });
+        if (!author) return null;
+
+        const existing = await tx.message.findFirst({
+            where: { mondayId: item.id },
+        });
+
+        let message;
+        if (existing) {
+            message = await tx.message.update({
+                where: { id: existing.id },
+                data: {
+                    content: item.body,
+                    updatedAt: new Date(item.edited_at),
+                },
+            });
+        } else {
+            message = await tx.message.create({
+                data: {
+                    prayerOrderId,
+                    authorId: author.id,
+                    content: item.body,
+                    mondayId: item.id,
+                    createdAt: new Date(item.created_at),
+                    updatedAt: new Date(item.edited_at),
+                    ...(parentMessageId !== undefined && { parentMessageId }),
+                },
+            });
+        }
+
+        await this.syncViewers(tx, message.id, item.viewers);
+
+        await this.syncReactions(tx, message.id, item.reactions);
+
+        return message;
+    }
+
+    private async syncViewers(
+        tx: any,
+        messageId: number,
+        newViewers: any[]
+    ): Promise<void> {
+        const currentViews = await tx.messageView.findMany({
+            where: { messageId },
+            select: { id: true, userId: true },
+        });
+        const newUserIds = new Set<number>();
+
+        for (const viewer of newViewers) {
+            const user = await tx.user.findFirst({
+                where: { mondayId: viewer.userMondayId },
+            });
+            if (!user) continue;
+            newUserIds.add(user.id);
+            await tx.messageView.upsert({
+                where: {
+                    messageId_userId: {
+                        messageId,
+                        userId: user.id,
+                    },
+                },
+                update: {
+                    viewedAt: viewer.date,
+                },
+                create: {
+                    messageId,
+                    userId: user.id,
+                    viewedAt: viewer.date,
+                },
+            });
+        }
+
+        for (const current of currentViews) {
+            if (!newUserIds.has(current.userId)) {
+                await tx.messageView.delete({
+                    where: { id: current.id },
+                });
+            }
+        }
+    }
+
+    private readonly reactionTypeMap: Record<string, any> = {
+        '+1': 'LIKE',
+        heart: 'LOVE',
+        pray: 'PRAY',
+        laugh: 'LAUGH',
+        care: 'CARE',
+        clap: 'CLAP',
+        celebrate: 'CELEBRATE',
+    };
+
+    private async syncReactions(
+        tx: any,
+        messageId: number,
+        newReactions: any[]
+    ): Promise<void> {
+        const currentReactions = await tx.messageReaction.findMany({
+            where: { messageId },
+            select: { id: true, userId: true },
+        });
+        const newUserIds = new Set<number>();
+
+        for (const reaction of newReactions) {
+            const user = await tx.user.findFirst({
+                where: { mondayId: reaction.userMondayId },
+            });
+            if (!user) continue;
+
+            const mappedType = this.reactionTypeMap[reaction.reactionType];
+            if (!mappedType) {
+                console.warn(
+                    `Skipping unknown reaction type, '${reaction.reactionType}', on Message Id, ${messageId}`
+                );
+                continue;
+            }
+
+            newUserIds.add(user.id);
+            await tx.messageReaction.upsert({
+                where: {
+                    messageId_userId: {
+                        messageId,
+                        userId: user.id,
+                    },
+                },
+                update: {
+                    reactionType: mappedType,
+                },
+                create: {
+                    messageId,
+                    userId: user.id,
+                    reactionType: mappedType,
+                },
+            });
+        }
+
+        for (const current of currentReactions) {
+            if (!newUserIds.has(current.userId)) {
+                await tx.messageReaction.delete({
+                    where: { id: current.id },
+                });
+            }
         }
     }
 
