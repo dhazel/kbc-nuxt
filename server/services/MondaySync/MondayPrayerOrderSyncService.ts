@@ -63,6 +63,8 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
 
         await this.syncViewers(tx, message.id, item.viewers);
 
+        await this.syncReactions(tx, message.id, item.reactions);
+
         return message;
     }
 
@@ -104,6 +106,69 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
         for (const current of currentViews) {
             if (!newUserIds.has(current.userId)) {
                 await tx.messageView.delete({
+                    where: { id: current.id },
+                });
+            }
+        }
+    }
+
+    private readonly reactionTypeMap: Record<string, any> = {
+        '+1': 'LIKE',
+        heart: 'LOVE',
+        pray: 'PRAY',
+        laugh: 'LAUGH',
+        care: 'CARE',
+        clap: 'CLAP',
+        celebrate: 'CELEBRATE',
+    };
+
+    private async syncReactions(
+        tx: any,
+        messageId: number,
+        newReactions: any[]
+    ): Promise<void> {
+        const currentReactions = await tx.messageReaction.findMany({
+            where: { messageId },
+            select: { id: true, userId: true },
+        });
+        const newUserIds = new Set<number>();
+
+        for (const reaction of newReactions) {
+            const user = await tx.user.findFirst({
+                where: { mondayId: reaction.userMondayId },
+            });
+            if (!user) continue;
+
+            const mappedType = this.reactionTypeMap[reaction.reactionType];
+            if (!mappedType) {
+                console.warn(
+                    `Skipping unknown reaction type, '${reaction.reactionType}', on Message Id, ${messageId}`
+                );
+                continue;
+            }
+
+            newUserIds.add(user.id);
+            await tx.messageReaction.upsert({
+                where: {
+                    messageId_userId: {
+                        messageId,
+                        userId: user.id,
+                    },
+                },
+                update: {
+                    reactionType: mappedType,
+                },
+                create: {
+                    messageId,
+                    userId: user.id,
+                    reactionType: mappedType,
+                },
+            });
+        }
+
+        for (const current of currentReactions) {
+            if (!newUserIds.has(current.userId)) {
+                await tx.messageReaction.delete({
                     where: { id: current.id },
                 });
             }

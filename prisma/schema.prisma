@@ -16,6 +16,8 @@ enum ReactionType {
   PRAY
   LAUGH
   CARE
+  CLAP
+  CELEBRATE
 }
 
 model User {
