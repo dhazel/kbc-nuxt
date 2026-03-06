@@ -1,11 +1,7 @@
-import type {
-    IMondayService,
-    ActivityLog,
-    Item,
-    User,
-} from '../Monday/IMondayService';
+import type { IMondayService, Item, User } from '../Monday/IMondayService';
 import type { IBoardIdProvider } from '../BoardIdProvider/IBoardIdProvider';
-import type { PrayerOrderData, PrayerOrderType  } from '~/../types/prayerOrder';
+import type { PrayerOrderDto, PrayerOrderType } from '~/../types/prayerOrderDto';
+import type { PrayerActivity } from './PrayerActivity';
 
 export abstract class AbstractIntercessorReportService {
     protected mondayService: IMondayService;
@@ -27,7 +23,9 @@ export abstract class AbstractIntercessorReportService {
 
     protected async ensureReady(): Promise<void> {
         if (!this.boardIds) {
-            this.boardIds = await this.boardIdProvider.getBoardIds(this.prayerOrderType);
+            this.boardIds = await this.boardIdProvider.getBoardIds(
+                this.prayerOrderType
+            );
         }
         if (!this.statusLabels || !this.allUsersMap) {
             this.statusLabels = await this.mondayService.getStatusLabels(
@@ -45,14 +43,13 @@ export abstract class AbstractIntercessorReportService {
     }
 
     protected makePrayerOrderList(
-        closedChanges: ActivityLog[],
-        items: Item[]
-    ): PrayerOrderData[] {
-        const prayerOrders: PrayerOrderData[] = [];
-        for (const changeLog of closedChanges) {
+        prayerActivity: PrayerActivity
+    ): PrayerOrderDto[] {
+        const prayerOrders: PrayerOrderDto[] = [];
+        for (const changeLog of prayerActivity.activityLogs) {
             const unixMs = Math.round(parseInt(changeLog.created_at) / 10000);
             const changeLogData = JSON.parse(changeLog.data);
-            let item = items.filter(
+            let item = prayerActivity.items.filter(
                 (item: Item) => changeLogData.pulse_id == item.id
             )[0];
             let status = 'Unknown';

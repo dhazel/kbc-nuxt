@@ -1,16 +1,16 @@
 import { defineStore } from 'pinia';
-import type { PrayerOrderData } from '~/../types/prayerOrder';
-import { PrayerOrderType } from '~/../types/prayerOrder';
+import type { PrayerOrderDto } from '~/../types/prayerOrderDto';
+import { PrayerOrderType } from '~/../types/prayerOrderDto';
 
 export const useIntercessorReportStore = defineStore('intercessorReport', {
     state: () => ({
         startDate: null as Date | null,
         endDate: null as Date | null,
-        orders: [] as PrayerOrderData[],
-        ordersMonthToMonth: [] as PrayerOrderData[],
-        ordersAnnualInformed: [] as PrayerOrderData[],
-        ordersAnnualInspired: [] as PrayerOrderData[],
-        ordersPerBoard: {} as Record<string, PrayerOrderData[]>,
+        orders: [] as PrayerOrderDto[],
+        ordersMonthToMonth: [] as PrayerOrderDto[],
+        ordersAnnualInformed: [] as PrayerOrderDto[],
+        ordersAnnualInspired: [] as PrayerOrderDto[],
+        ordersPerBoard: {} as Record<string, PrayerOrderDto[]>,
         loading: false,
         error: '',
     }),
@@ -38,24 +38,24 @@ export const useIntercessorReportStore = defineStore('intercessorReport', {
                 );
                 this.orders = response;
                 this.ordersMonthToMonth = response.filter(
-                    (o: PrayerOrderData) =>
+                    (o: PrayerOrderDto) =>
                         [
                             PrayerOrderType.monthToMonthInformed,
                             PrayerOrderType.monthToMonthInspired,
                         ].includes(o.type)
                 );
                 this.ordersAnnualInformed = response.filter(
-                    (o: PrayerOrderData) =>
+                    (o: PrayerOrderDto) =>
                         o.type == PrayerOrderType.annualInformed
                 );
                 this.ordersAnnualInspired = response.filter(
-                    (o: PrayerOrderData) =>
+                    (o: PrayerOrderDto) =>
                         o.type == PrayerOrderType.annualInspired
                 );
                 this.ordersPerBoard = Object.groupBy(
                     response,
-                    (po: PrayerOrderData) => po.board
-                ) as Record<string, PrayerOrderData[]>;
+                    (po: PrayerOrderDto) => po.board
+                ) as Record<string, PrayerOrderDto[]>;
             } catch (err: unknown) {
                 const error = err as {
                     statusCode?: number;

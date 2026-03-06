@@ -1,7 +1,7 @@
 import type {
     IIntercessorReportService,
 } from './IIntercessorReportService';
-import type { PrayerOrderData } from '~/../types/prayerOrder';
+import type { PrayerOrderDto } from '~/../types/prayerOrderDto';
 
 export class AggregateIntercessorReportService implements IIntercessorReportService {
     constructor(private intercessorReportServices: IIntercessorReportService[]) {}
@@ -9,8 +9,8 @@ export class AggregateIntercessorReportService implements IIntercessorReportServ
     async getWorkedPrayerOrders(
         startDate: Date,
         endDate: Date
-    ): Promise<PrayerOrderData[]> {
-        let prayerOrders: PrayerOrderData[] = [];
+    ): Promise<PrayerOrderDto[]> {
+        let prayerOrders: PrayerOrderDto[] = [];
 
         prayerOrders = (await Promise.all(this.intercessorReportServices.map(async (service) => {
             return await service.getWorkedPrayerOrders(startDate, endDate);

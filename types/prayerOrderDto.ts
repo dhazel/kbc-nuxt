@@ -5,7 +5,7 @@ export enum PrayerOrderType {
     annualInspired = 'Annual Inspired',
 }
 
-export interface PrayerOrderData {
+export interface PrayerOrderDto {
     type: PrayerOrderType;
     workedDate: Date;
     title: string;

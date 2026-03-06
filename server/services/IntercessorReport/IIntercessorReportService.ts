@@ -1,8 +1,8 @@
-import type { PrayerOrderData } from '~/../types/prayerOrder';
+import type { PrayerOrderDto } from '~/../types/prayerOrderDto';
 
 export interface IIntercessorReportService {
     getWorkedPrayerOrders(
         startDate: Date,
         endDate: Date
-    ): Promise<PrayerOrderData[]>;
+    ): Promise<PrayerOrderDto[]>;
 }

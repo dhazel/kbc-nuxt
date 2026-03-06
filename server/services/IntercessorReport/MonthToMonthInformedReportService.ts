@@ -1,6 +1,6 @@
 import type { IIntercessorReportService } from './IIntercessorReportService';
-import type { PrayerOrderData } from '~/../types/prayerOrder';
-import { PrayerOrderType } from '~/../types/prayerOrder';
+import type { PrayerOrderDto } from '~/../types/prayerOrderDto';
+import { PrayerOrderType } from '~/../types/prayerOrderDto';
 import type { IMondayService } from '../Monday/IMondayService';
 import type { IBoardIdProvider } from '../BoardIdProvider/IBoardIdProvider';
 import { AbstractIntercessorReportService } from './AbstractIntercessorReportService';
@@ -20,11 +20,11 @@ export class MonthToMonthInformedReportService
     async getWorkedPrayerOrders(
         startDate: Date,
         endDate: Date
-    ): Promise<PrayerOrderData[]> {
+    ): Promise<PrayerOrderDto[]> {
         try {
             await this.ensureReady();
 
-            let prayerOrders: PrayerOrderData[] = [];
+            let prayerOrders: PrayerOrderDto[] = [];
 
             const activityLogs =
                 await this.mondayService.getAllStatusActivityLogs(
@@ -34,20 +34,20 @@ export class MonthToMonthInformedReportService
                 );
 
             const closedActivityLogs =
-                this.mondayService.filterActivityLogsByStatus(
-                    activityLogs,
-                    ['closed', 'kbc reply']
-                );
+                this.mondayService.filterActivityLogsByStatus(activityLogs, [
+                    'closed',
+                    'kbc reply',
+                ]);
 
             const closedItems =
                 await this.mondayService.getAllRelatedItems(closedActivityLogs);
 
             await this.loadMissingStatusLabels(closedItems);
 
-            prayerOrders = this.makePrayerOrderList(
-                closedActivityLogs,
-                closedItems
-            );
+            prayerOrders = this.makePrayerOrderList({
+                activityLogs: closedActivityLogs,
+                items: closedItems,
+            });
 
             return prayerOrders;
         } catch (error) {

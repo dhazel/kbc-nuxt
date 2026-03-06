@@ -1,5 +1,5 @@
 import type { IIntercessorReportService } from './IIntercessorReportService';
-import { PrayerOrderType, type PrayerOrderData } from '~/../types/prayerOrder';
+import { PrayerOrderType, type PrayerOrderDto as PrayerOrderDto } from '~/../types/prayerOrderDto';
 import type { IMondayService } from '../Monday/IMondayService';
 import type { IBoardIdProvider } from '../BoardIdProvider/IBoardIdProvider';
 import { AbstractIntercessorReportService } from './AbstractIntercessorReportService';
@@ -19,11 +19,11 @@ export class AnnualInformedReportService
     async getWorkedPrayerOrders(
         startDate: Date,
         endDate: Date
-    ): Promise<PrayerOrderData[]> {
+    ): Promise<PrayerOrderDto[]> {
         try {
             await this.ensureReady();
 
-            let prayerOrders: PrayerOrderData[] = [];
+            let prayerOrders: PrayerOrderDto[] = [];
 
             const statusActivityLogs =
                 await this.mondayService.getAllStatusActivityLogs(
@@ -42,7 +42,7 @@ export class AnnualInformedReportService
 
             await this.loadMissingStatusLabels(items);
 
-            prayerOrders = this.makePrayerOrderList(activityLogs, items);
+            prayerOrders = this.makePrayerOrderList({ activityLogs, items });
 
             return prayerOrders;
         } catch (error) {

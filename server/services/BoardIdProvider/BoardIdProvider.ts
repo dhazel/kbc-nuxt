@@ -1,4 +1,4 @@
-import { PrayerOrderType } from '~~/types/prayerOrder';
+import { PrayerOrderType } from '~~/types/prayerOrderDto';
 import type { IBoardIdProvider } from './IBoardIdProvider';
 import type { PrismaClient } from '@prisma/client';
 
