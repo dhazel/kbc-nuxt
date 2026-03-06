@@ -18,10 +18,12 @@ export class MonthToMonthInspiredReportService
         this.prayerOrderType = PrayerOrderType.monthToMonthInspired;
     }
 
-    private async fetchPrayerOrderData(
+    public async getPrayerActivity(
         startDate: Date,
         endDate: Date
     ): Promise<PrayerActivity> {
+        await this.init();
+
         const newActivityLogs =
             await this.mondayService.getAllItemCreationActivityLogs(
                 this.boardIds,
@@ -49,8 +51,8 @@ export class MonthToMonthInspiredReportService
         endDate: Date
     ): Promise<PrayerOrderDto[]> {
         try {
-            await this.ensureReady();
-            const prayerActivity = await this.fetchPrayerOrderData(
+            await this.init();
+            const prayerActivity = await this.getPrayerActivity(
                 startDate,
                 endDate
             );

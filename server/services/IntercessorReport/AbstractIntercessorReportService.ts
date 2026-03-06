@@ -21,16 +21,18 @@ export abstract class AbstractIntercessorReportService {
         this.boardIdProvider = boardIdProvider;
     }
 
-    protected async ensureReady(): Promise<void> {
+    protected async init(): Promise<void> {
         if (!this.boardIds) {
             this.boardIds = await this.boardIdProvider.getBoardIds(
                 this.prayerOrderType
             );
         }
-        if (!this.statusLabels || !this.allUsersMap) {
+        if (!this.statusLabels) {
             this.statusLabels = await this.mondayService.getStatusLabels(
                 this.boardIds
             );
+        }
+        if (!this.allUsersMap) {
             const allUsers = await this.mondayService.getAllMondayUsers();
             this.allUsersMap = allUsers.reduce(
                 (map: Record<string, string>, user: User) => {

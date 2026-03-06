@@ -1,10 +1,11 @@
-import type {
-    IIntercessorReportService,
-} from './IIntercessorReportService';
+import type { IIntercessorReportService } from './IIntercessorReportService';
 import type { PrayerOrderDto } from '~/../types/prayerOrderDto';
+import type { PrayerActivity } from './PrayerActivity';
 
 export class AggregateIntercessorReportService implements IIntercessorReportService {
-    constructor(private intercessorReportServices: IIntercessorReportService[]) {}
+    constructor(
+        private intercessorReportServices: IIntercessorReportService[]
+    ) {}
 
     async getWorkedPrayerOrders(
         startDate: Date,
@@ -12,10 +13,35 @@ export class AggregateIntercessorReportService implements IIntercessorReportServ
     ): Promise<PrayerOrderDto[]> {
         let prayerOrders: PrayerOrderDto[] = [];
 
-        prayerOrders = (await Promise.all(this.intercessorReportServices.map(async (service) => {
-            return await service.getWorkedPrayerOrders(startDate, endDate);
-        }))).flatMap(po => po);
+        prayerOrders = (
+            await Promise.all(
+                this.intercessorReportServices.map(async (service) => {
+                    return await service.getWorkedPrayerOrders(
+                        startDate,
+                        endDate
+                    );
+                })
+            )
+        ).flatMap((po) => po);
 
         return prayerOrders;
+    }
+
+    async getPrayerActivity(
+        startDate: Date,
+        endDate: Date
+    ): Promise<PrayerActivity> {
+        const activities = await Promise.all(
+            this.intercessorReportServices.map((service) =>
+                service.getPrayerActivity(startDate, endDate)
+            )
+        );
+
+        return {
+            activityLogs: activities.flatMap(
+                (activity) => activity.activityLogs
+            ),
+            items: activities.flatMap((activity) => activity.items),
+        };
     }
 }

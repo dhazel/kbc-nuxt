@@ -20,10 +20,12 @@ export class AnnualInformedReportService
         this.prayerOrderType = PrayerOrderType.annualInformed;
     }
 
-    private async fetchPrayerOrderData(
+    public async getPrayerActivity(
         startDate: Date,
         endDate: Date
     ): Promise<PrayerActivity> {
+        await this.init();
+
         const statusActivityLogs =
             await this.mondayService.getAllStatusActivityLogs(
                 this.boardIds,
@@ -54,8 +56,8 @@ export class AnnualInformedReportService
         endDate: Date
     ): Promise<PrayerOrderDto[]> {
         try {
-            await this.ensureReady();
-            const prayerActivity = await this.fetchPrayerOrderData(
+            await this.init();
+            const prayerActivity = await this.getPrayerActivity(
                 startDate,
                 endDate
             );
