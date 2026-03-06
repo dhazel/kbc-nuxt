@@ -4,6 +4,7 @@ import { PrayerOrderType } from '~/../types/prayerOrderDto';
 import type { IMondayService } from '../Monday/IMondayService';
 import type { IBoardIdProvider } from '../BoardIdProvider/IBoardIdProvider';
 import { AbstractIntercessorReportService } from './AbstractIntercessorReportService';
+import type { PrayerActivity } from './PrayerActivity';
 
 export class AnnualInspiredReportService
     extends AbstractIntercessorReportService
@@ -17,34 +18,43 @@ export class AnnualInspiredReportService
         this.prayerOrderType = PrayerOrderType.annualInspired;
     }
 
+    private async fetchPrayerOrderData(
+        startDate: Date,
+        endDate: Date
+    ): Promise<PrayerActivity> {
+        const newActivityLogs =
+            await this.mondayService.getAllItemCreationActivityLogs(
+                this.boardIds,
+                startDate,
+                endDate
+            );
+
+        const newInspiredItems = (
+            await this.mondayService.getAllRelatedItems(newActivityLogs)
+        ).filter((l) => l.group?.title.toLowerCase().includes('inspired'));
+
+        await this.loadMissingStatusLabels(newInspiredItems);
+
+        return { activityLogs: newActivityLogs, items: newInspiredItems };
+    }
+
+    private createPrayerOrders(
+        prayerActivity: PrayerActivity
+    ): PrayerOrderDto[] {
+        return this.makePrayerOrderList(prayerActivity);
+    }
+
     async getWorkedPrayerOrders(
         startDate: Date,
         endDate: Date
     ): Promise<PrayerOrderDto[]> {
         try {
             await this.ensureReady();
-
-            let prayerOrders: PrayerOrderDto[] = [];
-
-            const newActivityLogs =
-                await this.mondayService.getAllItemCreationActivityLogs(
-                    this.boardIds,
-                    startDate,
-                    endDate
-                );
-
-            const newInspiredItems = (
-                await this.mondayService.getAllRelatedItems(newActivityLogs)
-            ).filter((l) => l.group?.title.toLowerCase().includes('inspired'));
-
-            await this.loadMissingStatusLabels(newInspiredItems);
-
-            prayerOrders = this.makePrayerOrderList({
-                activityLogs: newActivityLogs,
-                items: newInspiredItems,
-            });
-
-            return prayerOrders;
+            const prayerActivity = await this.fetchPrayerOrderData(
+                startDate,
+                endDate
+            );
+            return this.createPrayerOrders(prayerActivity);
         } catch (error) {
             console.error('Error in getWorkedPrayerOrders:', error);
             throw error;
