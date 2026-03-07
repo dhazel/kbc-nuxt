@@ -16,7 +16,7 @@
             <div
                 v-if="isDesktop"
                 v-show="sidebarVisible"
-                class="w-64 bg-gray-100 dark:bg-gray-800 flex-shrink-0 transition-all duration-300"
+                class="w-64 shrink-0 transition-all duration-300"
             >
                 <div class="flex flex-col h-full">
                     <div class="flex justify-start p-2">
