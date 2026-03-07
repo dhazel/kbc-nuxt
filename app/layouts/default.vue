@@ -26,21 +26,7 @@
                             @click="sidebarVisible = false"
                         />
                     </div>
-                    <ul class="list-none p-3 m-0 flex-1">
-                        <li
-                            v-for="item in items"
-                            v-show="item.show"
-                            :key="item.label"
-                        >
-                            <NuxtLink
-                                :to="item.route"
-                                class="flex items-center p-3 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
-                            >
-                                <span :class="item.icon" class="mr-2" />
-                                <span>{{ item.label }}</span>
-                            </NuxtLink>
-                        </li>
-                    </ul>
+                    <AppNavMenu variant="desktop" />
                 </div>
             </div>
             <!-- Mobile sidebar (overlay-based) -->
@@ -52,22 +38,10 @@
                 class="w-64"
             >
                 <div class="flex flex-col h-full">
-                    <ul class="list-none p-3 m-0 flex-1">
-                        <li
-                            v-for="item in items"
-                            v-show="item.show"
-                            :key="item.label"
-                        >
-                            <NuxtLink
-                                :to="item.route"
-                                class="flex items-center p-3 text-gray-700 hover:bg-gray-100 rounded"
-                                @click="closeSidebarOnMobile"
-                            >
-                                <span :class="item.icon" class="mr-2" />
-                                <span>{{ item.label }}</span>
-                            </NuxtLink>
-                        </li>
-                    </ul>
+                    <AppNavMenu
+                        variant="mobile"
+                        :on-item-click="closeSidebarOnMobile"
+                    />
                 </div>
             </Sidebar>
             <div class="flex-1 flex flex-col">
@@ -84,7 +58,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { useNuxtApp } from '#app';
 import { usePermissionsStore } from '~/stores/permissions';
 
@@ -92,25 +66,6 @@ const { $auth } = useNuxtApp();
 const permissionsStore = usePermissionsStore();
 const sidebarVisible = ref(false);
 const isDesktop = ref(false);
-
-const showAdmin = computed(() =>
-    permissionsStore.permissions.includes('admin')
-);
-
-const items = ref([
-    {
-        label: 'About',
-        icon: 'pi pi-info-circle',
-        route: '/about',
-        show: false,
-    },
-    {
-        label: 'Intercessor Report',
-        icon: 'pi',
-        route: '/reports/intercessors',
-        show: showAdmin,
-    },
-]);
 
 const closeSidebarOnMobile = () => {
     if (!isDesktop.value) {
