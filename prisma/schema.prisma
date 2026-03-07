@@ -33,8 +33,7 @@ model User {
   messages            Message[]
   messageViews        MessageView[]
   messageReactions    MessageReaction[]
-  organizations       Organization[] @relation("UserOrganizations")
-  intercessorFor      Organization[] @relation("UserIntercessors")
+  userRolesPerOrganization           UserRoleInOrganization[]
 
   @@unique([mondayId])
   @@map("users")
@@ -45,6 +44,7 @@ model Role {
   name String
 
   users User[]
+  userRolesPerOrganization UserRoleInOrganization[]
 
   @@map("roles")
 }
@@ -55,15 +55,27 @@ model Organization {
   description String?
   createdAt   DateTime @default(now())
 
-  users        User[]        @relation("UserOrganizations")
   prayerOrders PrayerOrder[]
-  intercessors User[]        @relation("UserIntercessors")
   mondayBoards MondayBoard[]
+  userRolesInOrganization    UserRoleInOrganization[]
 
   subscriptionId Int?
   subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
 
   @@map("organizations")
+}
+
+model UserRoleInOrganization {
+  id             Int           @id @default(autoincrement())
+  userId         Int
+  user           User          @relation(fields: [userId], references: [id])
+  roleId         Int
+  role           Role          @relation(fields: [roleId], references: [id])
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  
+  @@unique([userId, roleId, organizationId])
+  @@map("user_roles_in_organization")
 }
 
 model Subscription {
