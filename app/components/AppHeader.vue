@@ -1,12 +1,6 @@
 <template>
     <div class="flex items-center justify-between p-4 bg-white shadow">
         <div class="flex items-center">
-            <Button
-                v-show="!sidebarVisible"
-                class="mr-2"
-                icon="pi pi-bars"
-                @click="toggleSidebar"
-            />
             <NuxtLink to="/" external>
                 <img :src="logoSrc" style="height: 40px" />
             </NuxtLink>
@@ -26,7 +20,7 @@
 </template>
 
 <script setup>
-import { computed, inject } from 'vue';
+import { computed } from 'vue';
 
 const colorMode = useColorMode();
 const logoSrc = computed(() =>
@@ -34,9 +28,4 @@ const logoSrc = computed(() =>
         ? '/Catalyst_Transparent_dark.png'
         : '/Catalyst_Transparent.png'
 );
-const sidebarVisible = inject('sidebarVisible');
-
-const toggleSidebar = () => {
-    sidebarVisible.value = !sidebarVisible.value;
-};
 </script>
