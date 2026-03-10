@@ -6,7 +6,7 @@ import type {
     ActivityLog,
     Item,
 } from '../Monday/IMondayService';
-import { PrayerOrderSyncResult } from './PrayerOrderSyncResult';
+import type { PrayerOrderSyncResult } from './PrayerOrderSyncResult';
 
 export class MondayPrayerOrderSyncService implements IMondaySyncService {
     constructor(
@@ -102,7 +102,7 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
         await this.syncPrayerOrderStatusUpdates(board);
 
         // Create PrayerOrders
-        let syncedCount = await this.createPrayerOrders(
+        const syncedCount = await this.createPrayerOrders(
             items,
             creationLogs,
             board
