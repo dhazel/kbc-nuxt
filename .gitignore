@@ -1,4 +1,5 @@
 session.vim
+.opencode/
 
 # Nuxt dev/build outputs
 .output
