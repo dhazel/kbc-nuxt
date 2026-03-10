@@ -1,4 +1,4 @@
-import { PrayerOrder } from './PrayerOrder';
+import type { PrayerOrder } from './PrayerOrder';
 
 export interface OrganizationUnit {
     name: string;
