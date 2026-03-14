@@ -8,6 +8,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("NETLIFY_DATABASE_URL")
 }
 
 enum ReactionType {
@@ -141,6 +142,8 @@ model PrayerOrder {
 
   messages Message[] // All replies/follow-ups (flat)
 
+  testimonyTypes TestimonyType[]
+
   createdAt         DateTime           @default(now())
   lastActivityAt      DateTime             @default(now()) @updatedAt // Automatically updates on new messages
   mondayId            String?
@@ -224,6 +227,14 @@ model IntercessionType {
   @@map("intercession_types")
 }
 
+model TestimonyType {
+  id             Int           @id @default(autoincrement())
+  name           String        @unique
+  prayerOrders   PrayerOrder[]
+
+  @@map("testimony_types")
+}
+
 model BoardMapping {
   id             Int          @id @default(autoincrement())
   subscriptionId Int
@@ -267,6 +278,6 @@ model GeneralSync {
   id            Int       @id @default(autoincrement())
   description   String
   lastSyncedAt  DateTime?
-  
+
   @@map("general_syncs")
 }
