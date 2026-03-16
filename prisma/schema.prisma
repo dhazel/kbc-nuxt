@@ -5,6 +5,7 @@ generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
+
 datasource db {
   provider = "postgresql"
   url      = env("NETLIFY_DATABASE_URL")
@@ -58,11 +59,24 @@ model Organization {
   prayerOrders PrayerOrder[]
   mondayBoards MondayBoard[]
   userRolesInOrganization    UserRoleInOrganization[]
+  units          OrganizationUnit[]
 
   subscriptionId Int?
   subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
 
   @@map("organizations")
+}
+
+model OrganizationUnit {
+  id             Int          @id @default(autoincrement())
+  name           String
+  description    String?
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  prayerOrders PrayerOrder[]
+
+  @@map("organization_units")
 }
 
 model UserRoleInOrganization {
@@ -120,10 +134,15 @@ model PrayerOrder {
   organizationId Int // Required: links to organization
   organization   Organization @relation(fields: [organizationId], references: [id])
 
+  organizationUnitId Int? // Optional: links to organization unit
+  organizationUnit   OrganizationUnit? @relation(fields: [organizationUnitId], references: [id])
+
   title               String? // Optional subject/title for the thread
   firstMessageContent String // Content of the original/root post
 
   messages Message[] // All replies/follow-ups (flat)
+
+  testimonyTypes TestimonyType[]
 
   createdAt         DateTime           @default(now())
   lastActivityAt      DateTime             @default(now()) @updatedAt // Automatically updates on new messages
@@ -208,6 +227,14 @@ model IntercessionType {
   @@map("intercession_types")
 }
 
+model TestimonyType {
+  id             Int           @id @default(autoincrement())
+  name           String        @unique
+  prayerOrders   PrayerOrder[]
+
+  @@map("testimony_types")
+}
+
 model BoardMapping {
   id             Int          @id @default(autoincrement())
   subscriptionId Int
@@ -251,6 +278,6 @@ model GeneralSync {
   id            Int       @id @default(autoincrement())
   description   String
   lastSyncedAt  DateTime?
-  
+
   @@map("general_syncs")
 }
