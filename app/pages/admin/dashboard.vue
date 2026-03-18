@@ -40,7 +40,13 @@
                 <Card class="p-4">
                     <template #title>User Management</template>
                     <template #content>
-                        <p>User-related admin features coming soon.</p>
+                        <p>Manage users and roles within organizations.</p>
+                        <NuxtLink to="/admin/organizations/roles">
+                            <Button
+                                label="Manage Organization Roles"
+                                class="w-full mt-3"
+                            />
+                        </NuxtLink>
                     </template>
                 </Card>
             </div>
