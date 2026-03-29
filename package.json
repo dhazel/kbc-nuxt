@@ -20,6 +20,7 @@
         "@netlify/blobs": "^10.0.8",
         "@nuxt/fonts": "^0.11.4",
         "@nuxt/icon": "^1.15.0",
+        "@nuxt/image": "^2.0.0",
         "@nuxtjs/color-mode": "^4.0.0",
         "@nuxtjs/kinde": "^0.2.0",
         "@pinia/nuxt": "^0.11.3",

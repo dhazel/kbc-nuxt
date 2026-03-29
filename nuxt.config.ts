@@ -8,12 +8,13 @@ export default defineNuxtConfig({
     devtools: { enabled: true },
 
     modules: [
-        '@primevue/nuxt-module',
-        '@nuxt/icon',
-        '@nuxt/fonts',
-        '@nuxtjs/kinde',
-        '@nuxtjs/color-mode',
-        '@pinia/nuxt',
+      '@primevue/nuxt-module',
+      '@nuxt/icon',
+      '@nuxt/fonts',
+      '@nuxtjs/kinde',
+      '@nuxtjs/color-mode',
+      '@pinia/nuxt',
+      '@nuxt/image'
     ],
 
     nitro: {
