@@ -12,7 +12,10 @@
 
 <script setup lang="ts">
 import { usePermissionsStore } from '~/stores/permissions';
-import { navigateTo } from '#app';
+
+definePageMeta({
+    middleware: 'auth-logged-in',
+});
 
 const permissionsStore = usePermissionsStore();
 

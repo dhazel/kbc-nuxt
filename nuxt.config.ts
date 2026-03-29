@@ -8,13 +8,13 @@ export default defineNuxtConfig({
     devtools: { enabled: true },
 
     modules: [
-      '@primevue/nuxt-module',
-      '@nuxt/icon',
-      '@nuxt/fonts',
-      '@nuxtjs/kinde',
-      '@nuxtjs/color-mode',
-      '@pinia/nuxt',
-      '@nuxt/image'
+        '@primevue/nuxt-module',
+        '@nuxt/icon',
+        '@nuxt/fonts',
+        '@nuxtjs/kinde',
+        '@nuxtjs/color-mode',
+        '@pinia/nuxt',
+        '@nuxt/image',
     ],
 
     nitro: {
@@ -63,35 +63,8 @@ export default defineNuxtConfig({
     },
 
     routeRules: {
-        '/reports/intercessors': {
-            appMiddleware: ['auth-logged-in'],
-            kinde: {
-                // permissions: { admin: true }, // This fails for some reason
-                redirectUrl: '/',
-                external: true,
-            },
-        },
         '/demo': {
             redirect: '/',
-            appMiddleware: ['auth-logged-in'],
-            kinde: {
-                external: true,
-                redirectUrl: '/api/login',
-                // permissions: { admin: true },  // Commented out for now
-            },
-        },
-        '/profile': {
-            appMiddleware: ['auth-logged-in'],
-            kinde: {
-                external: true,
-                redirectUrl: '/api/login',
-                // permissions: { admin: true },  // Commented out for now
-            },
-        },
-        '/': {
-            kinde: {
-                public: true,
-            },
         },
     },
 });

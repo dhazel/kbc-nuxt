@@ -65,13 +65,8 @@
                         :orders="store.ordersAnnualInspired"
                     />
                 </TabPanel>
-                <TabPanel
-                    v-if="store.orders.length > 0"
-                    header="Per Board"
-                >
-                    <IntercessorsPerBoard
-                        :orders="store.ordersPerBoard"
-                    />
+                <TabPanel v-if="store.orders.length > 0" header="Per Board">
+                    <IntercessorsPerBoard :orders="store.ordersPerBoard" />
                 </TabPanel>
             </TabView>
         </div>
@@ -86,6 +81,10 @@ import TabPanel from 'primevue/tabpanel';
 import IntercessorReportTable from '~/components/reports/IntercessorReportTable.vue';
 import IntercessorsPerBoard from '~/components/reports/IntercessorsPerBoard.vue';
 import { useIntercessorReportStore } from '~/stores/intercessorReport';
+
+definePageMeta({
+    middleware: 'auth-logged-in',
+});
 
 const store = useIntercessorReportStore();
 </script>

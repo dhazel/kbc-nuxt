@@ -8,7 +8,7 @@
 import { useNuxtApp, navigateTo } from '#app';
 import { onMounted } from 'vue';
 
-definePageMeta({ layout: 'no-sidebar' });
+definePageMeta({ layout: 'no-sidebar', middleware: false });
 
 const { $auth } = useNuxtApp();
 
