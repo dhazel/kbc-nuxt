@@ -4,6 +4,7 @@
 
 <script setup>
 import { computed } from 'vue';
+import { navigateTo } from '#app';
 import { usePermissionsStore } from '~/stores/permissions';
 import Menu from 'primevue/menu';
 
@@ -17,18 +18,20 @@ const menuItems = computed(() => [
     {
         label: 'About',
         icon: 'pi pi-info-circle',
-        routerLink: '/about',
         visible: false,
+        command: () => {
+            navigateTo('/about');
+            if (props.onItemClick) props.onItemClick();
+        },
     },
     {
         label: 'Intercessor Report',
         icon: 'pi',
-        routerLink: '/reports/intercessors',
         visible: showAdmin.value,
-        command:
-            props.onItemClick
-                ? () => props.onItemClick()
-                : undefined,
+        command: () => {
+            navigateTo('/reports/intercessors');
+            if (props.onItemClick) props.onItemClick();
+        },
     },
 ]);
 
