@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <PageGuard>
         <section class="mb-12">
             <h1 class="text-3xl">
                 Welcome{{ userName ? ` ${userName}` : '' }}!
@@ -31,7 +31,7 @@
                 </Card>
             </PermissionGuard>
         </section>
-    </div>
+    </PageGuard>
 </template>
 
 <script setup lang="ts">

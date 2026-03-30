@@ -1,7 +1,5 @@
 <template>
-    <div>
-        <h1 class="text-3xl">Welcome!</h1>
-    </div>
+    <h1 class="text-3xl">Welcome!</h1>
 </template>
 
 <script setup lang="ts">
