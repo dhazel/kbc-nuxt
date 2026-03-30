@@ -16,20 +16,39 @@ const showAdmin = computed(() =>
 
 const menuItems = computed(() => [
     {
+        label: 'Home',
+        items: [
+            {
+                label: 'Dashboard',
+                icon: 'pi',
+                visible: showAdmin.value,
+                command: () => {
+                    navigateTo('/dashboard');
+                    if (props.onItemClick) props.onItemClick();
+                },
+            },
+        ]
+    },
+    {
+        label: 'Reports',
+        items: [
+            {
+                label: 'Intercessor Report',
+                icon: 'pi',
+                visible: showAdmin.value,
+                command: () => {
+                    navigateTo('/reports/intercessors');
+                    if (props.onItemClick) props.onItemClick();
+                },
+            },
+        ]
+    },
+    {
         label: 'About',
         icon: 'pi pi-info-circle',
         visible: false,
         command: () => {
             navigateTo('/about');
-            if (props.onItemClick) props.onItemClick();
-        },
-    },
-    {
-        label: 'Intercessor Report',
-        icon: 'pi',
-        visible: showAdmin.value,
-        command: () => {
-            navigateTo('/reports/intercessors');
             if (props.onItemClick) props.onItemClick();
         },
     },
