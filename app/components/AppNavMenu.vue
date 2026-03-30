@@ -21,7 +21,6 @@ const menuItems = computed(() => [
             {
                 label: 'Dashboard',
                 icon: 'pi',
-                visible: showAdmin.value,
                 command: () => {
                     navigateTo('/dashboard');
                     if (props.onItemClick) props.onItemClick();
