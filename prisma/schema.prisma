@@ -2,8 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
-  binaryTargets   = ["native", "debian-openssl-3.0.x"]
+  provider         = "prisma-client-js"
+  binaryTargets    = ["native", "debian-openssl-3.0.x"]
   moduleResolution = "bundler"
 }
 
@@ -22,6 +22,11 @@ enum ReactionType {
   CELEBRATE
 }
 
+enum SyncType {
+  MondayMessages
+  MondayPrayerOrders
+}
+
 model User {
   id         Int      @id @default(autoincrement())
   name       String
@@ -30,12 +35,12 @@ model User {
   visitCount Int      @default(0)
   mondayId   String?
 
-  createdPrayerOrders PrayerOrder[]  @relation("PrayerOrderCreator")
-  roles               Role[]
-  messages            Message[]
-  messageViews        MessageView[]
-  messageReactions    MessageReaction[]
-  userRolesPerOrganization           UserRoleInOrganization[]
+  createdPrayerOrders      PrayerOrder[]            @relation("PrayerOrderCreator")
+  roles                    Role[]
+  messages                 Message[]
+  messageViews             MessageView[]
+  messageReactions         MessageReaction[]
+  userRolesPerOrganization UserRoleInOrganization[]
 
   @@unique([mondayId])
   @@map("users")
@@ -45,7 +50,7 @@ model Role {
   id   Int    @id @default(autoincrement())
   name String
 
-  users User[]
+  users                    User[]
   userRolesPerOrganization UserRoleInOrganization[]
 
   @@map("roles")
@@ -57,10 +62,10 @@ model Organization {
   description String?
   createdAt   DateTime @default(now())
 
-  prayerOrders PrayerOrder[]
-  mondayBoards MondayBoard[]
-  userRolesInOrganization    UserRoleInOrganization[]
-  units          OrganizationUnit[]
+  prayerOrders            PrayerOrder[]
+  mondayBoards            MondayBoard[]
+  userRolesInOrganization UserRoleInOrganization[]
+  units                   OrganizationUnit[]
 
   subscriptionId Int?
   subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
@@ -81,14 +86,14 @@ model OrganizationUnit {
 }
 
 model UserRoleInOrganization {
-  id             Int           @id @default(autoincrement())
+  id             Int          @id @default(autoincrement())
   userId         Int
-  user           User          @relation(fields: [userId], references: [id])
+  user           User         @relation(fields: [userId], references: [id])
   roleId         Int
-  role           Role          @relation(fields: [roleId], references: [id])
+  role           Role         @relation(fields: [roleId], references: [id])
   organizationId Int
   organization   Organization @relation(fields: [organizationId], references: [id])
-  
+
   @@unique([userId, roleId, organizationId])
   @@map("user_roles_in_organization")
 }
@@ -106,8 +111,8 @@ model Subscription {
 }
 
 model Status {
-  id                  Int                  @id @default(autoincrement())
-  name                String               @unique
+  id                  Int                 @id @default(autoincrement())
+  name                String              @unique
   color               String?
   prayerOrderStatuses PrayerOrderStatus[] // Many-to-many via junction
 
@@ -145,8 +150,8 @@ model PrayerOrder {
 
   testimonyTypes TestimonyType[]
 
-  createdAt         DateTime           @default(now())
-  lastActivityAt      DateTime             @default(now()) @updatedAt // Automatically updates on new messages
+  createdAt           DateTime            @default(now())
+  lastActivityAt      DateTime            @default(now()) @updatedAt // Automatically updates on new messages
   mondayId            String?
   prayerOrderStatuses PrayerOrderStatus[]
 
@@ -166,10 +171,10 @@ model Message {
   author   User @relation(fields: [authorId], references: [id])
 
   parentMessageId Int?
-  parentMessage   Message? @relation("MessageReplies", fields: [parentMessageId], references: [id], onDelete: SetNull)
+  parentMessage   Message?  @relation("MessageReplies", fields: [parentMessageId], references: [id], onDelete: SetNull)
   replies         Message[] @relation("MessageReplies")
 
-  messageViews    MessageView[]
+  messageViews MessageView[]
 
   messageReactions MessageReaction[]
 
@@ -188,12 +193,12 @@ model Message {
 }
 
 model MessageView {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   messageId Int
-  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  message   Message   @relation(fields: [messageId], references: [id], onDelete: Cascade)
   userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  viewedAt DateTime? // Optional timestamp; null for imported data without views
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  viewedAt  DateTime? // Optional timestamp; null for imported data without views
 
   @@unique([messageId, userId]) // Ensures one record per user-message (first view)
   @@index([messageId]) // Efficient querying of views for a message
@@ -229,56 +234,56 @@ model IntercessionType {
 }
 
 model TestimonyType {
-  id             Int           @id @default(autoincrement())
-  name           String        @unique
-  prayerOrders   PrayerOrder[]
+  id           Int           @id @default(autoincrement())
+  name         String        @unique
+  prayerOrders PrayerOrder[]
 
   @@map("testimony_types")
 }
 
 model BoardMapping {
-  id             Int          @id @default(autoincrement())
-  subscriptionId Int
-  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
-  intercessionTypeId   Int
-  intercessionType     IntercessionType   @relation(fields: [intercessionTypeId], references: [id])
-  mondayBoardId  Int?
-  mondayBoard    MondayBoard? @relation(fields: [mondayBoardId], references: [id])
+  id                 Int              @id @default(autoincrement())
+  subscriptionId     Int
+  subscription       Subscription     @relation(fields: [subscriptionId], references: [id])
+  intercessionTypeId Int
+  intercessionType   IntercessionType @relation(fields: [intercessionTypeId], references: [id])
+  mondayBoardId      Int?
+  mondayBoard        MondayBoard?     @relation(fields: [mondayBoardId], references: [id])
 
   @@unique([subscriptionId, intercessionTypeId, mondayBoardId])
   @@map("board_mappings")
 }
 
 model MondayBoard {
-  id             Int            @id @default(autoincrement())
-  mondayId  String         @unique
-  boardName      String?
-  organizationId Int?
-  organization   Organization?  @relation(fields: [organizationId], references: [id])
-  boardMappings          BoardMapping[]
-  mondayPrayerOrderSync   MondayPrayerOrderSync?
-  createdAt               DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  id                    Int                    @id @default(autoincrement())
+  mondayId              String                 @unique
+  boardName             String?
+  organizationId        Int?
+  organization          Organization?          @relation(fields: [organizationId], references: [id])
+  boardMappings         BoardMapping[]
+  mondayPrayerOrderSync MondayPrayerOrderSync?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
 
   @@map("monday_boards")
 }
 
 model MondayPrayerOrderSync {
-  id             Int                   @id @default(autoincrement())
-  mondayBoardId  Int                   @unique
-  mondayBoard    MondayBoard           @relation(fields: [mondayBoardId], references: [id])
-  lastSyncedAt   DateTime?
-  createdAt      DateTime              @default(now())
-  updatedAt      DateTime              @updatedAt
+  id            Int         @id @default(autoincrement())
+  mondayBoardId Int         @unique
+  mondayBoard   MondayBoard @relation(fields: [mondayBoardId], references: [id])
+  lastSyncedAt  DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
   @@index([mondayBoardId])
   @@map("monday_prayer_order_syncs")
 }
 
 model GeneralSync {
-  id            Int       @id @default(autoincrement())
-  description   String
-  lastSyncedAt  DateTime?
+  id           Int       @id @default(autoincrement())
+  syncType     SyncType
+  lastSyncedAt DateTime?
 
   @@map("general_syncs")
 }
