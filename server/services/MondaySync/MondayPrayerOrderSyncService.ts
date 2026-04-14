@@ -1,4 +1,4 @@
-import type { MondayBoard, PrismaClient } from '@prisma/client';
+import { MondayBoard, PrismaClient, SyncType } from '@prisma/client';
 import type { IMondaySyncService } from './IMondaySyncService';
 import type {
     IMondayService,
@@ -19,80 +19,59 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
      */
     async sync(): Promise<void> {
         const boards = await this.getAllMondayBoards();
+        const startDate = await this.getLastSyncDate();
+        const endDate: Date = new Date();
+
+        console.log(`Last sync date: ${startDate}`);
 
         const prayerOrderSyncResults: PrayerOrderSyncResult[] = [];
         for (const board of boards) {
             console.log('Syncing PrayerOrders for board: ', board.boardName);
-            prayerOrderSyncResults.push(await this.syncPrayerOrders(board));
+            prayerOrderSyncResults.push(
+                await this.syncPrayerOrders(board, startDate, endDate)
+            );
         }
 
-        const startDate: Date = new Date(
-            Math.min(
-                ...prayerOrderSyncResults.map((r) => r.startDate.getTime())
-            )
-        );
-        const endDate: Date = new Date();
-
-        console.log('Syncing PrayerOrder messages from start date: ', startDate);
-        await this.syncPrayerOrderMessages(startDate, endDate);
+        await this.saveSyncDate(new Date());
 
         console.log('Done syncing');
     }
 
-    async syncPrayerOrderMessages(
-        startDate: Date,
-        endDate: Date
-    ): Promise<void> {
-        const itemUpdates = await this.mondayService.getAllItemMessages(
-            startDate,
-            endDate
-        );
-
-        const batches = this.chunkArray(itemUpdates, 100);
-        for (const batch of batches) {
-            console.log('Starting message batch');
-            await this.prisma.$transaction(async (tx) => {
-                for (const update of batch) {
-                    const prayerOrder = await tx.prayerOrder.findFirst({
-                        where: { mondayId: update.item.id },
-                    });
-                    if (!prayerOrder) continue;
-
-                    const mainMessage = await this.processMessage(
-                        tx,
-                        update,
-                        update.creator.id,
-                        prayerOrder.id
-                    );
-                    if (!mainMessage) continue;
-
-                    // Process replies
-                    for (const reply of update.replies) {
-                        await this.processMessage(
-                            tx,
-                            reply,
-                            reply.creator.id,
-                            prayerOrder.id,
-                            mainMessage.id
-                        );
-                    }
-                }
+    async saveSyncDate(syncDate: Date) {
+        try {
+            await this.prisma.generalSync.create({
+                data: {
+                    syncType: SyncType.MondayPrayerOrders,
+                    lastSyncedAt: syncDate,
+                },
             });
+        } catch (error) {
+            console.error('Error saving sync date:', error);
         }
     }
 
-    async syncPrayerOrders(board: MondayBoard): Promise<PrayerOrderSyncResult> {
-        // Get last sync date
-        const syncRecord = await this.prisma.mondayPrayerOrderSync.findUnique({
-            where: { mondayBoardId: board.id },
-        });
-        const lastSyncDate = syncRecord?.lastSyncedAt ?? new Date(2024, 0, 1);
+    async getLastSyncDate(): Promise<Date> {
+        try {
+            const sync = await this.prisma.generalSync.findFirst({
+                where: { syncType: SyncType.MondayPrayerOrders },
+                orderBy: { lastSyncedAt: 'desc' },
+            });
+            return sync?.lastSyncedAt || new Date(2024, 0, 1);
+        } catch (error) {
+            throw new Error(`Error getting last sync date: ${error.message}`);
+        }
+    }
 
+    async syncPrayerOrders(
+        board: MondayBoard,
+        startDate: Date,
+        endDate: Date
+    ): Promise<PrayerOrderSyncResult> {
         // Get item creation activity logs
         const creationLogs =
             await this.mondayService.getAllItemCreationActivityLogs(
                 [Number(board.mondayId)],
-                lastSyncDate,
+                startDate,
                 new Date()
             );
 
@@ -120,8 +99,8 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
 
         return {
             boardId: board.id,
-            startDate: lastSyncDate,
-            endDate: new Date(),
+            startDate: startDate,
+            endDate: endDate,
             syncedPrayerOrdersCount: syncedCount,
         };
     }
@@ -294,167 +273,6 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
             default:
                 console.warn(`Unknown monday status: ${mondayLabel}`);
                 return null;
-        }
-    }
-
-    private chunkArray<T>(array: T[], size: number): T[][] {
-        const chunks: T[][] = [];
-        for (let i = 0; i < array.length; i += size) {
-            chunks.push(array.slice(i, i + size));
-        }
-        return chunks;
-    }
-
-    private async processMessage(
-        tx: any,
-        item: any,
-        creatorId: string | number,
-        prayerOrderId: number,
-        parentMessageId?: number
-    ): Promise<any | null> {
-        const author = await tx.user.findFirst({
-            where: { mondayId: creatorId },
-        });
-        if (!author) return null;
-
-        const existing = await tx.message.findFirst({
-            where: { mondayId: item.id },
-        });
-
-        let message;
-        if (existing) {
-            message = await tx.message.update({
-                where: { id: existing.id },
-                data: {
-                    content: item.body,
-                    updatedAt: new Date(item.edited_at),
-                },
-            });
-        } else {
-            message = await tx.message.create({
-                data: {
-                    prayerOrderId,
-                    authorId: author.id,
-                    content: item.body,
-                    mondayId: item.id,
-                    createdAt: new Date(item.created_at),
-                    updatedAt: new Date(item.edited_at),
-                    ...(parentMessageId !== undefined && { parentMessageId }),
-                },
-            });
-        }
-
-        await this.syncViewers(tx, message.id, item.viewers);
-
-        await this.syncReactions(tx, message.id, item.reactions);
-
-        return message;
-    }
-
-    private async syncViewers(
-        tx: any,
-        messageId: number,
-        newViewers: any[]
-    ): Promise<void> {
-        const currentViews = await tx.messageView.findMany({
-            where: { messageId },
-            select: { id: true, userId: true },
-        });
-        const newUserIds = new Set<number>();
-
-        for (const viewer of newViewers) {
-            const user = await tx.user.findFirst({
-                where: { mondayId: viewer.userMondayId },
-            });
-            if (!user) continue;
-            newUserIds.add(user.id);
-            await tx.messageView.upsert({
-                where: {
-                    messageId_userId: {
-                        messageId,
-                        userId: user.id,
-                    },
-                },
-                update: {
-                    viewedAt: viewer.date,
-                },
-                create: {
-                    messageId,
-                    userId: user.id,
-                    viewedAt: viewer.date,
-                },
-            });
-        }
-
-        for (const current of currentViews) {
-            if (!newUserIds.has(current.userId)) {
-                await tx.messageView.delete({
-                    where: { id: current.id },
-                });
-            }
-        }
-    }
-
-    private readonly reactionTypeMap: Record<string, any> = {
-        '+1': 'LIKE',
-        heart: 'LOVE',
-        pray: 'PRAY',
-        laugh: 'LAUGH',
-        care: 'CARE',
-        clap: 'CLAP',
-        celebrate: 'CELEBRATE',
-    };
-
-    private async syncReactions(
-        tx: any,
-        messageId: number,
-        newReactions: any[]
-    ): Promise<void> {
-        const currentReactions = await tx.messageReaction.findMany({
-            where: { messageId },
-            select: { id: true, userId: true },
-        });
-        const newUserIds = new Set<number>();
-
-        for (const reaction of newReactions) {
-            const user = await tx.user.findFirst({
-                where: { mondayId: reaction.userMondayId },
-            });
-            if (!user) continue;
-
-            const mappedType = this.reactionTypeMap[reaction.reactionType];
-            if (!mappedType) {
-                console.warn(
-                    `Skipping unknown reaction type, '${reaction.reactionType}', on Message Id, ${messageId}`
-                );
-                continue;
-            }
-
-            newUserIds.add(user.id);
-            await tx.messageReaction.upsert({
-                where: {
-                    messageId_userId: {
-                        messageId,
-                        userId: user.id,
-                    },
-                },
-                update: {
-                    reactionType: mappedType,
-                },
-                create: {
-                    messageId,
-                    userId: user.id,
-                    reactionType: mappedType,
-                },
-            });
-        }
-
-        for (const current of currentReactions) {
-            if (!newUserIds.has(current.userId)) {
-                await tx.messageReaction.delete({
-                    where: { id: current.id },
-                });
-            }
         }
     }
 
