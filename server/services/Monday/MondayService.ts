@@ -423,7 +423,7 @@ export class MondayService implements IMondayService {
 
     /**
      * @param boardIds - Collection of board IDs
-     * @returns Array of Board objects with mondayId and name
+     * @returns Array of Board objects
      */
     public async getBoards(boardIds: number[]): Promise<Board[]> {
         const query = `query {
@@ -432,13 +432,19 @@ export class MondayService implements IMondayService {
             ) {
                 id
                 name
+                columns {
+                    id
+                    title
+                    type
+                }
             }
         }`;
         const response = await this.mondayAdapter.query(query);
         const boards = response.data.boards;
-        return boards.map((board: { id: string; name: string }) => ({
+        return boards.map((board: { id: string; name: string; columns: Column[] }) => ({
             mondayId: parseInt(board.id),
             name: board.name,
+            columns: board.columns,
         }));
     }
 }

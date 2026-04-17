@@ -173,7 +173,7 @@ export class CachedMondayService implements IMondayService {
 
     /**
      * @param boardIds - Collection of board IDs
-     * @returns Array of Board objects with mondayId and name
+     * @returns Array of Board objects
      */
     public async getBoards(boardIds: number[]): Promise<Board[]> {
         const cachedFunc = defineCachedFunction(

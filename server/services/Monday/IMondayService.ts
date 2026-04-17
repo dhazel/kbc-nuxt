@@ -79,7 +79,7 @@ export interface IMondayService {
 
     /**
      * @param boardIds - Collection of board IDs
-     * @returns Array of Board objects with mondayId and name
+     * @returns Array of Board objects
      */
     getBoards(boardIds: number[]): Promise<Board[]>;
 }
