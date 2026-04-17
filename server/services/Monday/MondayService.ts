@@ -276,6 +276,11 @@ export class MondayService implements IMondayService {
     ): Promise<ActivityLog[]> {
         const inclusiveEndDate = new Date(endDate);
         inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
+
+        const columnIds = Array.from(new Set((await this.getBoards(boards))
+            .flatMap(b => b.columns.filter(c => c.title.toLowerCase() === 'status')
+                                   .map(c => c.id))));
+
         const maxActivityLog = 10000;
         const activityQuery = `query {
             boards(
@@ -286,7 +291,7 @@ export class MondayService implements IMondayService {
                 activity_logs(
                     from: "${startDate.toISOString()}",
                     to: "${inclusiveEndDate.toISOString()}",
-                    column_ids: ["status"],
+                    column_ids: [${columnIds.map(c => '"' + c + '"').join(',')}],
                     limit: ${maxActivityLog}
                 ) {
                     id
