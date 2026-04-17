@@ -1,68 +1,8 @@
-export interface Column {
-    id: string;
-    title: string;
-    type: string;
-    settings_str?: string;
-}
-
-export interface Board {
-    mondayId: number;
-    name: string;
-}
-
-export interface User {
-    id: string;
-    mondayId: string;
-    name: string;
-    email: string | undefined;
-}
-
-export interface ActivityLog {
-    id: string;
-    event: string;
-    data: string;
-    user_id: string;
-    created_at: string;
-    boardName?: string;
-    boardId?: number;
-}
-
-export interface ItemUpdate {
-    id: string;
-    body: string;
-    bodyText: string;
-    created_at: string;
-    edited_at: string;
-    creator: User;
-    item: Item;
-    viewers: ViewRecord[];
-    reactions: ReactionRecord[];
-    replies: ItemUpdate[];
-}
-
-export interface ViewRecord {
-    userMondayId: string;
-    date?: Date;
-}
-
-export interface ReactionRecord {
-    userMondayId: string;
-    reactionType: string;
-}
-
-export interface ColumnValue {
-    id: string;
-    value: string;
-}
-
-export interface Item {
-    id: string;
-    name: string;
-    created_at: Date;
-    column_values: ColumnValue[];
-    board?: { id: string; name: string };
-    group?: { id: string; title: string };
-}
+import { User } from "./Models/User";
+import { ActivityLog } from "./Models/ActivityLog";
+import { Board } from "./Models/Board";
+import { Item } from "./Models/Item";
+import { ItemUpdate } from "./Models/ItemUpdate";
 
 export interface IMondayService {
     /*

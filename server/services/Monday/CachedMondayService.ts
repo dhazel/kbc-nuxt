@@ -1,11 +1,9 @@
-import type {
-    ActivityLog,
-    Board,
-    IMondayService,
-    Item,
-    ItemUpdate,
-    User,
-} from './IMondayService';
+import { User } from './Models/User';
+import type { IMondayService } from './IMondayService';
+import { ActivityLog } from './Models/ActivityLog';
+import { Board } from './Models/Board';
+import { Item } from './Models/Item';
+import { ItemUpdate } from './Models/ItemUpdate';
 
 export class CachedMondayService implements IMondayService {
     constructor(private mondayService: IMondayService) {}

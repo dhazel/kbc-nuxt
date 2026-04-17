@@ -1,12 +1,10 @@
 import { MondayBoard, PrismaClient, SyncType } from '@prisma/client';
 import type { IMondaySyncService } from './IMondaySyncService';
-import type {
-    IMondayService,
-    ColumnValue,
-    ActivityLog,
-    Item,
-} from '../Monday/IMondayService';
+import type { IMondayService } from '../Monday/IMondayService';
 import type { PrayerOrderSyncResult } from './PrayerOrderSyncResult';
+import { ActivityLog } from '../Monday/Models/ActivityLog';
+import { ColumnValue } from '../Monday/Models/ColumnValue';
+import { Item } from '../Monday/Models/Item';
 
 export class MondayPrayerOrderSyncService implements IMondaySyncService {
     constructor(

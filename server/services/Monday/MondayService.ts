@@ -1,14 +1,12 @@
 import type { IMondayAdapter } from '../../adapters/IMondayAdapter';
-import type {
-    ActivityLog,
-    Board,
-    Column,
-    IMondayService,
-    Item,
-    ItemUpdate,
-    User,
-} from './IMondayService';
+import type { IMondayService } from './IMondayService';
 import { ResultSizeError } from '../../errors/ResultSizeError';
+import { User } from './Models/User';
+import { ActivityLog } from './Models/ActivityLog';
+import { Board } from './Models/Board';
+import { Column } from './Models/Column';
+import { Item } from './Models/Item';
+import { ItemUpdate } from './Models/ItemUpdate';
 
 export class MondayService implements IMondayService {
     constructor(private mondayAdapter: IMondayAdapter) {}
@@ -199,7 +197,7 @@ export class MondayService implements IMondayService {
         return activityLogs.filter((log: ActivityLog) => {
             if (log.event !== 'update_column_value') return false;
             const data = JSON.parse(log.data);
-            if (data.column_id !== 'status') return false;
+            if (data.column_title.toLowerCase() !== 'status') return false;
             const parsedValue = data.value;
             const label = parsedValue?.label.text;
             return statusText.some(
