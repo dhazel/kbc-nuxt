@@ -16,14 +16,8 @@ export default defineNitroPlugin((nitroApp) => {
         const boardIdProvider = event.context.boardIdProvider;
         event.context.intercessorReportService =
             new AggregateIntercessorReportService([
-                new MonthToMonthInformedReportService(
-                    mondayService,
-                    boardIdProvider
-                ),
-                new MonthToMonthInspiredReportService(
-                    mondayService,
-                    boardIdProvider
-                ),
+                new MonthToMonthInformedReportService(mondayService, boardIdProvider),
+                new MonthToMonthInspiredReportService(mondayService, boardIdProvider),
                 new AnnualInformedReportService(mondayService, boardIdProvider),
                 new AnnualInspiredReportService(mondayService, boardIdProvider),
             ]);

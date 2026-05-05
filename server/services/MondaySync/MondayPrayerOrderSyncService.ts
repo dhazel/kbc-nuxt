@@ -22,17 +22,19 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
 
         console.log(`Last sync date: ${startDate}`);
 
-        const prayerOrderSyncResults: PrayerOrderSyncResult[] = [];
-        for (const board of boards) {
-            console.log('Syncing PrayerOrders for board: ', board.boardName);
-            prayerOrderSyncResults.push(
-                await this.syncPrayerOrders(board, startDate, endDate)
-            );
+        if (startDate.toDateString() !== endDate.toDateString()) {
+            const prayerOrderSyncResults: PrayerOrderSyncResult[] = [];
+            for (const board of boards) {
+                console.log('Syncing PrayerOrders for board: ', board.boardName);
+                prayerOrderSyncResults.push(
+                    await this.syncPrayerOrders(board, startDate, endDate)
+                );
+            }
+
+            await this.saveSyncDate(new Date());
         }
 
-        await this.saveSyncDate(new Date());
-
-        console.log('Done syncing');
+        console.log('Done syncing prayer orders');
     }
 
     async saveSyncDate(syncDate: Date) {

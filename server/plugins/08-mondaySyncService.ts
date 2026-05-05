@@ -6,6 +6,7 @@ import { AggregateMondaySyncService } from '../services/MondaySync/AggregateMond
 import { MondayUsersSyncService } from '../services/MondaySync/MondayUsersSyncService';
 import { MondayBoardNameSyncService } from '../services/MondaySync/MondayBoardNameSyncService';
 import { MondayPrayerOrderSyncService } from '../services/MondaySync/MondayPrayerOrderSyncService';
+import { MondayMessageSyncService } from '../services/MondaySync/MondayMessageSyncService';
 
 export default defineNitroPlugin((nitroApp) => {
     nitroApp.hooks.hook('request', (event) => {
@@ -16,6 +17,11 @@ export default defineNitroPlugin((nitroApp) => {
             new MondayUsersSyncService(mondayService, event.context.prisma),
             new MondayBoardNameSyncService(mondayService, event.context.prisma),
             new MondayPrayerOrderSyncService(mondayService, event.context.prisma),
+            new MondayMessageSyncService(
+                mondayService,
+                event.context.prisma,
+                event.context.intercessorReportService
+            ),
         ]);
     });
 });
