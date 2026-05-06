@@ -87,16 +87,6 @@ export class MondayPrayerOrderSyncService implements IMondaySyncService {
             board
         );
 
-        // Update last sync date
-        await this.prisma.mondayPrayerOrderSync.upsert({
-            where: { mondayBoardId: board.id },
-            update: { lastSyncedAt: new Date() },
-            create: {
-                mondayBoardId: board.id,
-                lastSyncedAt: new Date(),
-            },
-        });
-
         return {
             boardId: board.id,
             startDate: startDate,
