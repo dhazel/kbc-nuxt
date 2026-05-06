@@ -13,6 +13,7 @@
         "test": "vitest",
         "test:run": "vitest run",
         "test:ui": "vitest --ui",
+        "db:migration": "prisma migrate dev --create-only",
         "db:deploy": "prisma migrate deploy",
         "db:generate": "prisma generate"
     },
